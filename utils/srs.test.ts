@@ -632,6 +632,37 @@ describe('SRS SM-2 Algorithm Tests', () => {
       expect(selection.rejectionReasons[0]).toContain('word already known');
       expect(selection.rejectionReasons[1]).toBe('word absent from sentence');
     });
+
+    it('correctly accepts a target word when an article is included in option.word', () => {
+      // "il" is already known, "focolare" is unknown
+      const customKnownSet = new Set([...knownWords, 'il', 'vicino', 'al']);
+      const option: EnrichmentOption = {
+        word: 'il focolare',
+        sentence: 'Io leggo un libro vicino al focolare.',
+        translation: 'Eu leio um livro perto da lareira.'
+      };
+
+      const result = evaluateEnrichmentOption(option, customKnownSet, properNounTokens, true);
+      expect(result.valid).toBe(true);
+      expect(result.chosenWord).toBe('focolare');
+    });
+
+    it('accepts compound/multi-token target word when all unknown tokens belong to the target word', () => {
+      // "ferrovia" tokenized or 2 unknown tokens both belonging to word
+      const customKnownSet = new Set([...knownWords, 'vicino', 'alla']);
+      const option: EnrichmentOption = {
+        word: 'ferrovia sotterranea',
+        sentence: 'Io cammino vicino alla ferrovia sotterranea.',
+        translation: 'Eu caminho perto da ferrovia subterrânea.'
+      };
+      // "cammino" is in knownSet
+      customKnownSet.add('cammino');
+
+      const result = evaluateEnrichmentOption(option, customKnownSet, properNounTokens, false);
+      expect(result.valid).toBe(true);
+      expect(result.chosenWord).toBe('ferrovia');
+    });
   });
 });
+
 

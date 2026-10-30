@@ -612,27 +612,25 @@ export const evaluateEnrichmentOption = (
     return { valid: false, reason: 'empty sentence', unknownTokens: [] };
   }
 
-  // (a) word tokens must appear in the sentence
+  // (b) Find the target unknown tokens in option.word.
+  // If the word contains a known article/particle (e.g. "il", "la", "to", "der") plus an unknown word,
+  // we identify the unknown tokens. If ALL tokens of word are already known or proper nouns, reject.
+  const unknownWordTokens = wordTokens.filter(wt => !knownSet.has(wt) && !globalProperNounTokens.has(wt));
+  if (unknownWordTokens.length === 0) {
+    return { valid: false, reason: `word already known (${wordTokens[0] || ''})`, unknownTokens: [] };
+  }
+
+  // (a) target unknown word tokens must appear in the sentence
   const sentenceTokenSet = new Set(sentenceTokens);
-  const wordAbsent = wordTokens.some(t => !sentenceTokenSet.has(t));
+  const wordAbsent = unknownWordTokens.some(t => !sentenceTokenSet.has(t));
   if (wordAbsent) {
     return { valid: false, reason: 'word absent from sentence', unknownTokens: [] };
   }
 
-  // (b) no token of word belongs to known vocabulary or proper nouns
-  for (const wt of wordTokens) {
-    if (knownSet.has(wt)) {
-      return { valid: false, reason: `word already known (${wt})`, unknownTokens: [] };
-    }
-    if (globalProperNounTokens.has(wt)) {
-      return { valid: false, reason: `word is proper noun (${wt})`, unknownTokens: [] };
-    }
-  }
-
-  // (d) if strictNewWords is enabled, no token of word shares stem with known word
+  // (d) if strictNewWords is enabled, no target token of word shares stem with known word
   if (strictNewWords) {
-    for (const wt of wordTokens) {
-      const derivedCheck = isDerivedFromKnown(wt, knownSet);
+    for (const uwt of unknownWordTokens) {
+      const derivedCheck = isDerivedFromKnown(uwt, knownSet);
       if (derivedCheck.isDerived) {
         return {
           valid: false,
@@ -643,7 +641,7 @@ export const evaluateEnrichmentOption = (
     }
   }
 
-  // (c) the sentence has at most 1 unknown token total
+  // (c) the sentence has at most 1 unknown token total outside the target word tokens
   const sentenceProperNouns = extractSentenceProperNouns(option.sentence, globalProperNounTokens);
   const unknownTokens: string[] = [];
   for (const st of sentenceTokens) {
@@ -652,7 +650,8 @@ export const evaluateEnrichmentOption = (
     unknownTokens.push(st);
   }
 
-  if (unknownTokens.length > 1) {
+  const extraUnknownTokens = unknownTokens.filter(t => !wordTokens.includes(t));
+  if (unknownTokens.length > 1 && extraUnknownTokens.length > 0) {
     return {
       valid: false,
       reason: `more than 1 unknown word (${unknownTokens.length}: ${unknownTokens.join(', ')})`,
@@ -660,7 +659,7 @@ export const evaluateEnrichmentOption = (
     };
   }
 
-  const chosenWord = wordTokens[0];
+  const chosenWord = unknownWordTokens[0];
   return {
     valid: true,
     chosenWord,
@@ -1098,8 +1097,9 @@ export const generateStory = async (
 
     STORY GUIDELINES:
     1. Write simple, natural sentences in ${langDisplay}.
-    2. The vast majority of words in each sentence MUST come from the KNOWN WORDS list.
-    3. ${densityRule}
+    2. MANDATORY NOVELTY DENSITY: ${densityRule}
+       Ensure that every new word or structure introduced is an authentic, useful vocabulary item suitable for CEFR ${level}. It MUST NOT appear anywhere in the KNOWN WORDS list, and must NOT be a proper name.
+    3. KNOWN WORDS REINFORCEMENT: All other words in each sentence MUST come strictly from the KNOWN WORDS list (or be listed proper nouns).
     4. Length: ${sentenceCount} sentences.
     5. List all character names, person names, and place names that appear in the story in 'proper_nouns' exactly as written in the text.
     6. For each sentence, provide 'id', 'original', and 'translation'.
@@ -1125,7 +1125,10 @@ export const generateStory = async (
   const canValidate = cleanWords.length >= MIN_VOCAB_FOR_VALIDATION;
   const zeroNoveltyLimit = MAX_ZERO_NOVELTY_RATIO[noveltyDensity] ?? 0.3;
   const hasExcessUnknowns = canValidate && analysis.ratioWith3OrMore > MAX_HIGH_UNKNOWN_SENTENCE_RATIO;
-  const lacksNovelty = canValidate && !hasExcessUnknowns && analysis.ratioWith0 > zeroNoveltyLimit;
+  const lacksNovelty = !hasExcessUnknowns && (
+    analysis.ratioWith0 > zeroNoveltyLimit ||
+    (noveltyDensity === 'high' && analysis.sentencesWith0Unknowns > 0)
+  );
 
   // Full regeneration applies ONLY to excess unknown words (>=3 unknowns in >30% sentences)
   if (hasExcessUnknowns) {
@@ -1176,7 +1179,7 @@ export const generateStory = async (
       if (zeroNoveltySentences.length > 0) {
         const enrichmentPrompt = `
 Act as a Natural Language Acquisition Specialist.
-Rewrite ONLY the zero-novelty sentences provided below to introduce a suitable new vocabulary word, while preserving the story's meaning, tone, grammatical correctness, and narrative continuity.
+Rewrite ONLY the zero-novelty sentences provided below to introduce a suitable new vocabulary word or grammatical structure, while preserving the story's meaning, tone, grammatical correctness, and narrative continuity.
 
 Target Language: ${langDisplay}
 Native Language: ${resolvedNative}
@@ -1187,11 +1190,12 @@ ${JSON.stringify(zeroNoveltySentences, null, 2)}
 
 REQUIREMENTS FOR EACH SENTENCE:
 1. Provide exactly 4 distinct alternative rewrites in 'options' for each sentence.
-2. Each alternative re-writes the original sentence, preserving meaning, grammar, and story continuity, introducing exactly ONE word of suitable level that is NOT among the 2000 most frequent words of the language, and is not a proper name.
-3. The 4 alternatives for the same sentence MUST use 4 DIFFERENT new words.
-4. The field 'word' MUST appear in 'sentence' exactly as written.
-5. The word MUST be a different lexeme, not a simple derivation of a common word: no superlatives (such as -issimo), no diminutives or augmentatives, no adverbs formed with -mente, and no mere inflection of a common word.
-6. The field 'translation' MUST be written in ${resolvedNative}.
+2. MINIMAL CHANGE RULE (CRITICAL): In each alternative, change ONLY the target new word (or replace a single simple word with the new target word). Keep ALL OTHER words of the original sentence EXACTLY as written. DO NOT rephrase the rest of the sentence, and DO NOT add extra adjectives, adverbs, or clauses.
+3. Each alternative re-writes the original sentence, preserving meaning, grammar, and story continuity, introducing exactly ONE word of suitable level that is NOT among the 2000 most frequent words of the language, and is not a proper name.
+4. The 4 alternatives for the same sentence MUST use 4 DIFFERENT new words.
+5. The field 'word' MUST appear in 'sentence' exactly as written.
+6. The word MUST be a different lexeme, not a simple derivation of a common word: no superlatives (such as -issimo), no diminutives or augmentatives, no adverbs formed with -mente, and no mere inflection of a common word.
+7. The field 'translation' MUST be written in ${resolvedNative}.
 
 CRITICAL LANGUAGE REQUIREMENT:
 ${explicitLanguageInstruction}
