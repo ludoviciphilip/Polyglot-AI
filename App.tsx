@@ -16,7 +16,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { calculateStreak } from './utils/streak';
 import { computeSRSStats, resolveAllCards, toPersistedCard, compactAndFilterPersistedCards, getWeakWords, MAX_REVIEW_LOG_ENTRIES } from './utils/srs';
 import translations from './locales';
-import { getStarterVocabulary, getNativeLanguageFromUI, resolveNativeLanguage } from './utils/starterVocab';
+import { getNativeLanguageFromUI, resolveNativeLanguage } from './utils/starterVocab';
 import { BookOpen, LayoutDashboard, History as HistoryIcon, Settings as SettingsIcon, Download, Upload, Sun, Moon, RefreshCw, Flame, Key, FileJson, HelpCircle, Layers, Menu, X } from 'lucide-react';
 
 const STORAGE_KEY = 'polyglot_i1_data_v3';
@@ -88,17 +88,17 @@ const App: React.FC = () => {
     nativeLanguage: string;
     uiLanguage: UILanguage;
     targetLanguage: string;
+    knownWords: string[];
   }) => {
-    const starter = getStarterVocabulary(data.targetLanguage);
     const newProfile: UserProfile = {
       ...DEFAULT_PROFILE,
       name: data.name,
       nativeLanguage: data.nativeLanguage,
       uiLanguage: data.uiLanguage,
       targetLanguage: data.targetLanguage,
-      storySize: 'standard', // Padrão (10 frases)
-      knownWords: starter,
-      level: 'Pre-A1'
+      storySize: 'standard',
+      knownWords: data.knownWords,
+      level: calculateLevelFromVocab(data.knownWords.length)
     };
     setProfile(newProfile);
     setIsOnboardingOpen(false);
