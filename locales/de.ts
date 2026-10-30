@@ -316,7 +316,11 @@ const de = {
   "noveltyLowDesc": "Etwa 40% der Sätze haben ein neues Wort (entspanntes, flüssiges Lesen)",
   "noveltyHighTag": "1 neu / Satz",
   "noveltyNormalTag": "~70% der Sätze",
-  "noveltyLowTag": "~40% der Sätze"
+  "noveltyLowTag": "~40% der Sätze",
+  "strictNewWordsTitle": "Strikter Wortfilter (Stamm & Ableitung)",
+  "strictNewWordsDesc": "Lehnt Ableitungen, Suffixe und Beugungen bereits bekannter Wörter ab, um garantiert neue Wortstämme einzuführen.",
+  "strictNewWordsEnabled": "Strikter Filter (Aktiv)",
+  "strictNewWordsDisabled": "Entspannt (Ableitungen erlauben)"
 } as const;
 
 export default de;

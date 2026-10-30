@@ -316,7 +316,11 @@ const fr = {
   "noveltyLowDesc": "Environ 40% des phrases ont un mot nouveau (lecture plus fluide et détendue)",
   "noveltyHighTag": "1 nouveau / phrase",
   "noveltyNormalTag": "~70% des phrases",
-  "noveltyLowTag": "~40% des phrases"
+  "noveltyLowTag": "~40% des phrases",
+  "strictNewWordsTitle": "Filtre Strict des Racines (Nouveaux Mots)",
+  "strictNewWordsDesc": "Rejette les variations, suffixes (-issime, -ment) et flexions de mots déjà connus pour garantir de véritables nouvelles racines lexicales.",
+  "strictNewWordsEnabled": "Filtre Strict (Actif)",
+  "strictNewWordsDisabled": "Détendu (Autoriser les dérivations)"
 } as const;
 
 export default fr;

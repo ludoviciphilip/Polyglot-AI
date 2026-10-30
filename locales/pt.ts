@@ -316,7 +316,11 @@ const pt = {
   "noveltyLowDesc": "Cerca de 40% das frases têm uma palavra nova (leitura mais fluida e relaxada)",
   "noveltyHighTag": "1 nova / frase",
   "noveltyNormalTag": "~70% das frases",
-  "noveltyLowTag": "~40% das frases"
+  "noveltyLowTag": "~40% das frases",
+  "strictNewWordsTitle": "Filtro Estrito de Raízes (Novas Palavras)",
+  "strictNewWordsDesc": "Rejeita variações, sufixos (-íssimo, -mente) e flexões de palavras já conhecidas, garantindo raízes lexicais realmente inéditas.",
+  "strictNewWordsEnabled": "Filtro Estrito (Ativo)",
+  "strictNewWordsDisabled": "Relaxado (Permitir derivações)"
 } as const;
 
 export default pt;

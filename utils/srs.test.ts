@@ -12,7 +12,18 @@ import {
   getCardButtonIntervals,
   getWeakWords
 } from './srs';
-import { tokenize, analyzeSentenceTokens, analyzeStoryVocabulary, extractSentenceProperNouns, MAX_ZERO_NOVELTY_RATIO, MAX_HIGH_UNKNOWN_SENTENCE_RATIO } from '../services/geminiService';
+import {
+  tokenize,
+  analyzeSentenceTokens,
+  analyzeStoryVocabulary,
+  extractSentenceProperNouns,
+  MAX_ZERO_NOVELTY_RATIO,
+  MAX_HIGH_UNKNOWN_SENTENCE_RATIO,
+  isDerivedFromKnown,
+  evaluateEnrichmentOption,
+  selectBestEnrichmentOption,
+  EnrichmentOption
+} from '../services/geminiService';
 import { SRSCard, SRSReviewLogEntry, StoryResponse, NoveltyDensity } from '../types';
 
 const createMockCard = (overrides: Partial<SRSCard> = {}): SRSCard => ({
@@ -487,4 +498,140 @@ describe('SRS SM-2 Algorithm Tests', () => {
       expect(weak[0]).toBe('difficult'); // weaker card first
     });
   });
+
+  describe('isDerivedFromKnown', () => {
+    it('detects derived words that share a substantial stem with known words', () => {
+      const knownSet = new Set(['grande', 'molto', 'bambino']);
+
+      // "grandissimo" vs "grande": minLen=6, threshold=4.2, prefix="grand"(5) >= 4.2 -> derived
+      const res1 = isDerivedFromKnown('grandissimo', knownSet);
+      expect(res1.isDerived).toBe(true);
+      expect(res1.matchingKnown).toBe('grande');
+
+      // "molti" vs "molto": minLen=5, threshold=4, prefix="molt"(4) >= 4 -> derived
+      const res2 = isDerivedFromKnown('molti', knownSet);
+      expect(res2.isDerived).toBe(true);
+      expect(res2.matchingKnown).toBe('molto');
+
+      // "bambina" vs "bambino": minLen=7, threshold=4.9, prefix="bambin"(6) >= 4.9 -> derived
+      const res3 = isDerivedFromKnown('bambina', knownSet);
+      expect(res3.isDerived).toBe(true);
+      expect(res3.matchingKnown).toBe('bambino');
+    });
+
+    it('does not reject unrelated words or words with prefix shorter than 4 characters', () => {
+      const knownSet = new Set(['grande', 'casa', 'pane']);
+
+      // Unrelated word
+      expect(isDerivedFromKnown('nuvola', knownSet).isDerived).toBe(false);
+
+      // Short words with 3-char prefix (< 4 threshold)
+      const shortSet = new Set(['cat']);
+      expect(isDerivedFromKnown('cats', shortSet).isDerived).toBe(false);
+    });
+  });
+
+  describe('Enrichment Alternative Selection', () => {
+    const knownWords = ['io', 'leggo', 'un', 'libro', 'sul', 'tavolo', 'grande', 'la', 'musica'];
+    const knownSet = new Set(knownWords);
+    const properNounTokens = new Set(['marco', 'roma']);
+
+    it('rejects an alternative whose word is already in known vocabulary', () => {
+      const option: EnrichmentOption = {
+        word: 'libro',
+        sentence: 'Io leggo un libro sul tavolo.',
+        translation: 'Eu leio um livro sobre a mesa.'
+      };
+
+      const result = evaluateEnrichmentOption(option, knownSet, properNounTokens, true);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toContain('word already known');
+    });
+
+    it('rejects an alternative whose target word does not appear in the sentence', () => {
+      const option: EnrichmentOption = {
+        word: 'quaderno',
+        sentence: 'Io leggo un giornale sul tavolo.',
+        translation: 'Eu leio um jornal sobre a mesa.'
+      };
+
+      const result = evaluateEnrichmentOption(option, knownSet, properNounTokens, true);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toBe('word absent from sentence');
+    });
+
+    it('rejects an alternative whose sentence has more than 1 unknown word', () => {
+      // Unknowns: 'chitarra', 'antico', 'strano' (3 unknowns)
+      const option: EnrichmentOption = {
+        word: 'chitarra',
+        sentence: 'Io suono la chitarra antico e strano.',
+        translation: 'Eu toco o violão antigo e estranho.'
+      };
+
+      const result = evaluateEnrichmentOption(option, knownSet, properNounTokens, true);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toContain('more than 1 unknown word');
+    });
+
+    it('rejects when word shares stem with known word in strict mode, but accepts in relaxed mode', () => {
+      // "grandissimo" shares stem with known word "grande"
+      const option: EnrichmentOption = {
+        word: 'grandissimo',
+        sentence: 'Io leggo un grandissimo libro sul tavolo.',
+        translation: 'Eu leio um livro grandíssimo sobre a mesa.'
+      };
+
+      // In strict mode (default): rejected
+      const strictResult = evaluateEnrichmentOption(option, knownSet, properNounTokens, true);
+      expect(strictResult.valid).toBe(false);
+      expect(strictResult.reason).toContain('shares stem with known word: grande');
+
+      // In relaxed mode (strictNewWords = false): accepted
+      const relaxedResult = evaluateEnrichmentOption(option, knownSet, properNounTokens, false);
+      expect(relaxedResult.valid).toBe(true);
+      expect(relaxedResult.chosenWord).toBe('grandissimo');
+    });
+
+    it('selects the first valid alternative among multiple options and reports rejections', () => {
+      const options: EnrichmentOption[] = [
+        // 1. Rejected: word already known
+        {
+          word: 'libro',
+          sentence: 'Io leggo un libro sul tavolo.',
+          translation: 'Eu leio um livro sobre a mesa.'
+        },
+        // 2. Rejected: word absent from sentence
+        {
+          word: 'mela',
+          sentence: 'Io mangio il pane con piacere.',
+          translation: 'Eu como o pão com prazer.'
+        },
+        // 3. Valid: exactly 1 unknown word ("chitarra") which is in sentence and not in known
+        {
+          word: 'chitarra',
+          sentence: 'Io ascolto la chitarra con piacere.',
+          translation: 'Eu escuto o violão com prazer.'
+        },
+        // 4. Also valid alternative
+        {
+          word: 'violino',
+          sentence: 'Io ascolto il violino con piacere.',
+          translation: 'Eu escuto o violino com prazer.'
+        }
+      ];
+
+      // Add 'ascolto', 'il', 'con', 'piacere' to knownSet so only 'chitarra' is unknown in #3
+      const customKnownSet = new Set([...knownWords, 'ascolto', 'il', 'con', 'piacere']);
+
+      const selection = selectBestEnrichmentOption(options, customKnownSet, properNounTokens, true);
+      expect(selection.acceptedOption).toBeDefined();
+      expect(selection.chosenWord).toBe('chitarra');
+      expect(selection.acceptedOption?.sentence).toBe('Io ascolto la chitarra con piacere.');
+      expect(selection.acceptedCount).toBe(2);
+      expect(selection.rejectedCount).toBe(2);
+      expect(selection.rejectionReasons[0]).toContain('word already known');
+      expect(selection.rejectionReasons[1]).toBe('word absent from sentence');
+    });
+  });
 });
+

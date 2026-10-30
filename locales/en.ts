@@ -316,7 +316,11 @@ const en = {
   "noveltyLowDesc": "About 40% of sentences have a new word (relaxed, extensive reading)",
   "noveltyHighTag": "1 new word / sentence",
   "noveltyNormalTag": "~70% sentences",
-  "noveltyLowTag": "~40% sentences"
+  "noveltyLowTag": "~40% sentences",
+  "strictNewWordsTitle": "Strict Root & Stem Filter",
+  "strictNewWordsDesc": "Rejects suffixes (-issimo, -mente), inflections, and shared stems of words you already know, ensuring genuinely new vocabulary roots.",
+  "strictNewWordsEnabled": "Strict Filter (Active)",
+  "strictNewWordsDisabled": "Relaxed (Allow derivations)"
 } as const;
 
 export default en;

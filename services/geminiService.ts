@@ -11,15 +11,16 @@ export interface ModelChainEntry {
 }
 
 export const MODEL_CHAIN: ModelChainEntry[] = [
-  { model: "gemini-3.8-flash",      attempts: 3 },
-  { model: "gemini-3.6-flash",      attempts: 2 },
+  { model: "gemini-3.8-flash",      attempts: 2 },
+  { model: "gemini-3.6-flash",      attempts: 1 },
   { model: "gemini-3.5-flash-lite", attempts: 1 },
   { model: "gemini-3.1-flash-lite", attempts: 1 },
 ];
 
-export const PROMPT_VOCAB_LIMIT = 1000; // how many known words go into prompt
+export const PROMPT_VOCAB_LIMIT = 800; // how many known words go into prompt
 export const COOLDOWN_DAILY_MS = 6 * 60 * 60 * 1000; // 6 hours for daily quota
 export const COOLDOWN_RATE_LIMIT_MS = 60 * 1000; // 60 seconds for standard rate limit
+export const OVERLOAD_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutes for 503/504 overload
 export const MAX_INVALID_NEW_ELEMENT_RATIO = 0.3; // max 30% invalid new elements before regen
 export const MAX_HIGH_UNKNOWN_SENTENCE_RATIO = 0.3; // max 30% sentences with >=3 unknowns before full regen
 export const MAX_ZERO_NOVELTY_RATIO: Record<NoveltyDensity, number> = {
@@ -27,7 +28,8 @@ export const MAX_ZERO_NOVELTY_RATIO: Record<NoveltyDensity, number> = {
   normal: 0.5,
   low: 0.7
 };
-const quotaCooldowns = new Map<string, number>(); // in-memory: model name -> cooldown expiry timestamp
+const quotaCooldowns = new Map<string, number>(); // in-memory: model name -> quota cooldown expiry timestamp
+const overloadCooldowns = new Map<string, number>(); // in-memory: model name -> overload cooldown expiry timestamp
 const REQUEST_TIMEOUT_MS = 120000;   // long stories can take a while; a client abort does NOT cancel server-side quota usage
 
 // ============================================================
@@ -243,20 +245,45 @@ export interface GenerationResult<T> {
  * - Models currently in quota cooldown are skipped.
  * - If ALL models in chain are in cooldown, ignore cooldown and try the chain normally once.
  */
+const buildChainWithPreferred = (baseChain: ModelChainEntry[], preferred?: string): ModelChainEntry[] => {
+  if (!preferred) return baseChain;
+  const preferredEntry = baseChain.find(entry => entry.model === preferred);
+  if (!preferredEntry) return baseChain;
+  return [preferredEntry, ...baseChain.filter(entry => entry.model !== preferred)];
+};
+
+/**
+ * Strategy per error kind:
+ * - overloaded (5xx): retry the SAME model with exponential backoff up to attempts, then move to next model.
+ *   If all attempts fail, put model into OVERLOAD_COOLDOWN_MS cooldown.
+ * - quota (429): do NOT retry; put model into COOLDOWN_MS cooldown and jump directly to next model.
+ * - timeout: do NOT retry same model; jump to next model.
+ * - not_found (404): model does not exist for this key; log a warning and skip to next model without retrying.
+ * - permanent (400/401/403...): throw immediately.
+ * 
+ * Cooldown:
+ * - Models currently in quota or overload cooldown are skipped.
+ * - If ALL models in chain are in cooldown, ignore cooldown and try the chain normally once.
+ */
 const generateWithResilience = async <T,>(
   run: (model: string) => Promise<T>,
-  chain: ModelChainEntry[] = MODEL_CHAIN
+  chain: ModelChainEntry[] = MODEL_CHAIN,
+  preferredModel?: string
 ): Promise<GenerationResult<T>> => {
+  const orderedChain = buildChainWithPreferred(chain, preferredModel);
   const now = Date.now();
-  // Filter out models currently in cooldown
-  let activeChain = chain.filter(entry => {
-    const cooldownUntil = quotaCooldowns.get(entry.model);
-    return !cooldownUntil || cooldownUntil <= now;
+  // Filter out models currently in quota or overload cooldown
+  let activeChain = orderedChain.filter(entry => {
+    const quotaUntil = quotaCooldowns.get(entry.model);
+    if (quotaUntil && quotaUntil > now) return false;
+    const overloadUntil = overloadCooldowns.get(entry.model);
+    if (overloadUntil && overloadUntil > now) return false;
+    return true;
   });
 
   // If ALL models are in cooldown, ignore cooldown and attempt the chain normally once
   if (activeChain.length === 0) {
-    activeChain = chain;
+    activeChain = orderedChain;
   }
 
   let lastErr: any;
@@ -264,11 +291,13 @@ const generateWithResilience = async <T,>(
 
   for (const entry of activeChain) {
     const { model, attempts } = entry;
+    let attemptsFailedCount = 0;
     for (let i = 0; i < attempts; i++) {
       try {
         const res = await run(model);
         // Successful response - clear any active cooldown for this model
         quotaCooldowns.delete(model);
+        overloadCooldowns.delete(model);
         return { result: res, modelUsed: model };
       } catch (e: any) {
         lastErr = e;
@@ -297,11 +326,17 @@ const generateWithResilience = async <T,>(
         }
 
         // 'overloaded' (5xx)
+        attemptsFailedCount++;
         console.warn(`[${model}] attempt ${i + 1}/${attempts} failed (${lastKind}):`, e?.message || e);
         if (i < attempts - 1) {
           await sleep(800 * 2 ** i + Math.random() * 400);
         }
       }
+    }
+
+    if (lastKind === 'overloaded' && attemptsFailedCount === attempts) {
+      console.warn(`[${model}] all ${attempts} attempt(s) failed with overload (5xx), entering ${OVERLOAD_COOLDOWN_MS / 1000}s cooldown`);
+      overloadCooldowns.set(model, Date.now() + OVERLOAD_COOLDOWN_MS);
     }
   }
 
@@ -375,10 +410,20 @@ export const enrichmentSchema = {
         type: Type.OBJECT,
         properties: {
           id: { type: Type.NUMBER },
-          original: { type: Type.STRING },
-          translation: { type: Type.STRING }
+          options: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                word: { type: Type.STRING },
+                sentence: { type: Type.STRING },
+                translation: { type: Type.STRING }
+              },
+              required: ["word", "sentence", "translation"]
+            }
+          }
         },
-        required: ["id", "original", "translation"]
+        required: ["id", "options"]
       }
     }
   },
@@ -416,7 +461,8 @@ const buildStorySchema = (required: string[]) => ({
 export const callGeminiWithSchema = async (
   apiKey: string,
   prompt: string,
-  schema: any
+  schema: any,
+  preferredModel?: string
 ): Promise<{ data: any; modelUsed: string }> => {
   const ai = new GoogleGenAI({ apiKey, httpOptions: { timeout: REQUEST_TIMEOUT_MS } });
 
@@ -430,7 +476,7 @@ export const callGeminiWithSchema = async (
       }
     });
 
-  const { result: response, modelUsed } = await generateWithResilience(run, MODEL_CHAIN);
+  const { result: response, modelUsed } = await generateWithResilience(run, MODEL_CHAIN, preferredModel);
   console.info(
     `[Model: ${modelUsed}] Prompt tokens:`, response.usageMetadata?.promptTokenCount,
     "| output tokens:", response.usageMetadata?.candidatesTokenCount
@@ -442,9 +488,10 @@ export const callGeminiWithSchema = async (
 export const callGemini = async (
   apiKey: string,
   prompt: string,
-  required: string[] = ["story_title", "sentences"]
+  required: string[] = ["story_title", "sentences"],
+  preferredModel?: string
 ): Promise<{ data: any; modelUsed: string }> => {
-  return callGeminiWithSchema(apiKey, prompt, buildStorySchema(required));
+  return callGeminiWithSchema(apiKey, prompt, buildStorySchema(required), preferredModel);
 };
 
 // ============================================================
@@ -490,6 +537,174 @@ export const extractSentenceProperNouns = (
     }
   }
   return ignored;
+};
+
+export interface DerivedCheckResult {
+  isDerived: boolean;
+  matchingKnown?: string;
+}
+
+/**
+ * Pure function checking if a candidate word shares a substantial stem with any known word.
+ * Formula: commonPrefixLen >= Math.max(4, 0.7 * Math.min(w.length, k.length))
+ */
+export const isDerivedFromKnown = (word: string, knownSet: Set<string>): DerivedCheckResult => {
+  const w = word.toLowerCase().trim();
+  if (!w) return { isDerived: false };
+
+  for (const known of knownSet) {
+    const k = known.toLowerCase().trim();
+    if (!k) continue;
+    const minLen = Math.min(w.length, k.length);
+    let commonPrefixLen = 0;
+    while (commonPrefixLen < minLen && w[commonPrefixLen] === k[commonPrefixLen]) {
+      commonPrefixLen++;
+    }
+    const threshold = Math.max(4, 0.7 * minLen);
+    if (commonPrefixLen >= threshold) {
+      return { isDerived: true, matchingKnown: k };
+    }
+  }
+  return { isDerived: false };
+};
+
+export interface EnrichmentOption {
+  word: string;
+  sentence: string;
+  translation: string;
+}
+
+export interface OptionEvaluationResult {
+  valid: boolean;
+  reason?: string;
+  chosenWord?: string;
+  unknownTokens: string[];
+}
+
+export interface SentenceEnrichmentSelection {
+  acceptedOption?: EnrichmentOption;
+  chosenWord?: string;
+  acceptedCount: number;
+  rejectedCount: number;
+  rejectionReasons: string[];
+}
+
+/**
+ * Pure function that evaluates a single enrichment alternative:
+ * (a) word tokens appear in the sentence
+ * (b) no token of word belongs to full known vocabulary or proper nouns
+ * (c) the sentence has at most 1 unknown token total
+ * (d) if strictNewWords is enabled, no token of word is derived from a known word
+ */
+export const evaluateEnrichmentOption = (
+  option: EnrichmentOption,
+  knownSet: Set<string>,
+  globalProperNounTokens: Set<string>,
+  strictNewWords = true
+): OptionEvaluationResult => {
+  const wordTokens = tokenize(option.word || '');
+  if (wordTokens.length === 0) {
+    return { valid: false, reason: 'empty word', unknownTokens: [] };
+  }
+
+  const sentenceTokens = tokenize(option.sentence || '');
+  if (sentenceTokens.length === 0) {
+    return { valid: false, reason: 'empty sentence', unknownTokens: [] };
+  }
+
+  // (a) word tokens must appear in the sentence
+  const sentenceTokenSet = new Set(sentenceTokens);
+  const wordAbsent = wordTokens.some(t => !sentenceTokenSet.has(t));
+  if (wordAbsent) {
+    return { valid: false, reason: 'word absent from sentence', unknownTokens: [] };
+  }
+
+  // (b) no token of word belongs to known vocabulary or proper nouns
+  for (const wt of wordTokens) {
+    if (knownSet.has(wt)) {
+      return { valid: false, reason: `word already known (${wt})`, unknownTokens: [] };
+    }
+    if (globalProperNounTokens.has(wt)) {
+      return { valid: false, reason: `word is proper noun (${wt})`, unknownTokens: [] };
+    }
+  }
+
+  // (d) if strictNewWords is enabled, no token of word shares stem with known word
+  if (strictNewWords) {
+    for (const wt of wordTokens) {
+      const derivedCheck = isDerivedFromKnown(wt, knownSet);
+      if (derivedCheck.isDerived) {
+        return {
+          valid: false,
+          reason: `shares stem with known word: ${derivedCheck.matchingKnown}`,
+          unknownTokens: []
+        };
+      }
+    }
+  }
+
+  // (c) the sentence has at most 1 unknown token total
+  const sentenceProperNouns = extractSentenceProperNouns(option.sentence, globalProperNounTokens);
+  const unknownTokens: string[] = [];
+  for (const st of sentenceTokens) {
+    if (knownSet.has(st)) continue;
+    if (sentenceProperNouns.has(st)) continue;
+    unknownTokens.push(st);
+  }
+
+  if (unknownTokens.length > 1) {
+    return {
+      valid: false,
+      reason: `more than 1 unknown word (${unknownTokens.length}: ${unknownTokens.join(', ')})`,
+      unknownTokens
+    };
+  }
+
+  const chosenWord = wordTokens[0];
+  return {
+    valid: true,
+    chosenWord,
+    unknownTokens
+  };
+};
+
+/**
+ * Pure function that evaluates the options of a sentence in order,
+ * picks the first valid alternative, and collects statistics and rejection reasons.
+ */
+export const selectBestEnrichmentOption = (
+  options: EnrichmentOption[],
+  knownSet: Set<string>,
+  globalProperNounTokens: Set<string>,
+  strictNewWords = true
+): SentenceEnrichmentSelection => {
+  let acceptedOption: EnrichmentOption | undefined;
+  let chosenWord: string | undefined;
+  let acceptedCount = 0;
+  let rejectedCount = 0;
+  const rejectionReasons: string[] = [];
+
+  for (const option of options) {
+    const evalResult = evaluateEnrichmentOption(option, knownSet, globalProperNounTokens, strictNewWords);
+    if (evalResult.valid) {
+      acceptedCount++;
+      if (!acceptedOption) {
+        acceptedOption = option;
+        chosenWord = evalResult.chosenWord;
+      }
+    } else {
+      rejectedCount++;
+      rejectionReasons.push(evalResult.reason || 'invalid option');
+    }
+  }
+
+  return {
+    acceptedOption,
+    chosenWord,
+    acceptedCount,
+    rejectedCount,
+    rejectionReasons
+  };
 };
 
 export interface SentenceAnalysis {
@@ -722,7 +937,8 @@ export const annotateStory = async (
   nativeLanguage: string,
   ancientGreekDialect?: AncientGreekDialect,
   ancientGreekFocus?: AncientGreekFocus,
-  shakespeareanFocus?: ShakespeareanFocus
+  shakespeareanFocus?: ShakespeareanFocus,
+  preferredModel?: string
 ): Promise<{ story: StoryResponse; modelUsed?: string }> => {
   const sentences = Array.isArray(story.sentences) ? story.sentences : [];
   const itemsToAnnotate = sentences
@@ -764,7 +980,12 @@ The field 'definition_target' MUST be written in ${targetLanguage}.
 `;
 
   try {
-    const { data: annotData, modelUsed } = await callGeminiWithSchema(apiKey, annotationPrompt, annotationsSchema);
+    const { data: annotData, modelUsed } = await callGeminiWithSchema(
+      apiKey,
+      annotationPrompt,
+      annotationsSchema,
+      preferredModel
+    );
     const annotationsList = Array.isArray(annotData?.annotations) ? annotData.annotations : [];
     const annotMap = new Map<number, any>();
     for (const item of annotationsList) {
@@ -835,7 +1056,8 @@ export const generateStory = async (
   shakespeareanFocus?: ShakespeareanFocus,
   customApiKey?: string,
   weakWords?: string[],
-  noveltyDensity: NoveltyDensity = 'high'
+  noveltyDensity: NoveltyDensity = 'high',
+  strictNewWords = true
 ): Promise<StoryResponse> => {
   const apiKey = getApiKey(customApiKey);
   if (!apiKey) {
@@ -855,10 +1077,10 @@ export const generateStory = async (
 
   const densityRule =
     noveltyDensity === 'low'
-      ? 'About 40% of the sentences MUST contain exactly one word NOT in the list; the others use only known words.'
+      ? 'About 40% of the sentences MUST contain exactly one word NOT in the list (a word a learner at this level would NOT yet know; avoid basic high-frequency vocabulary; never a proper name); the others use only known words.'
       : noveltyDensity === 'normal'
-        ? 'About 70% of the sentences MUST contain exactly one word NOT in the list; the others use only known words.'
-        : 'Every sentence MUST contain exactly ONE word that is NOT in the KNOWN WORDS list (a common, useful word for the level; never a proper name).';
+        ? 'About 70% of the sentences MUST contain exactly one word NOT in the list (a word a learner at this level would NOT yet know; avoid basic high-frequency vocabulary; never a proper name); the others use only known words.'
+        : 'Every sentence MUST contain exactly ONE word that is NOT in the KNOWN WORDS list (a word a learner at this level would NOT yet know; avoid basic high-frequency vocabulary; never a proper name).';
 
   const prompt = `
     Act as a Natural Language Acquisition Specialist. 
@@ -938,7 +1160,7 @@ export const generateStory = async (
       console.warn("[Story Validation] Full regeneration attempt failed, retaining original story:", e);
     }
   } else if (lacksNovelty) {
-    // Targeted enrichment: rewrite only zero-novelty sentences
+    // Targeted enrichment: rewrite only zero-novelty sentences with 4 alternatives per sentence
     console.warn(
       `[Story Enrichment] Lacks novelty for mode '${noveltyDensity}': ${(analysis.ratioWith0 * 100).toFixed(1)}% sentences with 0 new elements ` +
       `(limit ${(zeroNoveltyLimit * 100).toFixed(0)}%). Attempting targeted enrichment...`
@@ -952,75 +1174,115 @@ export const generateStory = async (
         .map(s => ({ id: s.id, original: s.original, translation: s.translation }));
 
       if (zeroNoveltySentences.length > 0) {
-        const usedNewWords = story.sentences
-          .map(s => s.new_element?.trim().toLowerCase())
-          .filter((w): w is string => Boolean(w && w.length > 0));
-
         const enrichmentPrompt = `
 Act as a Natural Language Acquisition Specialist.
-Rewrite ONLY the sentences provided below to introduce new vocabulary, while preserving the story's meaning, tone, narrative flow, and continuity.
+Rewrite ONLY the zero-novelty sentences provided below to introduce a suitable new vocabulary word, while preserving the story's meaning, tone, grammatical correctness, and narrative continuity.
 
 Target Language: ${langDisplay}
 Native Language: ${resolvedNative}
 CEFR Level: ${level}
 
-KNOWN WORDS (${cleanWords.length} total words): [${wordsDisplay}]
-ALREADY INTRODUCED NEW WORDS IN STORY (DO NOT REUSE): [${Array.from(new Set(usedNewWords)).join(", ")}]
-
 SENTENCES TO ENRICH:
 ${JSON.stringify(zeroNoveltySentences, null, 2)}
 
-REQUIREMENTS:
-1. Rewrite each given sentence so that it contains exactly ONE word that is NOT in the KNOWN WORDS list (and NOT in the already introduced words list, and NOT a proper name).
-2. All other words in each sentence MUST come strictly from the KNOWN WORDS list.
-3. Maintain the continuity, narrative coherence, and original intent of the story.
-4. Keep the same 'id' for each rewritten sentence.
-5. Provide 'original' and 'translation'.
+REQUIREMENTS FOR EACH SENTENCE:
+1. Provide exactly 4 distinct alternative rewrites in 'options' for each sentence.
+2. Each alternative re-writes the original sentence, preserving meaning, grammar, and story continuity, introducing exactly ONE word of suitable level that is NOT among the 2000 most frequent words of the language, and is not a proper name.
+3. The 4 alternatives for the same sentence MUST use 4 DIFFERENT new words.
+4. The field 'word' MUST appear in 'sentence' exactly as written.
+5. The word MUST be a different lexeme, not a simple derivation of a common word: no superlatives (such as -issimo), no diminutives or augmentatives, no adverbs formed with -mente, and no mere inflection of a common word.
+6. The field 'translation' MUST be written in ${resolvedNative}.
 
 CRITICAL LANGUAGE REQUIREMENT:
 ${explicitLanguageInstruction}
 `;
 
-        const { data: enrichData } = await callGeminiWithSchema(
+        const { data: enrichData, modelUsed: enrichModelUsed } = await callGeminiWithSchema(
           apiKey,
           enrichmentPrompt,
-          enrichmentSchema
+          enrichmentSchema,
+          storyModelUsed
         );
 
         const enrichedSentences = Array.isArray(enrichData?.sentences) ? enrichData.sentences : [];
         if (enrichedSentences.length > 0) {
-          const enrichMap = new Map<number, { original: string; translation: string }>();
-          for (const es of enrichedSentences) {
-            if (typeof es?.id === 'number' && es.original) {
-              enrichMap.set(es.id, {
-                original: String(es.original).trim(),
-                translation: String(es.translation || '').trim()
-              });
+          const enrichOptionsMap = new Map<number, EnrichmentOption[]>();
+          for (const item of enrichedSentences) {
+            if (typeof item?.id === 'number' && Array.isArray(item.options)) {
+              enrichOptionsMap.set(item.id, item.options);
             }
           }
 
-          const mergedSentences = story.sentences.map(s => {
-            const replacement = enrichMap.get(s.id);
-            if (replacement) {
-              return {
-                ...s,
-                original: replacement.original,
-                translation: replacement.translation || s.translation
-              };
+          const knownSet = new Set(cleanWords);
+          const globalProperNounTokens = new Set<string>();
+          const rawProperNouns = Array.isArray(story.proper_nouns) ? story.proper_nouns : [];
+          for (const pn of rawProperNouns) {
+            if (typeof pn === 'string') {
+              tokenize(pn).forEach(t => globalProperNounTokens.add(t));
             }
-            return s;
-          });
+          }
 
-          const enrichedStoryCandidate: StoryResponse = {
-            ...story,
-            sentences: mergedSentences
-          };
+          const replacements = new Map<number, { original: string; translation: string; newElement: string }>();
 
-          const enrichedAnalysis = analyzeStoryVocabulary(enrichedStoryCandidate, cleanWords);
-          story = applyAnalysisToStory(enrichedStoryCandidate, enrichedAnalysis);
-          analysis = enrichedAnalysis;
-          finalZeroRatio = analysis.ratioWith0;
-          enrichmentOccurred = true;
+          for (const s of zeroNoveltySentences) {
+            const rawOptions = enrichOptionsMap.get(s.id) || [];
+            const sanitizedOptions: EnrichmentOption[] = rawOptions.map(opt => ({
+              word: String(opt?.word || '').trim(),
+              sentence: String(opt?.sentence || '').trim(),
+              translation: String(opt?.translation || '').trim()
+            }));
+
+            const selection = selectBestEnrichmentOption(
+              sanitizedOptions,
+              knownSet,
+              globalProperNounTokens,
+              strictNewWords
+            );
+
+            if (selection.acceptedOption && selection.chosenWord) {
+              replacements.set(s.id, {
+                original: selection.acceptedOption.sentence,
+                translation: selection.acceptedOption.translation || s.translation,
+                newElement: selection.chosenWord
+              });
+              console.info(
+                `[Enrichment Sentence #${s.id}] Accepted: ${selection.acceptedCount}, Rejected: ${selection.rejectedCount} | ` +
+                `Chosen word: "${selection.chosenWord}" | Old: "${s.original}" -> New: "${selection.acceptedOption.sentence}"` +
+                (selection.rejectionReasons.length > 0 ? ` | Rejections: [${selection.rejectionReasons.join("; ")}]` : "")
+              );
+            } else {
+              console.info(
+                `[Enrichment Sentence #${s.id}] Accepted: 0, Rejected: ${selection.rejectedCount} | No valid alternative chosen, retaining original` +
+                (selection.rejectionReasons.length > 0 ? ` | Rejections: [${selection.rejectionReasons.join("; ")}]` : "")
+              );
+            }
+          }
+
+          if (replacements.size > 0) {
+            const mergedSentences = story.sentences.map(s => {
+              const rep = replacements.get(s.id);
+              if (rep) {
+                return {
+                  ...s,
+                  original: rep.original,
+                  translation: rep.translation,
+                  new_element: rep.newElement
+                };
+              }
+              return s;
+            });
+
+            const enrichedStoryCandidate: StoryResponse = {
+              ...story,
+              sentences: mergedSentences
+            };
+
+            const enrichedAnalysis = analyzeStoryVocabulary(enrichedStoryCandidate, cleanWords);
+            story = applyAnalysisToStory(enrichedStoryCandidate, enrichedAnalysis);
+            analysis = enrichedAnalysis;
+            finalZeroRatio = analysis.ratioWith0;
+            enrichmentOccurred = true;
+          }
         }
       }
     } catch (e) {
@@ -1042,7 +1304,8 @@ ${explicitLanguageInstruction}
     nativeLanguage,
     ancientGreekDialect,
     ancientGreekFocus,
-    shakespeareanFocus
+    shakespeareanFocus,
+    storyModelUsed
   );
   story = annotatedStory;
 

@@ -316,7 +316,11 @@ const es = {
   "noveltyLowDesc": "Alrededor del 40% de las oraciones tienen palabra nueva (lectura más fluida y relajada)",
   "noveltyHighTag": "1 nueva / oración",
   "noveltyNormalTag": "~70% de las oraciones",
-  "noveltyLowTag": "~40% de las oraciones"
+  "noveltyLowTag": "~40% de las oraciones",
+  "strictNewWordsTitle": "Filtro Estricto de Raíces (Nuevas Palabras)",
+  "strictNewWordsDesc": "Rechaza variaciones, sufijos (-ísimo, -mente) e inflexiones de palabras ya conocidas, garantizando raíces léxicas verdaderamente nuevas.",
+  "strictNewWordsEnabled": "Filtro Estricto (Activo)",
+  "strictNewWordsDisabled": "Relajado (Permitir derivaciones)"
 } as const;
 
 export default es;

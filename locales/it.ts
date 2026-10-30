@@ -316,7 +316,11 @@ const it = {
   "noveltyLowDesc": "Circa il 40% delle frasi ha una nuova parola (ritmo di lettura rilassato e scorrevole)",
   "noveltyHighTag": "1 nuova / frase",
   "noveltyNormalTag": "~70% delle frasi",
-  "noveltyLowTag": "~40% delle frasi"
+  "noveltyLowTag": "~40% delle frasi",
+  "strictNewWordsTitle": "Filtro Rigido Radici (Nuove Parole)",
+  "strictNewWordsDesc": "Rifiuta variazioni, suffissi (-issimo, -mente) e flessioni di parole già note, garantendo radici lessicali davvero inedite.",
+  "strictNewWordsEnabled": "Filtro Rigido (Attivo)",
+  "strictNewWordsDisabled": "Rilassato (Consenti derivazioni)"
 } as const;
 
 export default it;

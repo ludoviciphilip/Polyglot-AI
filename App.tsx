@@ -41,7 +41,8 @@ const DEFAULT_PROFILE: UserProfile = {
   srsBackType: 'full_translation',
   srsDailyGoal: 20,
   srsAutoPlayAudio: true,
-  noveltyDensity: 'high'
+  noveltyDensity: 'high',
+  strictNewWords: true
 };
 
 const calculateLevelFromVocab = (count: number): CEFRLevel => {
@@ -272,7 +273,8 @@ const App: React.FC = () => {
         profile.shakespeareanFocus,
         profile.apiKey,
         weakWords,
-        profile.noveltyDensity || 'high'
+        profile.noveltyDensity || 'high',
+        profile.strictNewWords !== false
       );
       setCurrentStory(story);
       setActiveTab('study');
@@ -366,7 +368,8 @@ const App: React.FC = () => {
           updatedProfile.shakespeareanFocus,
           trimmed,
           weakWords,
-          updatedProfile.noveltyDensity || 'high'
+          updatedProfile.noveltyDensity || 'high',
+          updatedProfile.strictNewWords !== false
         );
         setCurrentStory(story);
         setActiveTab('study');

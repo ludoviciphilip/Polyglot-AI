@@ -57,6 +57,7 @@ export interface UserProfile {
   dailyNewCardsLimit?: number; // default 0; 0 = no limit
   srsAutoPlayAudio?: boolean; // default true: automatic browser TTS when review card appears
   noveltyDensity?: NoveltyDensity; // 'high' (1/sentence), 'normal' (~70%), 'low' (~40%)
+  strictNewWords?: boolean; // default true: reject words sharing stems/roots with known vocabulary
 }
 
 export interface HistoryItem extends StoryResponse {

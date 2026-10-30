@@ -240,6 +240,51 @@ const Settings: React.FC<SettingsProps> = ({ profile, setProfile, onExport, onIm
             </div>
           </div>
 
+          {/* Strict New Words (Root & Stem Filter) */}
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                <ShieldCheck size={16} className="text-indigo-600 dark:text-indigo-400" />
+                <span>{t.strictNewWordsTitle || "Strict Root & Stem Filter"}</span>
+              </label>
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                (formData.strictNewWords !== false)
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+              }`}>
+                {(formData.strictNewWords !== false) ? (t.strictNewWordsEnabled || "Active") : (t.strictNewWordsDisabled || "Relaxed")}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {t.strictNewWordsDesc || "Rejects derivations, suffixes, and inflections of already known words (-issimo, -mente, plurals) so only genuinely new roots are introduced."}
+            </p>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, strictNewWords: true })}
+                className={`p-3 rounded-xl border text-left transition-all ${
+                  (formData.strictNewWords !== false)
+                    ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-950 dark:text-indigo-100 shadow-sm ring-1 ring-indigo-600 font-bold'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                }`}
+              >
+                <div className="text-sm">{t.strictNewWordsEnabled || "Strict Filter (Active)"}</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, strictNewWords: false })}
+                className={`p-3 rounded-xl border text-left transition-all ${
+                  (formData.strictNewWords === false)
+                    ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-950 dark:text-indigo-100 shadow-sm ring-1 ring-indigo-600 font-bold'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                }`}
+              >
+                <div className="text-sm">{t.strictNewWordsDisabled || "Relaxed (Allow derivations)"}</div>
+              </button>
+            </div>
+          </div>
+
           {/* Experimental Language Notice */}
           {isExperimentalLanguage(formData.targetLanguage) && (
             <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 text-xs text-amber-800 dark:text-amber-300 space-y-1">
