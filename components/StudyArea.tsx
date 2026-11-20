@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
-import { GoogleGenAI, Modality } from "@google/genai";
 import { StoryResponse, Sentence } from '../types';
 import { Volume2, ChevronDown, ChevronUp, CheckCircle2, Loader2, Sparkles, Languages, Music, PlayCircle, Info, Download, RefreshCw, Book, BookOpen, AlertTriangle } from 'lucide-react';
 import { isExperimentalLanguage } from '../utils/starterVocab';
+import {
+  speakWithBrowser,
+  playNaturalAudio,
+  playFullStoryAudio,
+  downloadFullStoryAudio
+} from '../utils/audio';
+
+export { playFullStoryAudio, downloadFullStoryAudio };
 
 interface StudyAreaProps {
   story: StoryResponse | null;
@@ -14,136 +21,6 @@ interface StudyAreaProps {
   t: any;
   apiKey?: string;
 }
-
-function decodeBase64(base64: string): Uint8Array {
-  const binaryString = atob(base64);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
-
-async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: number): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer, data.byteOffset, data.byteLength / 2);
-  const buffer = ctx.createBuffer(1, dataInt16.length, sampleRate);
-  const channelData = buffer.getChannelData(0);
-  for (let i = 0; i < dataInt16.length; i++) {
-    channelData[i] = dataInt16[i] / 32768.0;
-  }
-  return buffer;
-}
-
-function createWavBlob(pcmData: Int16Array, sampleRate: number): Blob {
-  const buffer = new ArrayBuffer(44 + pcmData.length * 2);
-  const view = new DataView(buffer);
-
-  const writeString = (offset: number, string: string) => {
-    for (let i = 0; i < string.length; i++) {
-      view.setUint8(offset + i, string.charCodeAt(i));
-    }
-  };
-
-  writeString(0, 'RIFF');
-  view.setUint32(4, 32 + pcmData.length * 2, true);
-  writeString(8, 'WAVE');
-  writeString(12, 'fmt ');
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true);
-  view.setUint16(22, 1, true);
-  view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true);
-  view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true);
-  writeString(36, 'data');
-  view.setUint32(40, pcmData.length * 2, true);
-
-  let offset = 44;
-  for (let i = 0; i < pcmData.length; i++, offset += 2) {
-    view.setInt16(offset, pcmData[i], true);
-  }
-
-  return new Blob([buffer], { type: 'audio/wav' });
-}
-
-const speakWithBrowser = (text: string, lang: string) => {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  const langMap: Record<string, string> = {
-    'English': 'en-US',
-    'Shakespearean English': 'en-GB',
-    'Spanish': 'es-ES',
-    'Portuguese': 'pt-BR',
-    'French': 'fr-FR',
-    'German': 'de-DE',
-    'Italian': 'it-IT',
-    'Japanese': 'ja-JP',
-    'Chinese': 'zh-CN',
-    'Russian': 'ru-RU',
-    'Latin': 'la',
-    'Modern Greek': 'el-GR',
-    'Ancient Greek': 'el-GR'
-  };
-  utterance.lang = langMap[lang] || 'en-US';
-  utterance.rate = 0.9;
-  window.speechSynthesis.speak(utterance);
-};
-
-const getFullStoryAudioData = async (story: StoryResponse, targetLanguage: string, customApiKey?: string) => {
-  const apiKey = customApiKey?.trim() || "";
-  const sentences = Array.isArray(story?.sentences) ? story.sentences : [];
-  if (sentences.length === 0) throw new Error("A história não possui frases.");
-  const fullText = sentences.map(s => s.original).filter(Boolean).join(" ").trim();
-  
-  if (!apiKey) {
-    throw new Error("API key not configured");
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
-  const response = await ai.models.generateContent({
-    model: "gemini-3.8-flash-lite-tts",
-    contents: [{ parts: [{ text: fullText }] }],
-    config: {
-      responseModalities: [Modality.AUDIO],
-      speechConfig: {
-        voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
-      },
-    },
-  });
-
-  const base64Data = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-  if (!base64Data) throw new Error("No audio data returned");
-  return base64Data;
-};
-
-export const playFullStoryAudio = async (story: StoryResponse, targetLanguage: string, customApiKey?: string) => {
-  const base64Data = await getFullStoryAudioData(story, targetLanguage, customApiKey);
-  const audioBytes = decodeBase64(base64Data);
-  const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
-  const audioCtx = new AudioContextClass({ sampleRate: 24000 });
-  if (audioCtx.state === 'suspended') await audioCtx.resume();
-  const buffer = await decodeAudioData(audioBytes, audioCtx, 24000);
-  const source = audioCtx.createBufferSource();
-  source.buffer = buffer;
-  source.connect(audioCtx.destination);
-  source.start();
-};
-
-export const downloadFullStoryAudio = async (story: StoryResponse, targetLanguage: string, customApiKey?: string) => {
-  const base64Data = await getFullStoryAudioData(story, targetLanguage, customApiKey);
-  const audioBytes = decodeBase64(base64Data);
-  const pcmData = new Int16Array(audioBytes.buffer, audioBytes.byteOffset, audioBytes.byteLength / 2);
-  const blob = createWavBlob(pcmData, 24000);
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${(story.story_title || 'story').replace(/\s+/g, '_')}_full_audio.wav`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
 
 const SentenceCard: React.FC<{ 
   sentence: Sentence; 
@@ -164,32 +41,7 @@ const SentenceCard: React.FC<{
         speakWithBrowser(sentence.original, targetLanguage);
         return;
       }
-      const ai = new GoogleGenAI({ apiKey });
-      const textToSpeak = sentence.original.trim();
-      const response = await ai.models.generateContent({
-        model: "gemini-3.8-flash-lite-tts",
-        contents: [{ parts: [{ text: textToSpeak }] }],
-        config: {
-          responseModalities: [Modality.AUDIO],
-          speechConfig: {
-            voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
-          },
-        },
-      });
-      const base64Data = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-      if (!base64Data) {
-        speakWithBrowser(sentence.original, targetLanguage);
-        return;
-      }
-      const audioBytes = decodeBase64(base64Data);
-      const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
-      const audioCtx = new AudioContextClass({ sampleRate: 24000 });
-      if (audioCtx.state === 'suspended') await audioCtx.resume();
-      const buffer = await decodeAudioData(audioBytes, audioCtx, 24000);
-      const source = audioCtx.createBufferSource();
-      source.buffer = buffer;
-      source.connect(audioCtx.destination);
-      source.start();
+      await playNaturalAudio(sentence.original, apiKey);
     } catch {
       speakWithBrowser(sentence.original, targetLanguage);
     } finally {

@@ -68,7 +68,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onGenerate, onReview, lo
     history.forEach(item => {
       const d = new Date(item.timestamp);
       const dateStr = getLocalDateKey(d);
-      gainsByDate[dateStr] = (gainsByDate[dateStr] || 0) + item.new_words_to_add.length;
+      gainsByDate[dateStr] = (gainsByDate[dateStr] || 0) + (item.new_words_to_add?.length || 0);
     });
 
     let cumulativeTotal = profile.knownWords.length;
@@ -102,7 +102,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onGenerate, onReview, lo
     const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
     const recentGains = history
       .filter(item => item.timestamp >= sevenDaysAgo)
-      .reduce((acc, curr) => acc + curr.new_words_to_add.length, 0);
+      .reduce((acc, curr) => acc + (curr.new_words_to_add?.length || 0), 0);
     
     return Math.round((recentGains / 7) * 10) / 10;
   }, [history]);

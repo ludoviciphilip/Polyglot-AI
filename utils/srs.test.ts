@@ -13,6 +13,7 @@ import {
   getWeakWords
 } from './srs';
 import {
+  MODEL_CHAIN,
   tokenize,
   analyzeSentenceTokens,
   analyzeStoryVocabulary,
@@ -24,6 +25,7 @@ import {
   selectBestEnrichmentOption,
   EnrichmentOption
 } from '../services/geminiService';
+import { decodeBase64, createWavBlob } from './audio';
 import { SRSCard, SRSReviewLogEntry, StoryResponse, NoveltyDensity } from '../types';
 
 const createMockCard = (overrides: Partial<SRSCard> = {}): SRSCard => ({
@@ -663,6 +665,38 @@ describe('SRS SM-2 Algorithm Tests', () => {
       expect(result.chosenWord).toBe('ferrovia');
     });
   });
+
+  describe('MODEL_CHAIN Gemini 4 configuration', () => {
+    it('leads with free Gemini 4 series model gemini-4-hydrogen and retains fallbacks', () => {
+      expect(MODEL_CHAIN.length).toBeGreaterThanOrEqual(2);
+      expect(MODEL_CHAIN[0].model).toBe('gemini-4-hydrogen');
+      expect(MODEL_CHAIN[0].attempts).toBeGreaterThanOrEqual(1);
+      expect(MODEL_CHAIN.some(entry => entry.model === 'gemini-3.8-flash')).toBe(true);
+    });
+  });
+
+  describe('Shared audio utilities', () => {
+    it('decodes base64 strings into exact byte arrays', () => {
+      const bytes = decodeBase64('SGVsbG8='); // "Hello"
+      expect(Array.from(bytes)).toEqual([72, 101, 108, 108, 111]);
+    });
+
+    it('builds a valid RIFF/WAVE header for PCM audio', async () => {
+      const pcm = new Int16Array([0, 1000, -1000, 32767]);
+      const blob = createWavBlob(pcm, 24000);
+      expect(blob.type).toBe('audio/wav');
+      expect(blob.size).toBe(44 + pcm.length * 2);
+      const buffer = await blob.arrayBuffer();
+      const view = new DataView(buffer);
+      const riff = String.fromCharCode(view.getUint8(0), view.getUint8(1), view.getUint8(2), view.getUint8(3));
+      const wave = String.fromCharCode(view.getUint8(8), view.getUint8(9), view.getUint8(10), view.getUint8(11));
+      expect(riff).toBe('RIFF');
+      expect(wave).toBe('WAVE');
+      expect(view.getUint32(24, true)).toBe(24000);
+      expect(view.getUint32(40, true)).toBe(pcm.length * 2);
+    });
+  });
 });
+
 
 

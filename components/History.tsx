@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { HistoryItem, StoryResponse } from '../types';
 import { Clock, Book, ExternalLink, Play, Loader2, Download } from 'lucide-react';
-import { playFullStoryAudio, downloadFullStoryAudio } from './StudyArea';
+import { playFullStoryAudio, downloadFullStoryAudio, speakWithBrowser } from '../utils/audio';
 
 interface HistoryProps {
   history: HistoryItem[];
@@ -16,7 +16,7 @@ const History: React.FC<HistoryProps> = ({ history, onReopen, targetLanguage, t,
   const [downloadingIdx, setDownloadingIdx] = useState<number | null>(null);
 
   const formatDate = (timestamp: number) => {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(undefined, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -30,8 +30,11 @@ const History: React.FC<HistoryProps> = ({ history, onReopen, targetLanguage, t,
     setPlayingIdx(idx);
     try {
       await playFullStoryAudio(item, targetLanguage, apiKey);
-    } catch (err: any) {
-      alert(`Audio Error: ${err.message}`);
+    } catch {
+      const sentences = Array.isArray(item.sentences) ? item.sentences : [];
+      if (sentences.length > 0) {
+        speakWithBrowser(sentences.map(s => s.original).filter(Boolean).join('. '), targetLanguage);
+      }
     } finally {
       setPlayingIdx(null);
     }
@@ -66,7 +69,7 @@ const History: React.FC<HistoryProps> = ({ history, onReopen, targetLanguage, t,
       ) : (
         <div className="grid gap-4">
           {history.map((item, idx) => (
-            <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-800 transition-all">
+            <div key={item.timestamp ? `${item.timestamp}_${idx}` : idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-800 transition-all">
               <div className="flex items-start gap-4 flex-grow">
                 <div className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 p-3 rounded-xl shrink-0">
                   <Book size={20} />

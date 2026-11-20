@@ -11,7 +11,8 @@ export interface ModelChainEntry {
 }
 
 export const MODEL_CHAIN: ModelChainEntry[] = [
-  { model: "gemini-3.8-flash",      attempts: 2 },
+  { model: "gemini-4-hydrogen",     attempts: 2 },
+  { model: "gemini-3.8-flash",      attempts: 1 },
   { model: "gemini-3.6-flash",      attempts: 1 },
   { model: "gemini-3.5-flash-lite", attempts: 1 },
   { model: "gemini-3.1-flash-lite", attempts: 1 },
@@ -233,18 +234,6 @@ export interface GenerationResult<T> {
   modelUsed: string;
 }
 
-/**
- * Strategy per error kind:
- * - overloaded (5xx): retry the SAME model with exponential backoff up to attempts, then move to next model.
- * - quota (429): do NOT retry; put model into COOLDOWN_MS cooldown and jump directly to next model.
- * - timeout: do NOT retry same model; jump to next model.
- * - not_found (404): model does not exist for this key; log a warning and skip to next model without retrying.
- * - permanent (400/401/403...): throw immediately.
- * 
- * Cooldown:
- * - Models currently in quota cooldown are skipped.
- * - If ALL models in chain are in cooldown, ignore cooldown and try the chain normally once.
- */
 const buildChainWithPreferred = (baseChain: ModelChainEntry[], preferred?: string): ModelChainEntry[] => {
   if (!preferred) return baseChain;
   const preferredEntry = baseChain.find(entry => entry.model === preferred);
@@ -1201,7 +1190,7 @@ CRITICAL LANGUAGE REQUIREMENT:
 ${explicitLanguageInstruction}
 `;
 
-        const { data: enrichData, modelUsed: enrichModelUsed } = await callGeminiWithSchema(
+        const { data: enrichData } = await callGeminiWithSchema(
           apiKey,
           enrichmentPrompt,
           enrichmentSchema,

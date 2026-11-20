@@ -25,8 +25,7 @@ import {
   Clock,
   X
 } from 'lucide-react';
-import { GoogleGenAI, Modality } from '@google/genai';
-import { SRSCard, SRSCardRating, SRSBackType, Sentence, StoryResponse, SRSReviewLogEntry } from '../types';
+import { SRSCard, SRSCardRating, SRSBackType, Sentence, SRSReviewLogEntry } from '../types';
 import { 
   calculateNextInterval, 
   getCardButtonIntervals, 
@@ -35,6 +34,7 @@ import {
   estimateRetentionRate,
   formatIntervalLabel 
 } from '../utils/srs';
+import { stopAllAudio, speakWithBrowser, playNaturalAudio } from '../utils/audio';
 import { SRSRetentionChart } from './SRSRetentionChart';
 
 interface SRSReviewAreaProps {
@@ -55,96 +55,7 @@ interface SRSReviewAreaProps {
   t: any;
 }
 
-function decodeBase64(base64: string): Uint8Array {
-  const binaryString = atob(base64);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
-
-async function decodeAudioData(data: Uint8Array, ctx: AudioContext, sampleRate: number): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer, data.byteOffset, data.byteLength / 2);
-  const buffer = ctx.createBuffer(1, dataInt16.length, sampleRate);
-  const channelData = buffer.getChannelData(0);
-  for (let i = 0; i < dataInt16.length; i++) {
-    channelData[i] = dataInt16[i] / 32768.0;
-  }
-  return buffer;
-}
-
-let activeAudioSource: AudioBufferSourceNode | null = null;
-
-const stopAllAudio = () => {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-  }
-  if (activeAudioSource) {
-    try {
-      activeAudioSource.stop();
-    } catch {
-      // ignore if already stopped
-    }
-    activeAudioSource = null;
-  }
-};
-
-const speakText = (text: string, lang: string) => {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-  stopAllAudio();
-  const utterance = new SpeechSynthesisUtterance(text);
-  const langMap: Record<string, string> = {
-    'English': 'en-US',
-    'Shakespearean English': 'en-GB',
-    'Spanish': 'es-ES',
-    'Portuguese': 'pt-BR',
-    'French': 'fr-FR',
-    'German': 'de-DE',
-    'Italian': 'it-IT',
-    'Japanese': 'ja-JP',
-    'Chinese': 'zh-CN',
-    'Russian': 'ru-RU',
-    'Latin': 'la',
-    'Modern Greek': 'el-GR',
-    'Ancient Greek': 'el-GR'
-  };
-  utterance.lang = langMap[lang] || 'en-US';
-  utterance.rate = 0.95;
-  window.speechSynthesis.speak(utterance);
-};
-
-const playNaturalSentenceAudio = async (text: string, apiKey: string) => {
-  stopAllAudio();
-  const ai = new GoogleGenAI({ apiKey });
-  const response = await ai.models.generateContent({
-    model: "gemini-3.8-flash-lite-tts",
-    contents: [{ parts: [{ text: text.trim() }] }],
-    config: {
-      responseModalities: [Modality.AUDIO],
-      speechConfig: {
-        voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
-      },
-    },
-  });
-
-  const base64Data = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-  if (!base64Data) throw new Error("No audio data returned");
-
-  const audioBytes = decodeBase64(base64Data);
-  const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
-  const audioCtx = new AudioContextClass({ sampleRate: 24000 });
-  if (audioCtx.state === 'suspended') await audioCtx.resume();
-  const buffer = await decodeAudioData(audioBytes, audioCtx, 24000);
-  const source = audioCtx.createBufferSource();
-  source.buffer = buffer;
-  source.connect(audioCtx.destination);
-  activeAudioSource = source;
-  source.onended = () => {
-    if (activeAudioSource === source) activeAudioSource = null;
-  };
-  source.start();
-};
+const speakText = (text: string, lang: string) => speakWithBrowser(text, lang, 0.95);
 
 export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
   cards,
@@ -289,7 +200,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
     if (trimmedKey) {
       setIsPlayingNaturalVoice(true);
       try {
-        await playNaturalSentenceAudio(currentCard.sentence.original, trimmedKey);
+        await playNaturalAudio(currentCard.sentence.original, trimmedKey);
       } catch (err) {
         console.warn("[SRS TTS] Natural voice playback failed, falling back to browser speech synthesis:", err);
         speakText(currentCard.sentence.original, targetLanguage);
@@ -336,23 +247,25 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
     }));
 
     // If rated "Again", re-insert into queue 3-4 cards later or at the end
+    let nextQueueLength = reviewQueue.length;
     if (rating === 1) {
       const remainingQueue = [...reviewQueue];
       // Put failed card back into this session queue
       const reinsertIndex = Math.min(currentIndex + 3, remainingQueue.length);
       remainingQueue.splice(reinsertIndex, 0, updatedCard);
+      nextQueueLength = remainingQueue.length;
       setReviewQueue(remainingQueue);
     }
 
-    // Advance to next card
-    if (currentIndex + 1 < reviewQueue.length) {
+    // Advance to next card using the updated queue length
+    if (currentIndex + 1 < nextQueueLength) {
       setCurrentIndex(prev => prev + 1);
       setIsFlipped(false);
       setShowPhonetic(false);
       setShowExtraDetails(false);
     } else {
       // End of session
-      setCurrentIndex(reviewQueue.length);
+      setCurrentIndex(nextQueueLength);
     }
   }, [currentCard, currentIndex, reviewQueue, onUpdateCard, onLogReview]);
 

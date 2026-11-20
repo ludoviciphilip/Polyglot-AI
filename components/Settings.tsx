@@ -24,21 +24,32 @@ const Settings: React.FC<SettingsProps> = ({ profile, setProfile, onExport, onIm
   const [isApiKeyTutorialOpen, setIsApiKeyTutorialOpen] = useState(false);
   const [isJsonTutorialOpen, setIsJsonTutorialOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Keep local state in sync when external profile changes (e.g. on JSON import)
   useEffect(() => {
     setFormData(profile);
   }, [profile]);
 
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, []);
+
   const handleSave = (e?: React.FormEvent | React.MouseEvent) => {
     if (e && 'preventDefault' in e) {
       e.preventDefault();
     }
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
     setSaveStatus('saving');
-    setTimeout(() => {
+    saveTimerRef.current = setTimeout(() => {
       setProfile(formData);
       setSaveStatus('saved');
-      setTimeout(() => setSaveStatus('idle'), 2000);
+      resetTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2000);
     }, 500);
   };
 
@@ -51,6 +62,10 @@ const Settings: React.FC<SettingsProps> = ({ profile, setProfile, onExport, onIm
   };
 
   const requestNotificationPermission = async () => {
+    if (typeof Notification === 'undefined') {
+      alert("Notifications are not supported in this browser.");
+      return;
+    }
     if (Notification.permission !== 'granted') {
       const result = await Notification.requestPermission();
       if (result === 'granted') {

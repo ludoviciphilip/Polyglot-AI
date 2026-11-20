@@ -55,11 +55,89 @@ const calculateLevelFromVocab = (count: number): CEFRLevel => {
   return 'C2';
 };
 
+interface InitialAppStorage {
+  profile: UserProfile;
+  history: HistoryItem[];
+  persistedSrsCards: PersistedSRSCard[];
+  srsReviewLogs: SRSReviewLogEntry[];
+}
+
+const loadInitialStorage = (): InitialAppStorage => {
+  let profile: UserProfile = DEFAULT_PROFILE;
+  let history: HistoryItem[] = [];
+  let persistedSrsCards: PersistedSRSCard[] = [];
+  let srsReviewLogs: SRSReviewLogEntry[] = [];
+
+  try {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const { profile: savedProfile, history: savedHistory } = JSON.parse(savedData);
+      if (savedProfile && typeof savedProfile === 'object') {
+        profile = { ...DEFAULT_PROFILE, ...savedProfile };
+      }
+      if (Array.isArray(savedHistory)) {
+        const seen = new Set<string>();
+        history = savedHistory.filter((item: HistoryItem) => {
+          if (!item) return false;
+          const key = item.timestamp
+            ? `${item.timestamp}_${item.story_title}`
+            : `${item.story_title}_${item.sentences?.[0]?.original || ''}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      }
+    }
+  } catch (e) {
+    console.error("Failed to parse stored data", e);
+  }
+
+  try {
+    const savedSrs = localStorage.getItem(SRS_STORAGE_KEY);
+    if (savedSrs) {
+      const parsed = JSON.parse(savedSrs);
+      if (Array.isArray(parsed)) {
+        // Backward compatibility: automatically migrate legacy format to compact on startup
+        persistedSrsCards = compactAndFilterPersistedCards(parsed, history);
+      }
+    }
+  } catch (e) {
+    console.error("Failed to parse stored SRS cards", e);
+  }
+
+  try {
+    const savedLogs = localStorage.getItem(SRS_LOG_STORAGE_KEY);
+    if (savedLogs) {
+      const parsed = JSON.parse(savedLogs);
+      if (Array.isArray(parsed)) {
+        srsReviewLogs = parsed
+          .filter((entry: unknown): entry is SRSReviewLogEntry =>
+            Array.isArray(entry) && entry.length === 4 && typeof entry[0] === 'string'
+          )
+          .slice(-MAX_REVIEW_LOG_ENTRIES);
+      }
+    }
+  } catch (e) {
+    console.error("Failed to parse stored SRS review logs", e);
+  }
+
+  return { profile, history, persistedSrsCards, srsReviewLogs };
+};
+
 const App: React.FC = () => {
-  const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [persistedSrsCards, setPersistedSrsCards] = useState<PersistedSRSCard[]>([]);
-  const [srsReviewLogs, setSrsReviewLogs] = useState<SRSReviewLogEntry[]>([]);
+  const initialStorageRef = useRef<InitialAppStorage | null>(null);
+  if (initialStorageRef.current === null) {
+    initialStorageRef.current = loadInitialStorage();
+  }
+
+  const [profile, setProfile] = useState<UserProfile>(initialStorageRef.current.profile);
+  const [history, setHistory] = useState<HistoryItem[]>(initialStorageRef.current.history);
+  const [persistedSrsCards, setPersistedSrsCards] = useState<PersistedSRSCard[]>(initialStorageRef.current.persistedSrsCards);
+  const [srsReviewLogs, setSrsReviewLogs] = useState<SRSReviewLogEntry[]>(initialStorageRef.current.srsReviewLogs);
+  const hasMountedStorageRef = useRef(false);
+  const hasMountedSrsRef = useRef(false);
+  const hasMountedLogsRef = useRef(false);
+  const lastNotifiedMinuteRef = useRef<string>('');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'study' | 'srs' | 'history' | 'settings'>('dashboard');
   const [loading, setLoading] = useState(false);
   const [currentStory, setCurrentStory] = useState<StoryResponse | null>(null);
@@ -129,61 +207,23 @@ const App: React.FC = () => {
   }, [srsCards, profile.targetLanguage, srsReviewLogs]);
 
   useEffect(() => {
-    let initialHistory: HistoryItem[] = [];
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        const { profile: savedProfile, history: savedHistory } = JSON.parse(savedData);
-        if (savedProfile) setProfile({ ...DEFAULT_PROFILE, ...savedProfile });
-        if (savedHistory && Array.isArray(savedHistory)) {
-          const seen = new Set<string>();
-          const dedupedHistory = savedHistory.filter(item => {
-            if (!item) return false;
-            const key = item.timestamp 
-              ? `${item.timestamp}_${item.story_title}` 
-              : `${item.story_title}_${item.sentences?.[0]?.original || ''}`;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-          });
-          initialHistory = dedupedHistory;
-          setHistory(dedupedHistory);
-        }
-      } catch (e) {
-        console.error("Failed to parse stored data", e);
-      }
-    }
-
-    const savedSrs = localStorage.getItem(SRS_STORAGE_KEY);
-    if (savedSrs) {
-      try {
-        const parsed = JSON.parse(savedSrs);
-        if (Array.isArray(parsed)) {
-          // Backward compatibility: automatically migrate legacy format to compact on startup
-          const migrated = compactAndFilterPersistedCards(parsed, initialHistory);
-          setPersistedSrsCards(migrated);
-        }
-      } catch (e) {
-        console.error("Failed to parse stored SRS cards", e);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
     if (!profile.notificationsEnabled) return;
+    if (typeof Notification === 'undefined') return;
 
     const checkNotification = () => {
       const now = new Date();
       const currentStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      const minuteKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${currentStr}`;
       
-      if (currentStr === profile.notificationTime) {
+      if (currentStr === profile.notificationTime && lastNotifiedMinuteRef.current !== minuteKey) {
         if (Notification.permission === 'granted') {
+          lastNotifiedMinuteRef.current = minuteKey;
           new Notification(t.notificationTitle, { body: t.notificationBody });
         }
       }
     };
 
-    const interval = setInterval(checkNotification, 60000);
+    const interval = setInterval(checkNotification, 30000);
     return () => clearInterval(interval);
   }, [profile.notificationsEnabled, profile.notificationTime, t]);
 
@@ -196,16 +236,36 @@ const App: React.FC = () => {
   }, [profile.darkMode]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile, history }));
+    if (!hasMountedStorageRef.current) {
+      hasMountedStorageRef.current = true;
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile, history }));
+    } catch (e) {
+      console.error("Failed to persist profile and history to localStorage", e);
+    }
   }, [profile, history]);
 
   // Persist compact non-initial cards to localStorage without indentation
   useEffect(() => {
-    const compactList = compactAndFilterPersistedCards(persistedSrsCards, history);
-    localStorage.setItem(SRS_STORAGE_KEY, JSON.stringify(compactList));
+    if (!hasMountedSrsRef.current) {
+      hasMountedSrsRef.current = true;
+      return;
+    }
+    try {
+      const compactList = compactAndFilterPersistedCards(persistedSrsCards, history);
+      localStorage.setItem(SRS_STORAGE_KEY, JSON.stringify(compactList));
+    } catch (e) {
+      console.error("Failed to persist SRS cards to localStorage", e);
+    }
   }, [persistedSrsCards, history]);
 
   useEffect(() => {
+    if (!hasMountedLogsRef.current) {
+      hasMountedLogsRef.current = true;
+      return;
+    }
     try {
       localStorage.setItem(SRS_LOG_STORAGE_KEY, JSON.stringify(srsReviewLogs.slice(-MAX_REVIEW_LOG_ENTRIES)));
     } catch (e) {
@@ -454,7 +514,6 @@ const App: React.FC = () => {
   const handleReannotateStory = async () => {
     if (!currentStory || !profile.apiKey) return;
     try {
-      const effectiveNativeLanguage = profile.nativeLanguage || getNativeLanguageFromUI(profile.uiLanguage);
       const { story: annotatedStory } = await annotateStory(
         profile.apiKey,
         currentStory,
@@ -462,14 +521,21 @@ const App: React.FC = () => {
         effectiveNativeLanguage,
         profile.ancientGreekDialect,
         profile.ancientGreekFocus,
-        profile.shakespeareanFocus
+        profile.shakespeareanFocus,
+        currentStory.modelUsed
       );
-      setCurrentStory(annotatedStory);
-      if ((currentStory as any).completedAt || (currentStory as any).timestamp) {
+      const updatedCurrent: StoryResponse = {
+        ...annotatedStory,
+        isReopened: currentStory.isReopened,
+        historyTimestamp: currentStory.historyTimestamp
+      };
+      setCurrentStory(updatedCurrent);
+      const targetTimestamp = currentStory.historyTimestamp || (currentStory as HistoryItem).timestamp;
+      if (targetTimestamp || currentStory.isReopened) {
         setHistory(prev =>
           prev.map(item =>
-            (item.timestamp && item.timestamp === (currentStory as any).timestamp) ||
-            item.story_title === currentStory.story_title
+            (targetTimestamp && item.timestamp === targetTimestamp) ||
+            (!targetTimestamp && item.story_title === currentStory.story_title)
               ? { ...item, ...annotatedStory }
               : item
           )
@@ -783,7 +849,7 @@ const App: React.FC = () => {
             t={t}
           />
         )}
-        {activeTab === 'history' && <History history={history} onReopen={handleReopenStory} targetLanguage={profile.targetLanguage} t={t} />}
+        {activeTab === 'history' && <History history={history} onReopen={handleReopenStory} targetLanguage={profile.targetLanguage} apiKey={profile.apiKey} t={t} />}
         {activeTab === 'settings' && (
           <Settings 
             profile={profile} 
