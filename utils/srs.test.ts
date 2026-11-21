@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
   calculateNextInterval,
+  calculateRetrievability,
+  calculateNextIntervalDays,
+  migrateLegacyCardToFSRS,
+  toPersistedCard,
+  FSRS_DEFAULT_WEIGHTS,
   getTargetDueDate,
   getStartOfDay,
   getDueCards,
@@ -53,11 +58,41 @@ const createMockCard = (overrides: Partial<SRSCard> = {}): SRSCard => ({
   ...overrides
 });
 
-describe('SRS SM-2 Algorithm Tests', () => {
+describe('SRS FSRS-5 Algorithm Tests', () => {
   const fixedNow = new Date(2026, 9, 23, 14, 30, 0).getTime(); // 2026-10-23 14:30:00 local
+  const DAY_MS = 86400000;
 
-  describe('calculateNextInterval for New Cards (reps === 0)', () => {
-    it('handles Rating 1 (Again): schedules in 10 minutes, sets state to learning, increments lapse', () => {
+  describe('FSRS-5 Core Mathematical Properties', () => {
+    it('satisfies R(S, S) === 0.9 on the power-law forgetting curve', () => {
+      expect(calculateRetrievability(10, 10)).toBeCloseTo(0.9, 6);
+      expect(calculateRetrievability(30, 30)).toBeCloseTo(0.9, 6);
+      expect(calculateRetrievability(0, 10)).toBe(1);
+    });
+
+    it('scales intervals inversely with desired retention (0.95 < 0.90 < 0.85)', () => {
+      const ivl95 = calculateNextIntervalDays(20, 0.95);
+      const ivl90 = calculateNextIntervalDays(20, 0.90);
+      const ivl85 = calculateNextIntervalDays(20, 0.85);
+
+      expect(ivl90).toBe(20);
+      expect(ivl95).toBeLessThan(ivl90);
+      expect(ivl85).toBeGreaterThan(ivl90);
+    });
+
+    it('migrates legacy SM-2 cards without stability/difficulty smoothly', () => {
+      const easyLegacy = migrateLegacyCardToFSRS({ interval: 14, easeFactor: 2.8, lapses: 0 });
+      const hardLegacy = migrateLegacyCardToFSRS({ interval: 4, easeFactor: 1.5, lapses: 3 });
+
+      expect(easyLegacy.stability).toBe(14);
+      expect(hardLegacy.stability).toBe(4);
+      expect(hardLegacy.difficulty).toBeGreaterThan(easyLegacy.difficulty);
+      expect(hardLegacy.difficulty).toBeLessThanOrEqual(10);
+      expect(easyLegacy.difficulty).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('calculateNextInterval for New Cards (state === new)', () => {
+    it('handles Rating 1 (Again): schedules in 10 minutes, sets learning, increments lapse, initializes FSRS S0/D0', () => {
       const card = createMockCard({ state: 'new', reps: 0, lapses: 0, easeFactor: 2.5 });
       const next = calculateNextInterval(card, 1, fixedNow);
 
@@ -66,96 +101,147 @@ describe('SRS SM-2 Algorithm Tests', () => {
       expect(next.lapses).toBe(1);
       expect(next.interval).toBeLessThan(0.01);
       expect(next.dueDate).toBe(fixedNow + 10 * 60 * 1000);
-      expect(next.easeFactor).toBe(2.3); // 2.5 - 0.20
+      expect(next.stability).toBeCloseTo(FSRS_DEFAULT_WEIGHTS[0], 2);
+      expect(next.difficulty).toBeGreaterThan(6.5);
     });
 
-    it('handles Rating 2 (Hard) on new card: keeps learning, 10 min, does NOT add lapse, penalises easeFactor', () => {
+    it('produces strictly increasing monotonic intervals for Hard < Good < Easy at 00:00 local time', () => {
       const card = createMockCard({ state: 'new', reps: 0, lapses: 0, easeFactor: 2.5 });
-      const next = calculateNextInterval(card, 2, fixedNow);
+      const hard = calculateNextInterval(card, 2, fixedNow);
+      const good = calculateNextInterval(card, 3, fixedNow);
+      const easy = calculateNextInterval(card, 4, fixedNow);
 
-      expect(next.state).toBe('learning');
-      expect(next.reps).toBe(0);
-      expect(next.lapses).toBe(0); // No lapse added!
-      expect(next.interval).toBeLessThan(0.01);
-      expect(next.dueDate).toBe(fixedNow + 10 * 60 * 1000);
-      expect(next.easeFactor).toBe(2.35); // 2.5 - 0.15
-    });
+      expect(hard.state).toBe('review');
+      expect(good.state).toBe('review');
+      expect(easy.state).toBe('review');
+      expect(hard.reps).toBe(1);
+      expect(good.reps).toBe(1);
+      expect(easy.reps).toBe(1);
+      expect(hard.lapses).toBe(0);
 
-    it('handles Rating 3 (Good) on new card: graduates to 1 day at 00:00 of tomorrow', () => {
-      const card = createMockCard({ state: 'new', reps: 0, lapses: 0, easeFactor: 2.5 });
-      const next = calculateNextInterval(card, 3, fixedNow);
+      expect(hard.interval).toBeGreaterThanOrEqual(1);
+      expect(good.interval).toBeGreaterThan(hard.interval);
+      expect(easy.interval).toBeGreaterThan(good.interval);
 
-      expect(next.state).toBe('review');
-      expect(next.reps).toBe(1);
-      expect(next.lapses).toBe(0);
-      expect(next.interval).toBe(1);
+      // Harder initial ratings yield higher FSRS difficulty
+      expect(hard.difficulty).toBeGreaterThan(good.difficulty);
+      expect(good.difficulty).toBeGreaterThan(easy.difficulty);
 
-      // Verify due date is exactly at 00:00 local of tomorrow
-      const dueDateObj = new Date(next.dueDate);
-      expect(dueDateObj.getHours()).toBe(0);
-      expect(dueDateObj.getMinutes()).toBe(0);
-      expect(dueDateObj.getSeconds()).toBe(0);
-      expect(dueDateObj.getDate()).toBe(24);
-    });
-
-    it('handles Rating 4 (Easy) on new card: graduates to 3 days at 00:00 of target day', () => {
-      const card = createMockCard({ state: 'new', reps: 0, lapses: 0, easeFactor: 2.5 });
-      const next = calculateNextInterval(card, 4, fixedNow);
-
-      expect(next.state).toBe('review');
-      expect(next.reps).toBe(1);
-      expect(next.interval).toBe(3);
-      expect(next.easeFactor).toBe(2.65); // 2.5 + 0.15
-
-      const dueDateObj = new Date(next.dueDate);
-      expect(dueDateObj.getHours()).toBe(0);
-      expect(dueDateObj.getDate()).toBe(26); // 23 + 3 days
+      // Due dates at 00:00 local of target day
+      const goodDue = new Date(good.dueDate);
+      expect(goodDue.getHours()).toBe(0);
+      expect(goodDue.getMinutes()).toBe(0);
+      expect(goodDue.getDate()).toBe(23 + good.interval);
     });
   });
 
-  describe('calculateNextInterval for Mature Cards (reps > 0)', () => {
+  describe('calculateNextInterval for Mature & Re-learning Cards', () => {
     const matureCard = createMockCard({
       state: 'review',
       reps: 3,
       lapses: 0,
       easeFactor: 2.5,
+      stability: 10,
+      difficulty: 5.28,
       interval: 10,
+      lastReviewed: fixedNow - 10 * DAY_MS,
       dueDate: fixedNow
     });
 
-    it('handles Rating 1 (Again) on mature card: resets reps, lapses + 1, reschedules in 10 minutes', () => {
+    it('handles Rating 1 (Again) on mature card: enters learning (10m), increments lapses, preserves partial stability', () => {
       const next = calculateNextInterval(matureCard, 1, fixedNow);
       expect(next.state).toBe('learning');
       expect(next.reps).toBe(0);
       expect(next.lapses).toBe(1);
       expect(next.dueDate).toBe(fixedNow + 10 * 60 * 1000);
+      // FSRS preserves partial memory stability after a lapse instead of resetting to 0
+      expect(next.stability).toBeGreaterThan(0.5);
+      expect(next.stability).toBeLessThan(matureCard.stability!);
+      expect(next.difficulty).toBeGreaterThan(matureCard.difficulty!);
     });
 
-    it('handles Rating 2 (Hard) on mature card: multiplies interval by 1.2 at 00:00', () => {
-      const next = calculateNextInterval(matureCard, 2, fixedNow);
-      expect(next.state).toBe('review'); // 12 < 21
-      expect(next.reps).toBe(4);
-      expect(next.interval).toBe(12); // round(10 * 1.2)
-      const dueObj = new Date(next.dueDate);
-      expect(dueObj.getHours()).toBe(0);
+    it('orders Hard < Good < Easy and graduates to mastered at >= 21 days', () => {
+      const hard = calculateNextInterval(matureCard, 2, fixedNow);
+      const good = calculateNextInterval(matureCard, 3, fixedNow);
+      const easy = calculateNextInterval(matureCard, 4, fixedNow);
+
+      expect(hard.interval).toBeGreaterThan(matureCard.interval);
+      expect(good.interval).toBeGreaterThan(hard.interval);
+      expect(easy.interval).toBeGreaterThan(good.interval);
+
+      expect(good.interval).toBeGreaterThanOrEqual(21);
+      expect(good.state).toBe('mastered');
+      expect(easy.state).toBe('mastered');
+      expect(good.reps).toBe(4);
+      expect(new Date(good.dueDate).getHours()).toBe(0);
     });
 
-    it('handles Rating 3 (Good) on mature card: multiplies by easeFactor (10 * 2.5 = 25 => mastered)', () => {
-      const next = calculateNextInterval(matureCard, 3, fixedNow);
-      expect(next.interval).toBe(25);
-      expect(next.state).toBe('mastered'); // >= 21 days
-      expect(next.reps).toBe(4);
-      const dueObj = new Date(next.dueDate);
-      expect(dueObj.getHours()).toBe(0);
+    it('rewards spacing effect: overdue recall grows stability more than early recall', () => {
+      const earlyCard = createMockCard({
+        ...matureCard,
+        lastReviewed: fixedNow - 3 * DAY_MS // reviewed early (3d of 10d)
+      });
+      const overdueCard = createMockCard({
+        ...matureCard,
+        lastReviewed: fixedNow - 20 * DAY_MS // reviewed overdue (20d of 10d)
+      });
+
+      const earlyGood = calculateNextInterval(earlyCard, 3, fixedNow);
+      const overdueGood = calculateNextInterval(overdueCard, 3, fixedNow);
+
+      expect(overdueGood.stability).toBeGreaterThan(earlyGood.stability);
+      expect(overdueGood.interval).toBeGreaterThan(earlyGood.interval);
     });
 
-    it('handles Rating 4 (Easy) on mature card: multiplies by easeFactor * 1.3', () => {
-      const next = calculateNextInterval(matureCard, 4, fixedNow);
-      expect(next.interval).toBe(34); // round(10 * 2.65 * 1.3) = 34
+    it('handles same-day re-learning review via FSRS-5 short-term stability', () => {
+      const failed = calculateNextInterval(matureCard, 1, fixedNow);
+      const relearningCard = createMockCard({
+        ...matureCard,
+        ...failed,
+        lastReviewed: fixedNow
+      });
+
+      const relearnedGood = calculateNextInterval(relearningCard, 3, fixedNow + 10 * 60 * 1000);
+      expect(relearnedGood.state).toBe('review');
+      expect(relearnedGood.reps).toBe(1);
+      expect(relearnedGood.interval).toBeGreaterThanOrEqual(1);
+    });
+
+    it('migrates and schedules a legacy SM-2 card without stability/difficulty seamlessly', () => {
+      const legacyCard = createMockCard({
+        state: 'review',
+        reps: 3,
+        lapses: 0,
+        easeFactor: 2.5,
+        interval: 10,
+        dueDate: fixedNow
+      });
+      // Confirm legacy fields are absent
+      expect(legacyCard.stability).toBeUndefined();
+      expect(legacyCard.difficulty).toBeUndefined();
+
+      const next = calculateNextInterval(legacyCard, 3, fixedNow);
+      expect(next.stability).toBeGreaterThan(10);
+      expect(next.difficulty).toBeGreaterThanOrEqual(1);
+      expect(next.difficulty).toBeLessThanOrEqual(10);
+      expect(next.interval).toBeGreaterThanOrEqual(21);
       expect(next.state).toBe('mastered');
-      expect(next.easeFactor).toBe(2.65);
-      const dueObj = new Date(next.dueDate);
-      expect(dueObj.getHours()).toBe(0);
+
+      // Persisted format retains stability & difficulty
+      const persisted = toPersistedCard({ ...legacyCard, ...next }, []);
+      expect(persisted.stability).toBe(next.stability);
+      expect(persisted.difficulty).toBe(next.difficulty);
+    });
+
+    it('respects custom desiredRetention in both calculateNextInterval and getCardButtonIntervals', () => {
+      const highRet = calculateNextInterval(matureCard, 3, fixedNow, 0.95);
+      const lowRet = calculateNextInterval(matureCard, 3, fixedNow, 0.85);
+      expect(highRet.interval).toBeLessThan(lowRet.interval);
+
+      const labelsHigh = getCardButtonIntervals(matureCard, 0.95, fixedNow);
+      const labelsLow = getCardButtonIntervals(matureCard, 0.85, fixedNow);
+      expect(labelsHigh[1]).toBe('< 10m');
+      expect(labelsHigh[3]).not.toBe(labelsLow[3]);
     });
   });
 

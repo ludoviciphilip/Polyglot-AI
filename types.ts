@@ -56,6 +56,7 @@ export interface UserProfile {
   srsDailyGoal?: number;
   dailyNewCardsLimit?: number; // default 0; 0 = no limit
   srsAutoPlayAudio?: boolean; // default true: automatic browser TTS when review card appears
+  srsDesiredRetention?: number; // FSRS target retention (0.80 - 0.97, default 0.90)
   noveltyDensity?: NoveltyDensity; // 'high' (1/sentence), 'normal' (~70%), 'low' (~40%)
   strictNewWords?: boolean; // default true: reject words sharing stems/roots with known vocabulary
 }
@@ -83,7 +84,9 @@ export interface PersistedSRSCard {
   state: 'new' | 'learning' | 'review' | 'mastered';
   reps: number;
   lapses: number;
-  easeFactor: number; // default 2.5
+  easeFactor: number; // legacy SM-2 compatibility (synced from FSRS difficulty)
+  stability?: number; // FSRS memory stability in days (time until retrievability drops to 90%)
+  difficulty?: number; // FSRS item difficulty on 1-10 scale
   interval: number; // in days
   dueDate: number; // timestamp (ms)
   lastReviewed?: number; // timestamp (ms)

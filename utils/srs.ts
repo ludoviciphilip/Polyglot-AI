@@ -1,6 +1,27 @@
 import { HistoryItem, Sentence, SRSCard, PersistedSRSCard, SRSCardRating, SRSStats, SRSReviewLogEntry } from '../types';
 
 export const DEFAULT_EASE_FACTOR = 2.5;
+export const DEFAULT_DESIRED_RETENTION = 0.9;
+export const FSRS_DECAY = -0.5;
+export const FSRS_FACTOR = 19 / 81;
+export const FSRS_MIN_STABILITY = 0.1;
+export const FSRS_MAX_INTERVAL_DAYS = 36500;
+export const MASTERED_INTERVAL_DAYS = 21;
+
+// Official FSRS-5 default parameters (19 weights: w0..w18)
+export const FSRS_DEFAULT_WEIGHTS = [
+  0.40255, 1.18385, 3.173, 15.69105, // w0..w3: initial stability S0(1..4)
+  7.1949, 0.5345, 1.4604, 0.0046,    // w4..w7: initial difficulty & mean reversion
+  1.54575, 0.1192, 1.01925,          // w8..w10: stability after recall
+  1.9395, 0.11, 0.29605, 2.2698,     // w11..w14: stability after lapse (forget)
+  0.2315, 2.9898,                    // w15 (hard penalty), w16 (easy bonus)
+  0.51655, 0.6621                    // w17..w18: same-day (short-term) review stability
+] as const;
+
+const clamp = (value: number, min: number, max: number): number =>
+  Math.min(max, Math.max(min, value));
+
+const round2 = (value: number): number => Math.round(value * 100) / 100;
 
 /**
  * Creates a unique deterministic identifier for an SRS card
@@ -58,6 +79,8 @@ export const toPersistedCard = (
     dueDate: card.dueDate
   };
 
+  if (card.stability !== undefined) persisted.stability = card.stability;
+  if (card.difficulty !== undefined) persisted.difficulty = card.difficulty;
   if (card.lastReviewed !== undefined) persisted.lastReviewed = card.lastReviewed;
   if (card.firstReviewedAt !== undefined) persisted.firstReviewedAt = card.firstReviewedAt;
   if (card.learningAt !== undefined) persisted.learningAt = card.learningAt;
@@ -247,93 +270,255 @@ export const getTargetDueDate = (intervalDays: number, now: number = Date.now())
 };
 
 /**
- * Calculates the next SRS interval, ease factor, and due date following the SM-2 algorithm:
- * - Hard, Good, Easy with interval >= 1 day: dueDate at 00:00 local time of (today + interval)
- * - Again: 10 minutes from now
- * - Hard on new card (reps === 0): stays in 'learning', rescheduled in 10 minutes, no lapse added, easeFactor penalised by 0.15
- * - Good on new card (reps === 0): graduates to 1 day
+ * FSRS-5 power-law forgetting curve: probability of recall (0..1) after `elapsedDays`
+ * given memory stability `S` (in days). At `elapsedDays === S`, R(S, S) === 0.9.
+ */
+export const calculateRetrievability = (elapsedDays: number, stability: number): number => {
+  if (stability <= 0) return 0;
+  if (elapsedDays <= 0) return 1;
+  return clamp(Math.pow(1 + FSRS_FACTOR * (elapsedDays / stability), FSRS_DECAY), 0, 1);
+};
+
+/**
+ * FSRS-5 optimal next interval in days for a given stability and desired retention rate.
+ */
+export const calculateNextIntervalDays = (
+  stability: number,
+  desiredRetention: number = DEFAULT_DESIRED_RETENTION
+): number => {
+  const r = clamp(desiredRetention, 0.7, 0.99);
+  const rawDays = (Math.max(FSRS_MIN_STABILITY, stability) / FSRS_FACTOR) * (Math.pow(r, 1 / FSRS_DECAY) - 1);
+  return clamp(Math.round(rawDays), 1, FSRS_MAX_INTERVAL_DAYS);
+};
+
+const fsrsInitDifficulty = (rating: SRSCardRating, w = FSRS_DEFAULT_WEIGHTS): number => {
+  return clamp(w[4] - Math.exp(w[5] * (rating - 1)) + 1, 1, 10);
+};
+
+const fsrsNextDifficulty = (difficulty: number, rating: SRSCardRating, w = FSRS_DEFAULT_WEIGHTS): number => {
+  const deltaD = -w[6] * (rating - 3);
+  const dampedD = difficulty + deltaD * ((10 - difficulty) / 9);
+  const d0Easy = fsrsInitDifficulty(4, w);
+  const meanReverted = w[7] * d0Easy + (1 - w[7]) * dampedD;
+  return clamp(meanReverted, 1, 10);
+};
+
+const fsrsShortTermStability = (stability: number, rating: SRSCardRating, w = FSRS_DEFAULT_WEIGHTS): number => {
+  return Math.max(FSRS_MIN_STABILITY, stability * Math.exp(w[17] * (rating - 3 + w[18])));
+};
+
+const fsrsRecallStability = (
+  difficulty: number,
+  stability: number,
+  retrievability: number,
+  rating: SRSCardRating,
+  w = FSRS_DEFAULT_WEIGHTS
+): number => {
+  const hardPenalty = rating === 2 ? w[15] : 1;
+  const easyBonus = rating === 4 ? w[16] : 1;
+  const nextS = stability * (
+    1 +
+    Math.exp(w[8]) *
+    (11 - difficulty) *
+    Math.pow(Math.max(FSRS_MIN_STABILITY, stability), -w[9]) *
+    (Math.exp(w[10] * (1 - retrievability)) - 1) *
+    hardPenalty *
+    easyBonus
+  );
+  return Math.max(FSRS_MIN_STABILITY, nextS);
+};
+
+const fsrsForgetStability = (
+  difficulty: number,
+  stability: number,
+  retrievability: number,
+  w = FSRS_DEFAULT_WEIGHTS
+): number => {
+  const postLapseS =
+    w[11] *
+    Math.pow(difficulty, -w[12]) *
+    (Math.pow(Math.max(FSRS_MIN_STABILITY, stability) + 1, w[13]) - 1) *
+    Math.exp(w[14] * (1 - retrievability));
+  // Stability after a lapse never exceeds prior stability
+  return clamp(postLapseS, FSRS_MIN_STABILITY, Math.max(FSRS_MIN_STABILITY, stability));
+};
+
+const difficultyToLegacyEaseFactor = (difficulty: number): number => {
+  // Smooth mapping from FSRS difficulty (1..10, neutral ~5.28) to legacy SM-2 easeFactor (1.3..3.0, neutral 2.5)
+  return round2(clamp(2.5 + (5.28 - difficulty) * 0.25, 1.3, 3.0));
+};
+
+/**
+ * Seamlessly migrates a legacy SM-2 card (without stability/difficulty) into FSRS-5 memory state.
+ * Existing FSRS cards are returned unchanged.
+ */
+export const migrateLegacyCardToFSRS = (
+  card: Pick<PersistedSRSCard, 'stability' | 'difficulty' | 'easeFactor' | 'interval' | 'lapses'>
+): { stability: number; difficulty: number } => {
+  if (
+    typeof card.stability === 'number' &&
+    card.stability > 0 &&
+    typeof card.difficulty === 'number' &&
+    card.difficulty >= 1
+  ) {
+    return {
+      stability: card.stability,
+      difficulty: clamp(card.difficulty, 1, 10)
+    };
+  }
+
+  const stability = Math.max(
+    FSRS_MIN_STABILITY,
+    card.interval && card.interval >= 1
+      ? card.interval
+      : (card.lapses || 0) > 0
+        ? FSRS_DEFAULT_WEIGHTS[0]
+        : 1
+  );
+  const legacyEase = card.easeFactor || DEFAULT_EASE_FACTOR;
+  const difficulty = clamp(5.28 - (legacyEase - 2.5) * 3.0, 1, 10);
+
+  return { stability: round2(stability), difficulty: round2(difficulty) };
+};
+
+/**
+ * Calculates the next SRS interval, FSRS stability/difficulty, and due date following the FSRS-5 algorithm:
+ * - New cards use initial stability S0(rating) and initial difficulty D0(rating)
+ * - Same-day / learning reviews use FSRS-5 short-term stability update
+ * - Long-term reviews use DSR power-law retrievability R(t, S) to reward spacing and preserve partial stability on lapses
+ * - Automatically migrates legacy SM-2 cards on their first FSRS review
  */
 export const calculateNextInterval = (
   card: SRSCard,
   rating: SRSCardRating,
-  now: number = Date.now()
+  now: number = Date.now(),
+  desiredRetention: number = DEFAULT_DESIRED_RETENTION
 ): {
   interval: number;
   easeFactor: number;
+  stability: number;
+  difficulty: number;
   reps: number;
   lapses: number;
   state: SRSCard['state'];
   dueDate: number;
 } => {
-  let easeFactor = card.easeFactor || DEFAULT_EASE_FACTOR;
+  const w = FSRS_DEFAULT_WEIGHTS;
+  const r = clamp(desiredRetention || DEFAULT_DESIRED_RETENTION, 0.7, 0.99);
+  const isNewCard =
+    card.state === 'new' &&
+    (card.reps || 0) === 0 &&
+    (card.lapses || 0) === 0 &&
+    card.stability === undefined;
+
   let reps = card.reps || 0;
   let lapses = card.lapses || 0;
-  let interval = card.interval || 0;
-  let state: SRSCard['state'] = card.state;
-  let dueDate = now;
+  let stability: number;
+  let difficulty: number;
+  let interval: number;
+  let state: SRSCard['state'];
+  let dueDate: number;
 
-  switch (rating) {
-    case 1: { // Again / Errei
-      easeFactor = Math.max(1.3, easeFactor - 0.20);
+  if (isNewCard) {
+    stability = Math.max(FSRS_MIN_STABILITY, w[rating - 1]);
+    difficulty = fsrsInitDifficulty(rating, w);
+
+    if (rating === 1) {
+      // Again: enters learning queue for re-review in 10 minutes
       reps = 0;
       lapses += 1;
       interval = 0.007; // ~10 minutes
       state = 'learning';
       dueDate = now + 10 * 60 * 1000;
-      break;
-    }
+    } else {
+      // Strictly monotonic intervals across Hard, Good, Easy
+      const hardIvl = calculateNextIntervalDays(w[1], r);
+      const goodIvl = Math.max(hardIvl + 1, calculateNextIntervalDays(w[2], r));
+      const easyIvl = Math.max(goodIvl + 1, calculateNextIntervalDays(w[3], r));
 
-    case 2: { // Hard / Difícil
-      easeFactor = Math.max(1.3, easeFactor - 0.15);
-      if (reps === 0) {
-        // Differentiate Hard from Good on new card:
-        // Does not graduate, remains in learning, rescheduled in 10 minutes, no lapse added
-        interval = 0.007; // ~10 minutes
+      interval = rating === 2 ? hardIvl : rating === 3 ? goodIvl : easyIvl;
+      reps = 1;
+      state = interval >= MASTERED_INTERVAL_DAYS ? 'mastered' : 'review';
+      dueDate = getTargetDueDate(interval, now);
+    }
+  } else {
+    const { stability: prevS, difficulty: prevD } = migrateLegacyCardToFSRS(card);
+    const elapsedDays = card.lastReviewed !== undefined
+      ? Math.max(0, (now - card.lastReviewed) / 86400000)
+      : card.state === 'learning'
+        ? 0
+        : Math.max(0, card.interval || 0);
+
+    difficulty = fsrsNextDifficulty(prevD, rating, w);
+    const isShortTerm = card.state === 'learning' || elapsedDays < 1;
+
+    if (rating === 1) {
+      // Lapse: preserve partial stability rather than wiping memory completely
+      const retrievability = calculateRetrievability(elapsedDays, prevS);
+      stability = isShortTerm
+        ? fsrsShortTermStability(prevS, 1, w)
+        : fsrsForgetStability(difficulty, prevS, retrievability, w);
+      reps = 0;
+      lapses += 1;
+      interval = 0.007; // ~10 minutes
+      state = 'learning';
+      dueDate = now + 10 * 60 * 1000;
+    } else if (isShortTerm) {
+      stability = fsrsShortTermStability(prevS, rating, w);
+
+      if (card.state === 'learning' && rating === 2 && stability < 1) {
+        // Still struggling during re-learning: keep in short-term learning without adding a lapse
+        interval = 0.007;
         state = 'learning';
         dueDate = now + 10 * 60 * 1000;
-        reps = 0;
       } else {
-        interval = Math.max(1, Math.round(Math.max(1, interval) * 1.2));
+        const hardS = fsrsShortTermStability(prevS, 2, w);
+        const goodS = fsrsShortTermStability(prevS, 3, w);
+        const easyS = fsrsShortTermStability(prevS, 4, w);
+
+        const hardIvl = calculateNextIntervalDays(hardS, r);
+        const goodIvl = card.state === 'learning'
+          ? calculateNextIntervalDays(goodS, r)
+          : Math.max(hardIvl + 1, calculateNextIntervalDays(goodS, r));
+        const easyIvl = Math.max(goodIvl + 1, calculateNextIntervalDays(easyS, r));
+
+        interval = rating === 2 ? hardIvl : rating === 3 ? goodIvl : easyIvl;
         reps += 1;
-        state = interval >= 21 ? 'mastered' : 'review';
+        state = interval >= MASTERED_INTERVAL_DAYS ? 'mastered' : 'review';
         dueDate = getTargetDueDate(interval, now);
       }
-      break;
-    }
+    } else {
+      // Standard long-term FSRS-5 recall
+      const retrievability = calculateRetrievability(elapsedDays, prevS);
+      const hardD = fsrsNextDifficulty(prevD, 2, w);
+      const goodD = fsrsNextDifficulty(prevD, 3, w);
+      const easyD = fsrsNextDifficulty(prevD, 4, w);
 
-    case 3: { // Good / Bom
-      if (reps === 0) {
-        interval = 1;
-      } else if (reps === 1) {
-        interval = 6;
-      } else {
-        interval = Math.round(Math.max(1, interval) * easeFactor);
-      }
-      reps += 1;
-      state = interval >= 21 ? 'mastered' : 'review';
-      dueDate = getTargetDueDate(interval, now);
-      break;
-    }
+      const hardS = fsrsRecallStability(hardD, prevS, retrievability, 2, w);
+      const goodS = fsrsRecallStability(goodD, prevS, retrievability, 3, w);
+      const easyS = fsrsRecallStability(easyD, prevS, retrievability, 4, w);
 
-    case 4: { // Easy / Fácil
-      easeFactor = Math.min(3.0, easeFactor + 0.15);
-      if (reps === 0) {
-        interval = 3;
-      } else if (reps === 1) {
-        interval = 8;
-      } else {
-        interval = Math.round(Math.max(1, interval) * easeFactor * 1.3);
-      }
+      stability = rating === 2 ? hardS : rating === 3 ? goodS : easyS;
+
+      const hardIvl = calculateNextIntervalDays(hardS, r);
+      const goodIvl = Math.max(hardIvl + 1, calculateNextIntervalDays(goodS, r));
+      const easyIvl = Math.max(goodIvl + 1, calculateNextIntervalDays(easyS, r));
+
+      interval = rating === 2 ? hardIvl : rating === 3 ? goodIvl : easyIvl;
       reps += 1;
-      state = interval >= 21 ? 'mastered' : 'review';
+      state = interval >= MASTERED_INTERVAL_DAYS ? 'mastered' : 'review';
       dueDate = getTargetDueDate(interval, now);
-      break;
     }
   }
 
+  const roundedStability = round2(stability);
+  const roundedDifficulty = round2(difficulty);
+
   return {
     interval,
-    easeFactor,
+    easeFactor: difficultyToLegacyEaseFactor(roundedDifficulty),
+    stability: roundedStability,
+    difficulty: roundedDifficulty,
     reps,
     lapses,
     state,
@@ -363,14 +548,18 @@ export const formatIntervalLabel = (intervalInDays: number): string => {
 };
 
 /**
- * Calculates preview labels for each rating button on a card consistent with actual rules
+ * Calculates preview labels for each rating button on a card consistent with actual FSRS-5 rules
  */
-export const getCardButtonIntervals = (card: SRSCard): Record<SRSCardRating, string> => {
+export const getCardButtonIntervals = (
+  card: SRSCard,
+  desiredRetention: number = DEFAULT_DESIRED_RETENTION,
+  now: number = Date.now()
+): Record<SRSCardRating, string> => {
   return {
     1: '< 10m',
-    2: formatIntervalLabel(calculateNextInterval(card, 2).interval),
-    3: formatIntervalLabel(calculateNextInterval(card, 3).interval),
-    4: formatIntervalLabel(calculateNextInterval(card, 4).interval)
+    2: formatIntervalLabel(calculateNextInterval(card, 2, now, desiredRetention).interval),
+    3: formatIntervalLabel(calculateNextInterval(card, 3, now, desiredRetention).interval),
+    4: formatIntervalLabel(calculateNextInterval(card, 4, now, desiredRetention).interval)
   };
 };
 
@@ -742,12 +931,19 @@ export const getWeakWords = (
     return card.state === 'learning' || (card.lapses || 0) > 0 || hasRecentAgainOrHard;
   });
 
-  // Calculate weakness score (higher = weaker)
+  // Calculate weakness score (higher = weaker), incorporating FSRS difficulty when available
   const scored = weakCandidates.map(card => {
     let score = 0;
     if (card.state === 'learning') score += 10;
     score += (card.lapses || 0) * 4;
-    score += Math.max(0, (2.5 - (card.easeFactor || 2.5)) * 4);
+    if (typeof card.difficulty === 'number') {
+      score += Math.max(0, (card.difficulty - 5.0) * 1.5);
+    } else {
+      score += Math.max(0, (2.5 - (card.easeFactor || 2.5)) * 4);
+    }
+    if (typeof card.stability === 'number' && card.stability > 0 && card.stability < 7) {
+      score += (7 - card.stability) * 0.5;
+    }
 
     const logStats = recentRatingsByCard.get(card.id);
     if (logStats) {

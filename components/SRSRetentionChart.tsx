@@ -254,7 +254,7 @@ export const SRSRetentionChart: React.FC<SRSRetentionChartProps> = ({
             <span>Como funciona a transição de "Learning" para "Mastered"?</span>
           </div>
           <p className="leading-relaxed text-slate-600 dark:text-slate-300">
-            Quando você estuda uma nova frase <strong>i+1</strong>, ela entra no estado <em>Learning</em>. Cada revisão bem-sucedida (avaliada como <strong>Bom</strong> ou <strong>Fácil</strong>) aumenta o intervalo exponencialmente pelo algoritmo SM-2. Quando o intervalo atinge ou ultrapassa <strong>21 dias</strong>, o card gradua oficialmente para <em>Mastered</em>, indicando que a memória de longo prazo foi estabilizada contra o esquecimento.
+            Quando você estuda uma nova frase <strong>i+1</strong>, ela entra no estado <em>Learning</em>. Cada revisão bem-sucedida (avaliada como <strong>Bom</strong> ou <strong>Fácil</strong>) aumenta a estabilidade da memória pelo algoritmo <strong>FSRS</strong>, calculando o intervalo ideal para sua retenção-alvo. Quando o intervalo atinge ou ultrapassa <strong>21 dias</strong>, o card gradua oficialmente para <em>Mastered</em>, indicando que a memória de longo prazo foi estabilizada contra o esquecimento.
           </p>
         </div>
       )}
@@ -434,7 +434,7 @@ export const SRSRetentionChart: React.FC<SRSRetentionChartProps> = ({
           <span>Meta de Longo Prazo: <strong>Converter 80%+ do vocabulário em "Mastered"</strong></span>
         </span>
         <span className="text-[11px] text-slate-600 dark:text-slate-400">
-          Baseado na taxa de retenção exponencial SM-2
+          Baseado na curva de esquecimento FSRS-5
         </span>
       </div>
     </div>

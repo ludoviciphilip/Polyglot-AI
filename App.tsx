@@ -41,6 +41,7 @@ const DEFAULT_PROFILE: UserProfile = {
   srsBackType: 'full_translation',
   srsDailyGoal: 20,
   srsAutoPlayAudio: true,
+  srsDesiredRetention: 0.9,
   noveltyDensity: 'high',
   strictNewWords: true
 };
@@ -841,6 +842,7 @@ const App: React.FC = () => {
             onLogReview={handleLogReview}
             autoPlayAudio={profile.srsAutoPlayAudio ?? true}
             onToggleAutoPlayAudio={(enabled) => setProfile(prev => ({ ...prev, srsAutoPlayAudio: enabled }))}
+            desiredRetention={profile.srsDesiredRetention ?? 0.9}
             apiKey={profile.apiKey}
             onNavigateToStudy={() => {
               setActiveTab('study');

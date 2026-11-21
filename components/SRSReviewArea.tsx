@@ -51,6 +51,7 @@ interface SRSReviewAreaProps {
   onLogReview?: (entry: SRSReviewLogEntry) => void;
   autoPlayAudio?: boolean;
   onToggleAutoPlayAudio?: (enabled: boolean) => void;
+  desiredRetention?: number;
   apiKey?: string;
   t: any;
 }
@@ -71,6 +72,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
   onLogReview,
   autoPlayAudio,
   onToggleAutoPlayAudio,
+  desiredRetention = 0.9,
   apiKey,
   t
 }) => {
@@ -221,12 +223,14 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
     const now = Date.now();
     const prevInterval = currentCard.interval || 0;
     const isFirstReview = (currentCard.reps || 0) === 0 && !currentCard.firstReviewedAt;
-    const result = calculateNextInterval(currentCard, rating, now);
+    const result = calculateNextInterval(currentCard, rating, now, desiredRetention);
 
     const updatedCard: SRSCard = {
       ...currentCard,
       interval: result.interval,
       easeFactor: result.easeFactor,
+      stability: result.stability,
+      difficulty: result.difficulty,
       reps: result.reps,
       lapses: result.lapses,
       state: result.state,
@@ -267,7 +271,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
       // End of session
       setCurrentIndex(nextQueueLength);
     }
-  }, [currentCard, currentIndex, reviewQueue, onUpdateCard, onLogReview]);
+  }, [currentCard, currentIndex, reviewQueue, desiredRetention, onUpdateCard, onLogReview]);
 
   // Keyboard navigation (Space/Enter to flip, 1-4 to rate)
   useEffect(() => {
@@ -343,7 +347,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
     }
   };
 
-  const buttonIntervals = currentCard ? getCardButtonIntervals(currentCard) : null;
+  const buttonIntervals = currentCard ? getCardButtonIntervals(currentCard, desiredRetention) : null;
 
   // Back config labels & descriptions
   const backTypeOptions: { id: SRSBackType; label: string; desc: string; icon: string }[] = [
@@ -1040,7 +1044,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                     {t.srsForgettingCurveTitle || 'A Curva do Esquecimento de Ebbinghaus'}
                   </h4>
                   <p className="text-xs text-slate-600 dark:text-slate-400">
-                    {t.srsForgettingCurveSubtitle || 'Como o algoritmo SM-2 transforma aprendizado efêmero em retenção permanente.'}
+                    {t.srsForgettingCurveSubtitle || 'Como o algoritmo FSRS transforma aprendizado efêmero em retenção permanente.'}
                   </p>
                 </div>
               </div>
@@ -1104,7 +1108,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                   💡 <strong>Sem repetição:</strong> O cérebro descarta até 70% das novas palavras em 24h.
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  Com o Anki SM-2: a retenção se estabiliza em &gt;90% permanentemente.
+                  Com o FSRS-5: a retenção se mantém no alvo ({Math.round(desiredRetention * 100)}%) com menos revisões.
                 </span>
               </div>
             </div>
@@ -1112,10 +1116,10 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
             {showForgettingCurveInfo && (
               <div className="p-4 bg-indigo-50/50 dark:bg-indigo-950/30 rounded-2xl border border-indigo-100 dark:border-indigo-900/50 text-xs text-slate-700 dark:text-slate-300 space-y-2 animate-fade-in">
                 <p>
-                  <strong>Por que o Polyglot i+1 usa o modelo Anki?</strong> Em 1885, Hermann Ebbinghaus descobriu que a perda de memória é exponencial. O método Natural i+1 apresenta frases com apenas 1 elemento novo, tornando a compreensão imediata. Porém, sem repetição espaçada, essas palavras são esquecidas rapidamente.
+                  <strong>Por que o Polyglot i+1 usa o FSRS-5?</strong> Em 1885, Hermann Ebbinghaus descobriu que a perda de memória segue uma curva previsível. O FSRS (Free Spaced Repetition Scheduler) modela individualmente a <em>Estabilidade</em>, a <em>Dificuldade</em> e a <em>Recuperabilidade</em> de cada card — superando o antigo SM-2 em precisão.
                 </p>
                 <p>
-                  Quando você clica em <strong>Bom</strong> ou <strong>Fácil</strong>, o intervalo de dias é multiplicado pelo <em>Ease Factor</em> daquele card, agendando a próxima revisão exatamente no momento em que você estaria prestes a esquecê-lo. Isso economiza até 80% do tempo de estudo comparado a revisões manuais!
+                  Quando você clica em <strong>Difícil</strong>, <strong>Bom</strong> ou <strong>Fácil</strong>, o FSRS calcula o intervalo exato para atingir sua meta de retenção (<strong>{Math.round(desiredRetention * 100)}%</strong>), recompensando revisões bem espaçadas e preservando parte da estabilidade mesmo após um lapso — reduzindo até 20–30% o volume de revisões para a mesma retenção!
                 </p>
               </div>
             )}

@@ -566,7 +566,7 @@ const Settings: React.FC<SettingsProps> = ({ profile, setProfile, onExport, onIm
               {t.srsSettingsTitle || "Revisão Espaçada (SRS / Anki)"}
             </h3>
             <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-full">
-              Curva do Esquecimento
+              FSRS-5
             </span>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-400">
@@ -652,6 +652,45 @@ const Settings: React.FC<SettingsProps> = ({ profile, setProfile, onExport, onIm
                   </div>
                 </div>
               </button>
+            </div>
+          </div>
+
+          {/* FSRS Desired Retention Selector */}
+          <div className="space-y-3 pt-2">
+            <div>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block">
+                {t.srsDesiredRetention || "Retenção-Alvo (FSRS)"}
+              </label>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                {t.srsDesiredRetentionDesc || "Define a probabilidade de lembrança desejada na data da revisão. Valores maiores geram revisões mais frequentes."}
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { value: 0.85, pct: '85%', label: t.srsRetentionRelaxed || "Leve (menos revisões)" },
+                { value: 0.90, pct: '90%', label: t.srsRetentionBalanced || "Padrão (recomendado)" },
+                { value: 0.95, pct: '95%', label: t.srsRetentionHigh || "Intensivo (alta retenção)" }
+              ].map(opt => {
+                const selected = Math.abs((formData.srsDesiredRetention ?? 0.9) - opt.value) < 0.005;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, srsDesiredRetention: opt.value })}
+                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-1 ${
+                      selected
+                        ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-600 dark:border-indigo-500 shadow-sm'
+                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-extrabold text-indigo-700 dark:text-indigo-300">{opt.pct}</span>
+                      {selected && <span className="w-2 h-2 rounded-full bg-indigo-600" />}
+                    </div>
+                    <span className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight">{opt.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
