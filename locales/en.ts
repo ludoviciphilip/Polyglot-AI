@@ -325,7 +325,15 @@ const en = {
   "strictNewWordsTitle": "Strict Root & Stem Filter",
   "strictNewWordsDesc": "Rejects suffixes (-issimo, -mente), inflections, and shared stems of words you already know, ensuring genuinely new vocabulary roots.",
   "strictNewWordsEnabled": "Strict Filter (Active)",
-  "strictNewWordsDisabled": "Relaxed (Allow derivations)"
+  "strictNewWordsDisabled": "Relaxed (Allow derivations)",
+  "basicSettings": "Basic Settings",
+  "showAdvancedSettings": "Show advanced settings",
+  "hideAdvancedSettings": "Hide advanced settings",
+  "advancedSettingsAutoHint": "Level, i+1 density, and Anki/FSRS parameters are automatically optimized for your profile unless you customize them.",
+  "advancedAutoBanner": "Settings marked Auto adapt automatically to your vocabulary, story size, and daily goal. Editing any option switches it to Manual.",
+  "advancedModeAuto": "Auto",
+  "advancedModeManual": "Manual",
+  "resetAdvancedAuto": "Restore automatic optimization"
 } as const;
 
 export default en;

@@ -325,7 +325,15 @@ const es = {
   "strictNewWordsTitle": "Filtro Estricto de Raíces (Nuevas Palabras)",
   "strictNewWordsDesc": "Rechaza variaciones, sufijos (-ísimo, -mente) e inflexiones de palabras ya conocidas, garantizando raíces léxicas verdaderamente nuevas.",
   "strictNewWordsEnabled": "Filtro Estricto (Activo)",
-  "strictNewWordsDisabled": "Relajado (Permitir derivaciones)"
+  "strictNewWordsDisabled": "Relajado (Permitir derivaciones)",
+  "basicSettings": "Configuración Básica",
+  "showAdvancedSettings": "Mostrar configuración avanzada",
+  "hideAdvancedSettings": "Ocultar configuración avanzada",
+  "advancedSettingsAutoHint": "El nivel, la densidad i+1 y los parámetros de Anki/FSRS se optimizan automáticamente para tu perfil, salvo que los modifiques aquí.",
+  "advancedAutoBanner": "Las opciones marcadas como Auto se adaptan solas a tu vocabulario, tamaño de historias y meta diaria. Al modificar una opción, pasa a Manual.",
+  "advancedModeAuto": "Auto",
+  "advancedModeManual": "Manual",
+  "resetAdvancedAuto": "Restaurar optimización automática"
 } as const;
 
 export default es;

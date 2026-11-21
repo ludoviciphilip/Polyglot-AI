@@ -325,7 +325,15 @@ const it = {
   "strictNewWordsTitle": "Filtro Rigido Radici (Nuove Parole)",
   "strictNewWordsDesc": "Rifiuta variazioni, suffissi (-issimo, -mente) e flessioni di parole già note, garantendo radici lessicali davvero inedite.",
   "strictNewWordsEnabled": "Filtro Rigido (Attivo)",
-  "strictNewWordsDisabled": "Rilassato (Consenti derivazioni)"
+  "strictNewWordsDisabled": "Rilassato (Consenti derivazioni)",
+  "basicSettings": "Impostazioni di Base",
+  "showAdvancedSettings": "Mostra impostazioni avanzate",
+  "hideAdvancedSettings": "Nascondi impostazioni avanzate",
+  "advancedSettingsAutoHint": "Livello, densità i+1 e parametri Anki/FSRS sono ottimizzati automaticamente per il tuo profilo, a meno che tu non li modifichi qui.",
+  "advancedAutoBanner": "Le opzioni contrassegnate come Auto si adattano automaticamente al tuo vocabolario, alla lunghezza delle storie e all'obiettivo giornaliero. Modificando un'opzione, passa a Manuale.",
+  "advancedModeAuto": "Auto",
+  "advancedModeManual": "Manuale",
+  "resetAdvancedAuto": "Ripristina ottimizzazione automatica"
 } as const;
 
 export default it;

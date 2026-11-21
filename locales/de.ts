@@ -325,7 +325,15 @@ const de = {
   "strictNewWordsTitle": "Strikter Wortfilter (Stamm & Ableitung)",
   "strictNewWordsDesc": "Lehnt Ableitungen, Suffixe und Beugungen bereits bekannter Wörter ab, um garantiert neue Wortstämme einzuführen.",
   "strictNewWordsEnabled": "Strikter Filter (Aktiv)",
-  "strictNewWordsDisabled": "Entspannt (Ableitungen erlauben)"
+  "strictNewWordsDisabled": "Entspannt (Ableitungen erlauben)",
+  "basicSettings": "Grundeinstellungen",
+  "showAdvancedSettings": "Erweiterte Einstellungen anzeigen",
+  "hideAdvancedSettings": "Erweiterte Einstellungen ausblenden",
+  "advancedSettingsAutoHint": "Niveau, i+1-Dichte und Anki/FSRS-Parameter werden automatisch für dein Profil optimiert, sofern du sie nicht manuell änderst.",
+  "advancedAutoBanner": "Als Auto markierte Optionen passen sich automatisch an deinen Wortschatz, die Geschichtenlänge und dein Tagesziel an. Eine Änderung stellt die Option auf Manuell um.",
+  "advancedModeAuto": "Auto",
+  "advancedModeManual": "Manuell",
+  "resetAdvancedAuto": "Automatische Optimierung wiederherstellen"
 } as const;
 
 export default de;

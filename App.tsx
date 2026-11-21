@@ -17,6 +17,11 @@ import { calculateStreak } from './utils/streak';
 import { computeSRSStats, resolveAllCards, toPersistedCard, compactAndFilterPersistedCards, getWeakWords, MAX_REVIEW_LOG_ENTRIES } from './utils/srs';
 import translations from './locales';
 import { getNativeLanguageFromUI, resolveNativeLanguage } from './utils/starterVocab';
+import {
+  applyOptimizedAdvancedSettings,
+  calculateLevelFromVocab,
+  inferLegacyOverrides,
+} from './utils/profileOptimizer';
 import { BookOpen, LayoutDashboard, History as HistoryIcon, Settings as SettingsIcon, Download, Upload, Sun, Moon, RefreshCw, Flame, Key, FileJson, HelpCircle, Layers, Menu, X } from 'lucide-react';
 
 const STORAGE_KEY = 'polyglot_i1_data_v3';
@@ -46,16 +51,6 @@ const DEFAULT_PROFILE: UserProfile = {
   strictNewWords: true
 };
 
-const calculateLevelFromVocab = (count: number): CEFRLevel => {
-  if (count < 600) return 'Pre-A1';
-  if (count < 1500) return 'A1';
-  if (count < 3000) return 'A2';
-  if (count < 6000) return 'B1';
-  if (count < 12000) return 'B2';
-  if (count < 20000) return 'C1';
-  return 'C2';
-};
-
 interface InitialAppStorage {
   profile: UserProfile;
   history: HistoryItem[];
@@ -64,7 +59,7 @@ interface InitialAppStorage {
 }
 
 const loadInitialStorage = (): InitialAppStorage => {
-  let profile: UserProfile = DEFAULT_PROFILE;
+  let profile: UserProfile = applyOptimizedAdvancedSettings({ ...DEFAULT_PROFILE, manualAdvancedOverrides: [] });
   let history: HistoryItem[] = [];
   let persistedSrsCards: PersistedSRSCard[] = [];
   let srsReviewLogs: SRSReviewLogEntry[] = [];
@@ -74,7 +69,14 @@ const loadInitialStorage = (): InitialAppStorage => {
     if (savedData) {
       const { profile: savedProfile, history: savedHistory } = JSON.parse(savedData);
       if (savedProfile && typeof savedProfile === 'object') {
-        profile = { ...DEFAULT_PROFILE, ...savedProfile };
+        const mergedProfile: UserProfile = {
+          ...DEFAULT_PROFILE,
+          ...savedProfile,
+          manualAdvancedOverrides: Array.isArray(savedProfile.manualAdvancedOverrides)
+            ? savedProfile.manualAdvancedOverrides
+            : inferLegacyOverrides(savedProfile),
+        };
+        profile = applyOptimizedAdvancedSettings(mergedProfile);
       }
       if (Array.isArray(savedHistory)) {
         const seen = new Set<string>();
@@ -148,6 +150,7 @@ const App: React.FC = () => {
   const [isGlobalApiKeyTutorialOpen, setIsGlobalApiKeyTutorialOpen] = useState(false);
   const [isGlobalJsonTutorialOpen, setIsGlobalJsonTutorialOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openSettingsAdvanced, setOpenSettingsAdvanced] = useState(false);
   const sidebarFileInputRef = useRef<HTMLInputElement>(null);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
     try {
@@ -170,7 +173,7 @@ const App: React.FC = () => {
     targetLanguage: string;
     knownWords: string[];
   }) => {
-    const newProfile: UserProfile = {
+    const newProfile: UserProfile = applyOptimizedAdvancedSettings({
       ...DEFAULT_PROFILE,
       name: data.name,
       nativeLanguage: data.nativeLanguage,
@@ -178,8 +181,9 @@ const App: React.FC = () => {
       targetLanguage: data.targetLanguage,
       storySize: 'standard',
       knownWords: data.knownWords,
-      level: calculateLevelFromVocab(data.knownWords.length)
-    };
+      level: calculateLevelFromVocab(data.knownWords.length),
+      manualAdvancedOverrides: [],
+    });
     setProfile(newProfile);
     setIsOnboardingOpen(false);
     try {
@@ -466,9 +470,6 @@ const App: React.FC = () => {
     const isReview = !!story.is_review;
     const newWords = Array.isArray(story.new_words_to_add) ? story.new_words_to_add : [];
     const updatedKnownWords = Array.from(new Set([...profile.knownWords, ...newWords]));
-    const newLevel = calculateLevelFromVocab(updatedKnownWords.length);
-    const levelChanged = newLevel !== profile.level;
-    
     const now = Date.now();
     const newHistoryItem: HistoryItem = {
       ...story,
@@ -480,14 +481,17 @@ const App: React.FC = () => {
     
     const updatedHistory = [newHistoryItem, ...history];
     const newStreakInfo = calculateStreak(updatedHistory);
-    
-    setProfile(prev => ({ 
-      ...prev, 
+
+    const nextProfile = applyOptimizedAdvancedSettings({
+      ...profile,
       knownWords: updatedKnownWords,
-      level: newLevel,
       streakCount: newStreakInfo.streak,
       lastCompletedDate: newStreakInfo.lastCompletedDate || undefined
-    }));
+    });
+    const newLevel = nextProfile.level;
+    const levelChanged = newLevel !== profile.level;
+    
+    setProfile(nextProfile);
     
     setHistory(updatedHistory);
     setCurrentStory(null);
@@ -596,14 +600,18 @@ const App: React.FC = () => {
 
           const calculatedLevel = calculateLevelFromVocab(cleanWords.length);
           const finalLevel = rawProfile.level || calculatedLevel;
+          const importedOverrides = Array.isArray(rawProfile.manualAdvancedOverrides)
+            ? rawProfile.manualAdvancedOverrides
+            : inferLegacyOverrides({ ...rawProfile, knownWords: cleanWords });
 
-          setProfile(prev => ({
+          setProfile(prev => applyOptimizedAdvancedSettings({
             ...DEFAULT_PROFILE,
             ...prev,
             ...rawProfile,
             apiKey: prev.apiKey || rawProfile.apiKey || '',
             knownWords: cleanWords,
-            level: finalLevel
+            level: finalLevel,
+            manualAdvancedOverrides: importedOverrides,
           }));
         }
 
@@ -636,6 +644,7 @@ const App: React.FC = () => {
   };
 
   const navigateToTab = (tab: 'dashboard' | 'study' | 'srs' | 'history' | 'settings') => {
+    setOpenSettingsAdvanced(false);
     setActiveTab(tab);
     setIsMobileMenuOpen(false);
   };
@@ -858,6 +867,7 @@ const App: React.FC = () => {
             setProfile={setProfile} 
             onExport={handleExport}
             onImport={handleImport}
+            initialShowAdvanced={openSettingsAdvanced}
             t={t}
           />
         )}
@@ -869,8 +879,7 @@ const App: React.FC = () => {
         onClose={() => setIsVocabModalOpen(false)}
         words={profile.knownWords}
         onChangeWords={(newWords) => {
-          const newLevel = calculateLevelFromVocab(newWords.length);
-          setProfile(prev => ({ ...prev, knownWords: newWords, level: newLevel }));
+          setProfile(prev => applyOptimizedAdvancedSettings({ ...prev, knownWords: newWords }));
         }}
         targetLanguage={profile.targetLanguage}
         t={t}
@@ -882,6 +891,7 @@ const App: React.FC = () => {
         onClose={() => setIsApiKeyPromptOpen(false)}
         onGoToSettings={() => {
           setIsApiKeyPromptOpen(false);
+          setOpenSettingsAdvanced(true);
           setActiveTab('settings');
         }}
         onOpenTutorial={() => {

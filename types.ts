@@ -6,6 +6,14 @@ export type AncientGreekDialect = 'attic' | 'koine';
 export type AncientGreekFocus = 'general' | 'philosophical';
 export type ShakespeareanFocus = 'general' | 'drama' | 'courtly';
 export type NoveltyDensity = 'low' | 'normal' | 'high';
+export type AdvancedSettingKey =
+  | 'level'
+  | 'noveltyDensity'
+  | 'strictNewWords'
+  | 'dailyNewCardsLimit'
+  | 'srsBackType'
+  | 'srsDesiredRetention'
+  | 'srsAutoPlayAudio';
 
 export interface Sentence {
   id: number;
@@ -59,6 +67,7 @@ export interface UserProfile {
   srsDesiredRetention?: number; // FSRS target retention (0.80 - 0.97, default 0.90)
   noveltyDensity?: NoveltyDensity; // 'high' (1/sentence), 'normal' (~70%), 'low' (~40%)
   strictNewWords?: boolean; // default true: reject words sharing stems/roots with known vocabulary
+  manualAdvancedOverrides?: AdvancedSettingKey[]; // keys manually customized by the user (not auto-adjusted)
 }
 
 export interface HistoryItem extends StoryResponse {
