@@ -35,6 +35,7 @@ import {
   formatIntervalLabel 
 } from '../utils/srs';
 import { stopAllAudio, speakWithBrowser, playNaturalAudio } from '../utils/audio';
+import { findTranslationHighlightRange, formatIpa } from '../utils/highlightTranslation';
 import { SRSRetentionChart } from './SRSRetentionChart';
 
 interface SRSReviewAreaProps {
@@ -613,7 +614,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
 
                     {showPhonetic && currentCard.sentence.phonetic && (
                       <div className="mt-3 text-sm font-mono text-amber-600 dark:text-amber-400 bg-amber-50/60 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-200/50 dark:border-amber-900/40">
-                        /{currentCard.sentence.phonetic}/
+                        {formatIpa(currentCard.sentence.phonetic)}
                       </div>
                     )}
                   </div>
@@ -682,16 +683,30 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
 
                     {/* Primary Back Content according to user configuration */}
                     <div className="p-5 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50">
-                      {srsBackType === 'full_translation' && (
-                        <div className="space-y-1">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
-                            {t.srsFullTranslationLabel || 'Tradução Completa da Frase'} ({nativeLanguage}):
-                          </span>
-                          <p className="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-100 leading-relaxed">
-                            {currentCard.sentence.translation}
-                          </p>
-                        </div>
-                      )}
+                      {srsBackType === 'full_translation' && (() => {
+                        const translation = currentCard.sentence.translation || '';
+                        const span = findTranslationHighlightRange(currentCard.sentence);
+                        return (
+                          <div className="space-y-1">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
+                              {t.srsFullTranslationLabel || 'Tradução Completa da Frase'} ({nativeLanguage}):
+                            </span>
+                            <p className="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-100 leading-relaxed">
+                              {span ? (
+                                <>
+                                  {translation.slice(0, span.start)}
+                                  <strong className="font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100/80 dark:bg-indigo-900/50 px-1.5 py-0.5 rounded-md border-b-2 border-indigo-400 dark:border-indigo-500">
+                                    {translation.slice(span.start, span.end)}
+                                  </strong>
+                                  {translation.slice(span.end)}
+                                </>
+                              ) : (
+                                translation
+                              )}
+                            </p>
+                          </div>
+                        );
+                      })()}
 
                       {srsBackType === 'element_translation' && (
                         <div className="space-y-2">

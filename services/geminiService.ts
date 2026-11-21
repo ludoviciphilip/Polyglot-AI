@@ -1,6 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { CEFRLevel, StoryResponse, StorySize, AncientGreekDialect, AncientGreekFocus, ShakespeareanFocus, NoveltyDensity } from "../types";
 import { resolveNativeLanguage } from "../utils/starterVocab";
+import { cleanPhonetic, findExactBoundaryMatch } from "../utils/highlightTranslation";
 
 // ============================================================
 // Constants
@@ -381,9 +382,10 @@ export const annotationsSchema = {
           phonetic: { type: Type.STRING },
           explanation: { type: Type.STRING },
           definition_target: { type: Type.STRING },
-          part_of_speech: { type: Type.STRING }
+          part_of_speech: { type: Type.STRING },
+          new_element_translation: { type: Type.STRING }
         },
-        required: ["id", "phonetic", "explanation", "definition_target", "part_of_speech"]
+        required: ["id", "phonetic", "explanation", "definition_target", "part_of_speech", "new_element_translation"]
       }
     }
   },
@@ -934,6 +936,7 @@ export const annotateStory = async (
     .map(s => ({
       id: s.id,
       sentence: s.original,
+      translation: s.translation,
       word: s.new_element
     }));
 
@@ -953,18 +956,20 @@ export const annotateStory = async (
 Act as a Linguistic Annotation Specialist.
 Annotate the target new vocabulary words in the following sentences for a student learning ${langDisplay} whose native language is ${resolvedNative}.
 
-Sentences and target words to annotate:
+Sentences, translations, and target words to annotate:
 ${JSON.stringify(itemsToAnnotate, null, 2)}
 
 REQUIREMENTS FOR EACH ITEM:
-1. phonetic: IPA (International Phonetic Alphabet) transcription of the target word.
+1. phonetic: IPA (International Phonetic Alphabet) transcription of the target word (without surrounding slashes).
 2. explanation: In ${resolvedNative}, a short sentence explaining the meaning and nuance of the word in this sentence context.
 3. definition_target: In ${targetLanguage}, a simple, concise definition or synonym using basic vocabulary.
 4. part_of_speech: The grammatical category (e.g. noun, verb, adjective, adverb, preposition).
+5. new_element_translation: The EXACT word or shortest contiguous phrase copied verbatim from 'translation' that translates 'word' in this sentence (exact same conjugation/inflection/case as written inside 'translation'). Do NOT include surrounding articles or unrelated prepositions. If no direct corresponding span exists inside 'translation', return an empty string "".
 
 CRITICAL LANGUAGE REQUIREMENT:
 The field 'explanation' MUST be written in ${resolvedNative}.
 The field 'definition_target' MUST be written in ${targetLanguage}.
+The field 'new_element_translation' MUST be an exact substring from 'translation' (in ${resolvedNative}).
 `;
 
   try {
@@ -985,12 +990,17 @@ The field 'definition_target' MUST be written in ${targetLanguage}.
     const annotatedSentences = sentences.map(s => {
       const annot = annotMap.get(s.id);
       if (annot) {
+        const rawSpan = String(annot.new_element_translation || '').trim();
+        const verifiedMatch = rawSpan && s.translation ? findExactBoundaryMatch(s.translation, rawSpan) : null;
+        const verifiedSpan = verifiedMatch ? s.translation.slice(verifiedMatch.start, verifiedMatch.end) : '';
+
         return {
           ...s,
-          phonetic: String(annot.phonetic || '').trim(),
+          phonetic: cleanPhonetic(String(annot.phonetic || '')),
           explanation: String(annot.explanation || '').trim(),
           definition_target: String(annot.definition_target || '').trim(),
-          part_of_speech: String(annot.part_of_speech || '').trim()
+          part_of_speech: String(annot.part_of_speech || '').trim(),
+          new_element_translation: verifiedSpan
         };
       }
       return {
@@ -998,7 +1008,8 @@ The field 'definition_target' MUST be written in ${targetLanguage}.
         phonetic: '',
         explanation: '',
         definition_target: '',
-        part_of_speech: ''
+        part_of_speech: '',
+        new_element_translation: ''
       };
     });
 
@@ -1017,7 +1028,8 @@ The field 'definition_target' MUST be written in ${targetLanguage}.
       phonetic: '',
       explanation: '',
       definition_target: '',
-      part_of_speech: ''
+      part_of_speech: '',
+      new_element_translation: ''
     }));
 
     return {
@@ -1471,8 +1483,9 @@ export const normalizeStoryResponse = (data: any, isReview = false, fallbackLeve
       id: typeof s?.id === 'number' ? s.id : idx + 1,
       original: String(s?.original || s?.sentence || s?.text || '').trim(),
       translation: String(s?.translation || s?.meaning || '').trim(),
-      phonetic: String(s?.phonetic || s?.ipa || '').trim(),
+      phonetic: cleanPhonetic(String(s?.phonetic || s?.ipa || '')),
       new_element: String(s?.new_element || s?.new_word || s?.target_word || '').trim(),
+      new_element_translation: String(s?.new_element_translation || '').trim() || undefined,
       explanation: String(s?.explanation || '').trim(),
       definition_target: String(s?.definition_target || s?.definition || '').trim(),
       part_of_speech: String(s?.part_of_speech || s?.grammar_class || s?.pos || '').trim(),

@@ -21,6 +21,7 @@ export interface Sentence {
   translation: string;
   phonetic?: string; 
   new_element?: string;
+  new_element_translation?: string; // Exact verbatim word/phrase in translation corresponding to new_element
   explanation?: string;
   definition_target?: string; // Field for immersive learning
   part_of_speech?: string; // Grammatical category: noun, verb, adjective, adverb, phrasal verb, etc.

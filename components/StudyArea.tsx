@@ -8,6 +8,7 @@ import {
   playFullStoryAudio,
   downloadFullStoryAudio
 } from '../utils/audio';
+import { findTranslationHighlightRange, formatIpa } from '../utils/highlightTranslation';
 
 export { playFullStoryAudio, downloadFullStoryAudio };
 
@@ -82,64 +83,22 @@ const SentenceCard: React.FC<{
     if (!sentence || !sentence.translation) return "";
     if (!sentence.new_element || isReview) return sentence.translation;
 
-    try {
-      const candidates: string[] = [];
+    const match = findTranslationHighlightRange(sentence);
+    if (!match) return sentence.translation;
 
-      if (sentence.explanation) {
-        // Strip quotes and explanatory parentheses
-        const rawClean = sentence.explanation.replace(/[«»""'']/g, '').trim();
-        const noParens = rawClean.replace(/\([^)]*\)/g, '').trim();
-        // Head before punctuation delimiters (:, -, —, –, /, ;)
-        const head = noParens.split(/[:;\-—–\/]/)[0].trim();
+    const before = sentence.translation.slice(0, match.start);
+    const highlighted = sentence.translation.slice(match.start, match.end);
+    const after = sentence.translation.slice(match.end);
 
-        if (head && head.length >= 2) candidates.push(head);
-        if (noParens && noParens.length >= 2 && noParens !== head) candidates.push(noParens);
-
-        // Individual words from head of length >= 3
-        const words = head.split(/\s+/).map(w => w.replace(/[.,!?;:()]/g, '').trim()).filter(w => w.length >= 3);
-        for (const w of words) {
-          if (!candidates.includes(w)) candidates.push(w);
-        }
-      }
-
-      // Check cognates/loanwords if new_element appears as a distinct word in translation
-      if (sentence.new_element && sentence.new_element.trim().length >= 2) {
-        const elemTrimmed = sentence.new_element.trim();
-        if (!candidates.includes(elemTrimmed)) candidates.push(elemTrimmed);
-      }
-
-      // Prioritize longer phrase candidates first to avoid greedy partial matching
-      const sortedCandidates = [...candidates].sort((a, b) => b.length - a.length);
-
-      for (const cand of sortedCandidates) {
-        const escaped = cand.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        // STRICT Unicode word boundary check: never match inside other words (e.g. 'scudo' inside 'escudo')
-        const boundaryRegex = new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])(${escaped})(?![\\p{L}\\p{M}\\p{N}])`, 'giu');
-        
-        if (boundaryRegex.test(sentence.translation)) {
-          const parts = sentence.translation.split(boundaryRegex);
-          if (Array.isArray(parts) && parts.length > 1) {
-            return parts.map((part, index) => {
-              if (part.toLowerCase() === cand.toLowerCase()) {
-                return (
-                  <strong
-                    key={index}
-                    className="not-italic font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100/70 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded-md border-b-2 border-indigo-400 dark:border-indigo-600 inline-block"
-                  >
-                    {part}
-                  </strong>
-                );
-              }
-              return part;
-            });
-          }
-        }
-      }
-
-      return sentence.translation;
-    } catch {
-      return sentence.translation;
-    }
+    return (
+      <>
+        {before}
+        <strong className="not-italic font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100/70 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded-md border-b-2 border-indigo-400 dark:border-indigo-600 inline-block">
+          {highlighted}
+        </strong>
+        {after}
+      </>
+    );
   };
 
   return (
@@ -193,7 +152,7 @@ const SentenceCard: React.FC<{
                   {sentence.phonetic && (
                     <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
                       <p className="text-xs font-bold text-blue-700 dark:text-blue-500 uppercase tracking-widest mb-1 flex items-center gap-1"><Info size={12} /> {t_app.pronunciationIPA || "Pronunciation (IPA)"}</p>
-                      <p className="text-lg font-mono text-blue-900 dark:text-blue-200">/{sentence.phonetic}/</p>
+                      <p className="text-lg font-mono text-blue-900 dark:text-blue-200">{formatIpa(sentence.phonetic)}</p>
                     </div>
                   )}
                 </div>
