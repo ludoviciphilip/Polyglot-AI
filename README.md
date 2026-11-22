@@ -34,7 +34,9 @@ Instead of relying exclusively on isolated word lists, Polyglot generates person
 
 ### 🔁 Spaced Repetition System
 
-Polyglot includes a flashcard-based review system inspired by Anki and the SM-2 spaced repetition algorithm.
+Polyglot includes a flashcard-based review system inspired by Anki, scheduled with the FSRS-5 spaced repetition algorithm.
+
+- Per-card stability, difficulty, and retrievability modeling with a configurable target retention (80%–97%).
 
 - Automatically create review cards from completed lessons.
 - Review new, learning, due, and mastered cards.

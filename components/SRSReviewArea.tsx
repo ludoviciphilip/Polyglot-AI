@@ -35,7 +35,7 @@ import {
   formatIntervalLabel 
 } from '../utils/srs';
 import { stopAllAudio, speakWithBrowser, playNaturalAudio } from '../utils/audio';
-import { findTranslationHighlightRange, formatIpa } from '../utils/highlightTranslation';
+import { findTranslationHighlightRange, formatIpa, getElementTranslation } from '../utils/highlightTranslation';
 import { SRSRetentionChart } from './SRSRetentionChart';
 
 interface SRSReviewAreaProps {
@@ -385,7 +385,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
               {t.srsTitle || 'Revisão Espaçada (SRS / Anki)'}
             </h2>
             <span className="px-2.5 py-1 text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 rounded-full">
-              SM-2 Algorithm
+              FSRS-5
             </span>
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -708,22 +708,30 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                         );
                       })()}
 
-                      {srsBackType === 'element_translation' && (
-                        <div className="space-y-2">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
-                            {t.srsElementTranslationLabel || 'Tradução do Elemento i+1'}:
-                          </span>
-                          <div className="flex items-baseline gap-3">
-                            <span className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
-                              {currentCard.sentence.new_element}
+                      {srsBackType === 'element_translation' && (() => {
+                        const elementTranslation = getElementTranslation(currentCard.sentence);
+                        return (
+                          <div className="space-y-2">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
+                              {t.srsElementTranslationLabel || 'Tradução do Elemento i+1'}:
                             </span>
-                            <span className="text-slate-600">→</span>
-                            <span className="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-100">
-                              {currentCard.sentence.explanation}
-                            </span>
+                            <div className="flex flex-wrap items-baseline gap-3">
+                              <span className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
+                                {currentCard.sentence.new_element}
+                              </span>
+                              <span className="text-slate-600">→</span>
+                              <span className="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-100">
+                                {elementTranslation || currentCard.sentence.explanation}
+                              </span>
+                            </div>
+                            {elementTranslation && currentCard.sentence.explanation && (
+                              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                {currentCard.sentence.explanation}
+                              </p>
+                            )}
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
 
                       {srsBackType === 'target_definition' && (
                         <div className="space-y-2">
@@ -766,7 +774,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                               <span>{currentCard.sentence.translation}</span>
                             </div>
                           )}
-                          {srsBackType !== 'element_translation' && (
+                          {srsBackType !== 'element_translation' && currentCard.sentence.explanation && (
                             <div>
                               <strong className="text-slate-600 dark:text-slate-400 block mb-0.5">Explicação do Elemento i+1:</strong>
                               <span>{currentCard.sentence.new_element} → {currentCard.sentence.explanation}</span>

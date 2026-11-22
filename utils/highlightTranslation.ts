@@ -202,6 +202,20 @@ function findClosestContentWordMatch(
 }
 
 /**
+ * Returns the native-language word/phrase that translates `new_element` in this sentence.
+ * Prefers the model-aligned `new_element_translation`; for legacy stories it falls back to the
+ * span located by `findTranslationHighlightRange`. Returns '' when no reliable gloss exists.
+ */
+export function getElementTranslation(
+  sentence: Pick<Sentence, 'translation' | 'new_element' | 'new_element_translation' | 'explanation'>
+): string {
+  const direct = sentence?.new_element_translation?.trim();
+  if (direct) return direct;
+  const span = findTranslationHighlightRange(sentence);
+  return span && sentence.translation ? sentence.translation.slice(span.start, span.end).trim() : '';
+}
+
+/**
  * Locates the exact character span in `sentence.translation` that corresponds to
  * `sentence.new_element`, preferring the model-aligned `new_element_translation`
  * and falling back safely for legacy saved stories without highlighting stopwords.

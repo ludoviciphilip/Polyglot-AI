@@ -8,7 +8,7 @@ import {
   playFullStoryAudio,
   downloadFullStoryAudio
 } from '../utils/audio';
-import { findTranslationHighlightRange, formatIpa } from '../utils/highlightTranslation';
+import { findTranslationHighlightRange, formatIpa, getElementTranslation } from '../utils/highlightTranslation';
 
 export { playFullStoryAudio, downloadFullStoryAudio };
 
@@ -146,7 +146,11 @@ const SentenceCard: React.FC<{
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed font-semibold">{sentence.new_element}: <span className="font-normal">{sentence.explanation}</span></p>
+                      <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed font-semibold">
+                        {sentence.new_element}
+                        {getElementTranslation(sentence) && <> → {getElementTranslation(sentence)}</>}
+                        {sentence.explanation && <>: <span className="font-normal">{sentence.explanation}</span></>}
+                      </p>
                     </div>
                   )}
                   {sentence.phonetic && (
