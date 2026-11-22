@@ -127,6 +127,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   const [selectedEnglishLevel, setSelectedEnglishLevel] = useState<CEFRLevel | null>(null);
   const [isLoadingVocab, setIsLoadingVocab] = useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  // Autofocusing the name field on touch devices pops the keyboard over half the modal
+  const [canAutoFocus] = useState(() => {
+    try {
+      return window.matchMedia('(pointer: fine)').matches;
+    } catch {
+      return false;
+    }
+  });
 
   if (!isOpen) return null;
 
@@ -178,31 +186,32 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-300">
+      {/* The card never exceeds the (dynamic) viewport: header stays visible, only the form body scrolls */}
       <div
-        className="bg-white dark:bg-slate-900 w-full max-w-xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300"
+        className="bg-white dark:bg-slate-900 w-full max-w-xl max-h-full rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-300"
         role="dialog"
         aria-modal="true"
       >
         {/* Header Hero */}
-        <div className="p-6 sm:p-8 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white relative shrink-0">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-bold text-indigo-100">
+        <div className="px-5 py-4 sm:p-8 [@media(max-height:500px)]:py-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white relative shrink-0">
+          <div className="space-y-1.5 sm:space-y-2">
+            <div className="inline-flex [@media(max-height:500px)]:hidden items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-bold text-indigo-100">
               <Sparkles size={14} className="text-amber-300" />
               <span>{onboardingText.badge}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h2 className="text-xl sm:text-3xl [@media(max-height:500px)]:text-xl font-extrabold tracking-tight">
               {onboardingText.title}
             </h2>
-            <p className="text-sm text-indigo-100/90 leading-relaxed max-w-md">
+            <p className="text-xs sm:text-sm text-indigo-100/90 leading-relaxed max-w-md [@media(max-height:500px)]:hidden">
               {onboardingText.subtitle}
             </p>
           </div>
         </div>
 
         {/* Scrollable Form Body */}
-        <div className="overflow-y-auto max-h-[calc(100dvh-8rem)]">
-          <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+          <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-5 sm:space-y-6">
             {/* 1. User Name */}
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
@@ -214,8 +223,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={onboardingText.namePlaceholder}
-                autoFocus
-                className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm font-medium"
+                autoFocus={canAutoFocus}
+                className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-base sm:text-sm font-medium"
               />
             </div>
 
@@ -262,7 +271,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                 <select
                   value={selectedTargetLang}
                   onChange={(e) => handleTargetLangChange(e.target.value)}
-                  className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm font-semibold cursor-pointer appearance-none"
+                  className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-base sm:text-sm font-semibold cursor-pointer appearance-none"
                 >
                   {TARGET_LANGUAGES.map((lang) => (
                     <option key={lang.id} value={lang.id}>
