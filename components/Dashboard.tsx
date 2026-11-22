@@ -40,7 +40,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onGenerate, onReview, lo
       percentage: levelPercentage,
       nextLevelWords: currentRange.max - wordCount,
       isMax: profile.level === 'C2' && wordCount >= currentRange.max,
-      nextLevel: thresholds[thresholds.indexOf(currentRange) + 1]?.level || 'Mastery'
+      nextLevel: thresholds[thresholds.indexOf(currentRange) + 1]?.level || t.mastery || 'Mastery'
     };
   };
 
@@ -84,7 +84,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onGenerate, onReview, lo
       points.push({
         total: Math.max(0, cumulativeTotal),
         delta: dailyDelta,
-        label: targetDate.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' }),
+        label: targetDate.toLocaleDateString(t?.intlLocale || undefined, { weekday: 'short', day: 'numeric' }),
         isToday: i === 0,
         fullDate: dateStr
       });
@@ -94,7 +94,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onGenerate, onReview, lo
     }
     
     return points.reverse();
-  }, [history, profile.knownWords.length]);
+  }, [history, profile.knownWords.length, t?.intlLocale]);
 
   // Calculate learning velocity (avg words per day over the last 7 active days)
   const velocity = useMemo(() => {
@@ -108,7 +108,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onGenerate, onReview, lo
   }, [history]);
 
   // Calculate streak info from history
-  const streakInfo = useMemo(() => calculateStreak(history), [history]);
+  const streakInfo = useMemo(() => calculateStreak(history, t?.intlLocale || undefined), [history, t?.intlLocale]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -140,7 +140,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onGenerate, onReview, lo
                 {streakInfo.streak} {streakInfo.streak === 1 ? (t.day || 'day') : (t.days || 'days')} {t.streak ? t.streak.toLowerCase() : 'streak'}
               </span>
               {streakInfo.completedToday && (
-                <span className="flex h-2 w-2 relative" title="Completed today">
+                <span className="flex h-2 w-2 relative" title={t.completedTodayTitle || "Completed today"}>
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
                 </span>

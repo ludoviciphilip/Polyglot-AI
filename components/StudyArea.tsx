@@ -8,7 +8,9 @@ import {
   playFullStoryAudio,
   downloadFullStoryAudio
 } from '../utils/audio';
-import { findTranslationHighlightRange, formatIpa } from '../utils/highlightTranslation';
+import { findTranslationHighlightRange, formatIpa, getElementTranslation } from '../utils/highlightTranslation';
+import { localizePartOfSpeech } from '../utils/partOfSpeech';
+import { interpolate } from '../utils/richText';
 
 export { playFullStoryAudio, downloadFullStoryAudio };
 
@@ -142,11 +144,15 @@ const SentenceCard: React.FC<{
                         </p>
                         {sentence.part_of_speech && (
                           <span className="text-[10px] font-semibold bg-amber-200/80 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                            {sentence.part_of_speech}
+                            {localizePartOfSpeech(sentence.part_of_speech, t_app?.intlLocale || '')}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed font-semibold">{sentence.new_element}: <span className="font-normal">{sentence.explanation}</span></p>
+                      <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed font-semibold">
+                        {sentence.new_element}
+                        {getElementTranslation(sentence) && <> → {getElementTranslation(sentence)}</>}
+                        {sentence.explanation && <>: <span className="font-normal">{sentence.explanation}</span></>}
+                      </p>
                     </div>
                   )}
                   {sentence.phonetic && (
@@ -201,7 +207,7 @@ const StudyArea: React.FC<StudyAreaProps> = ({ story, loading, onGenerate, onCom
     try {
       await downloadFullStoryAudio(story, targetLanguage, apiKey);
     } catch (err: any) {
-      alert(`Download Error: ${err.message}`);
+      alert(`${t.downloadError || "Download Error:"} ${err.message}`);
     } finally {
       setIsDownloading(false);
     }
@@ -289,7 +295,7 @@ const StudyArea: React.FC<StudyAreaProps> = ({ story, loading, onGenerate, onCom
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">{story.level_target || 'Advanced'} {t.level || 'Level'}</span>
+            <span className="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">{interpolate(t.levelBadge || '{level} Level', { level: story.level_target || 'Advanced' })}</span>
             {story.is_review && (
               <span className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1"><RefreshCw size={10} /> {t.reviewMode || 'Review Mode'}</span>
             )}
@@ -299,7 +305,7 @@ const StudyArea: React.FC<StudyAreaProps> = ({ story, loading, onGenerate, onCom
               </span>
             )}
             {story.modelUsed && (
-              <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-mono px-2 py-1 rounded border border-slate-200 dark:border-slate-700 flex items-center gap-1" title="Model Used">
+              <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-mono px-2 py-1 rounded border border-slate-200 dark:border-slate-700 flex items-center gap-1" title={t.modelUsedTitle || "Model Used"}>
                 <Sparkles size={10} className="text-indigo-500" />
                 {story.modelUsed}
               </span>

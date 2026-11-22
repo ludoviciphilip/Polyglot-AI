@@ -65,7 +65,7 @@ export const ApiKeyTutorialModal: React.FC<ApiKeyTutorialModalProps> = ({
           <button
             onClick={onClose}
             className="p-2 rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-colors cursor-pointer shrink-0"
-            aria-label="Fechar"
+            aria-label={t.close || "Fechar"}
           >
             <X size={20} />
           </button>
@@ -82,7 +82,7 @@ export const ApiKeyTutorialModal: React.FC<ApiKeyTutorialModalProps> = ({
               </div>
               <div>
                 <p className="text-sm font-bold text-slate-900 dark:text-white">
-                  Google AI Studio — Get API Key
+                  Google AI Studio — {t.getApiKey || "Obter chave de API"}
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                   aistudio.google.com/app/apikey
@@ -103,7 +103,7 @@ export const ApiKeyTutorialModal: React.FC<ApiKeyTutorialModalProps> = ({
                 type="button"
                 onClick={handleCopyLink}
                 className="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all cursor-pointer"
-                title="Copiar link"
+                title={t.copyLink || "Copiar link"}
               >
                 {copiedLink ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
               </button>

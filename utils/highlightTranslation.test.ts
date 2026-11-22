@@ -3,6 +3,7 @@ import {
   cleanPhonetic,
   findTranslationHighlightRange,
   formatIpa,
+  getElementTranslation,
 } from './highlightTranslation';
 
 const sliceSpan = (text: string, span: { start: number; end: number } | null) =>
@@ -79,5 +80,32 @@ describe('highlightTranslation', () => {
     expect(formatIpa("intra'prɛnde")).toBe("/intra'prɛnde/");
     expect(formatIpa("//ispet'tsjona//")).toBe("/ispet'tsjona/");
     expect(formatIpa('')).toBe('');
+  });
+});
+
+describe('getElementTranslation', () => {
+  it('prefers the aligned new_element_translation field', () => {
+    expect(getElementTranslation({
+      translation: 'Tom morava sozinho em um velho farol à beira-mar.',
+      new_element: 'lighthouse',
+      new_element_translation: 'farol',
+      explanation: 'Torre com uma luz forte que guia os navios à noite.',
+    })).toBe('farol');
+  });
+
+  it('falls back to the highlighted span for legacy stories without the field', () => {
+    expect(getElementTranslation({
+      translation: 'Ele inspeciona o barco.',
+      new_element: 'ispeziona',
+      explanation: 'Significa examinar com atenção.',
+    })).toBe('inspeciona');
+  });
+
+  it('returns an empty string instead of the explanation when no gloss is found', () => {
+    expect(getElementTranslation({
+      translation: 'Uma neblina espessa cobriu o litoral.',
+      new_element: 'thick',
+      explanation: 'Significa denso, difícil de enxergar através.',
+    })).toBe('');
   });
 });

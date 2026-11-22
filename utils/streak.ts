@@ -15,7 +15,7 @@ export const getLocalDateKey = (date: Date | number): string => {
   return `${year}-${month}-${day}`;
 };
 
-export const calculateStreak = (history: HistoryItem[]): StreakInfo => {
+export const calculateStreak = (history: HistoryItem[], locale?: string): StreakInfo => {
   const completedDateSet = new Set<string>();
   
   if (Array.isArray(history)) {
@@ -71,7 +71,7 @@ export const calculateStreak = (history: HistoryItem[]): StreakInfo => {
     const dateStr = getLocalDateKey(d);
     dailyStatus.push({
       dateStr,
-      label: d.toLocaleDateString(undefined, { weekday: 'narrow' }),
+      label: d.toLocaleDateString(locale, { weekday: 'narrow' }),
       completed: completedDateSet.has(dateStr),
       isToday: i === 0
     });

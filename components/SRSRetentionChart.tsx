@@ -15,6 +15,7 @@ import {
 import { SRSCard, SRSReviewLogEntry } from '../types';
 import { generate30DayRetentionData, estimateRetentionRate, RetentionProgressPoint } from '../utils/srs';
 import { TrendingUp, Award, Layers, Sparkles, CheckCircle2, ArrowUpRight, BarChart3, HelpCircle } from 'lucide-react';
+import { interpolate, renderRichText } from '../utils/richText';
 
 interface SRSRetentionChartProps {
   cards: SRSCard[];
@@ -34,8 +35,8 @@ export const SRSRetentionChart: React.FC<SRSRetentionChartProps> = ({
 
   // Compute 30-day time series data
   const data = useMemo(() => {
-    return generate30DayRetentionData(cards, targetLanguage, reviewLogs);
-  }, [cards, targetLanguage, reviewLogs]);
+    return generate30DayRetentionData(cards, targetLanguage, reviewLogs, t?.intlLocale || undefined);
+  }, [cards, targetLanguage, reviewLogs, t?.intlLocale]);
 
   const fallback = useMemo(() => estimateRetentionRate(cards, reviewLogs), [cards, reviewLogs]);
 
@@ -177,7 +178,7 @@ export const SRSRetentionChart: React.FC<SRSRetentionChartProps> = ({
           <button
             type="button"
             onClick={() => setShowExplanation(!showExplanation)}
-            title="Como funciona a retenção?"
+            title={t?.srsRetentionHowItWorksTip || 'Como funciona a retenção?'}
             className="p-2 text-slate-600 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all cursor-pointer"
           >
             <HelpCircle size={18} />
@@ -251,10 +252,13 @@ export const SRSRetentionChart: React.FC<SRSRetentionChartProps> = ({
         <div className="p-4 bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl text-xs text-slate-700 dark:text-slate-300 space-y-1.5 animate-in fade-in duration-200">
           <div className="font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5">
             <CheckCircle2 size={15} className="text-indigo-600" />
-            <span>Como funciona a transição de "Learning" para "Mastered"?</span>
+            <span>{t?.srsTransitionExplainTitle || 'Como funciona a transição de “Em Aprendizado” para “Dominado”?'}</span>
           </div>
           <p className="leading-relaxed text-slate-600 dark:text-slate-300">
-            Quando você estuda uma nova frase <strong>i+1</strong>, ela entra no estado <em>Learning</em>. Cada revisão bem-sucedida (avaliada como <strong>Bom</strong> ou <strong>Fácil</strong>) aumenta a estabilidade da memória pelo algoritmo <strong>FSRS</strong>, calculando o intervalo ideal para sua retenção-alvo. Quando o intervalo atinge ou ultrapassa <strong>21 dias</strong>, o card gradua oficialmente para <em>Mastered</em>, indicando que a memória de longo prazo foi estabilizada contra o esquecimento.
+            {renderRichText(interpolate(
+              t?.srsTransitionExplainBody || 'Quando você estuda uma nova frase <strong>i+1</strong>, ela entra no estado <em>Em Aprendizado</em>. Cada revisão bem-sucedida (avaliada como <strong>{good}</strong> ou <strong>{easy}</strong>) aumenta a estabilidade da memória pelo algoritmo <strong>FSRS</strong>, que calcula o intervalo ideal para sua retenção-alvo. Quando o intervalo atinge ou ultrapassa <strong>21 dias</strong>, o card passa oficialmente para <em>Dominado</em>, indicando que a memória de longo prazo foi estabilizada contra o esquecimento.',
+              { good: t?.srsGood || 'Bom', easy: t?.srsEasy || 'Fácil' }
+            ))}
           </p>
         </div>
       )}
@@ -431,10 +435,10 @@ export const SRSRetentionChart: React.FC<SRSRetentionChartProps> = ({
       <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
         <span className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-          <span>Meta de Longo Prazo: <strong>Converter 80%+ do vocabulário em "Mastered"</strong></span>
+          <span>{renderRichText(t?.srsLongTermGoal || 'Meta de longo prazo: <strong>Converter 80%+ do vocabulário em “Dominados”</strong>')}</span>
         </span>
         <span className="text-[11px] text-slate-600 dark:text-slate-400">
-          Baseado na curva de esquecimento FSRS-5
+          {t?.srsBasedOnFsrsCurve || 'Baseado na curva de esquecimento do FSRS-5'}
         </span>
       </div>
     </div>

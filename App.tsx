@@ -345,7 +345,7 @@ const App: React.FC = () => {
       setActiveTab('study');
     } catch (error: any) {
       console.error("Error generating story:", error);
-      const msg = error?.message || "Error generating story.";
+      const msg = error?.message || t.unknownError || "Error generating story.";
       if (msg.includes("NO_API_KEY") || msg.includes("API key not configured")) {
         setApiKeyPromptAction('story');
         setIsApiKeyPromptOpen(true);
@@ -384,7 +384,7 @@ const App: React.FC = () => {
       setActiveTab('study');
     } catch (error: any) {
       console.error("Error generating review story:", error);
-      const msg = error?.message || "Error generating review story.";
+      const msg = error?.message || t.unknownError || "Error generating review story.";
       if (msg.includes("NO_API_KEY") || msg.includes("API key not configured")) {
         setApiKeyPromptAction('review');
         setIsApiKeyPromptOpen(true);
@@ -441,7 +441,7 @@ const App: React.FC = () => {
       }
     } catch (error: any) {
       console.error("Error generating after configuring key:", error);
-      const msg = error?.message || "Error generating story.";
+      const msg = error?.message || t.unknownError || "Error generating story.";
       alert(`${t.errorGeneratingStory || "Error generating lesson:"} ${msg}`);
     } finally {
       setLoading(false);
@@ -671,7 +671,7 @@ const App: React.FC = () => {
             <button 
               type="button"
               onClick={() => setProfile(p => ({...p, darkMode: !p.darkMode}))} 
-              aria-label="Alternar tema escuro/claro"
+              aria-label={t.toggleDarkMode || "Alternar tema escuro/claro"}
               className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer text-slate-600 dark:text-slate-300"
             >
               {profile.darkMode ? <Sun size={20} /> : <Moon size={20} />}
@@ -681,7 +681,7 @@ const App: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(prev => !prev)}
-              aria-label="Abrir ou fechar menu"
+              aria-label={t.toggleMenu || "Abrir ou fechar menu"}
               aria-expanded={isMobileMenuOpen}
               className="md:hidden p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer relative"
             >
@@ -824,7 +824,7 @@ const App: React.FC = () => {
           />
         )}
         {activeTab === 'study' && (
-          <ErrorBoundary onReset={() => setActiveTab('dashboard')}>
+          <ErrorBoundary onReset={() => setActiveTab('dashboard')} t={t}>
             <StudyArea 
               story={currentStory} 
               loading={loading}

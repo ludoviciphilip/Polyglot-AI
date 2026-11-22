@@ -35,8 +35,9 @@ import {
   formatIntervalLabel 
 } from '../utils/srs';
 import { stopAllAudio, speakWithBrowser, playNaturalAudio } from '../utils/audio';
-import { findTranslationHighlightRange, formatIpa } from '../utils/highlightTranslation';
+import { findTranslationHighlightRange, formatIpa, getElementTranslation } from '../utils/highlightTranslation';
 import { SRSRetentionChart } from './SRSRetentionChart';
+import { interpolate, renderRichText } from '../utils/richText';
 
 interface SRSReviewAreaProps {
   cards: SRSCard[];
@@ -385,7 +386,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
               {t.srsTitle || 'Revisão Espaçada (SRS / Anki)'}
             </h2>
             <span className="px-2.5 py-1 text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 rounded-full">
-              SM-2 Algorithm
+              FSRS-5
             </span>
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -484,11 +485,11 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
               <div className="flex items-center justify-between bg-white dark:bg-slate-900 px-6 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm">
                 <div className="flex items-center gap-3">
                   <span className="font-bold text-indigo-600 dark:text-indigo-400">
-                    Card {currentIndex + 1} / {reviewQueue.length}
+                    {t.srsCardLabel || 'Card'} {currentIndex + 1} / {reviewQueue.length}
                   </span>
                   <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
                     <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 rounded-md font-medium">
-                      {currentCard.state === 'new' ? 'Novo' : currentCard.state === 'learning' ? 'Aprendendo' : 'Revisão'}
+                      {currentCard.state === 'new' ? (t.srsStateNew || 'Novo') : currentCard.state === 'learning' ? (t.srsStateLearning || 'Aprendendo') : (t.srsStateReview || 'Revisão')}
                     </span>
                     <span>•</span>
                     <span className="truncate max-w-[200px]">{currentCard.storyTitle}</span>
@@ -708,22 +709,30 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                         );
                       })()}
 
-                      {srsBackType === 'element_translation' && (
-                        <div className="space-y-2">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
-                            {t.srsElementTranslationLabel || 'Tradução do Elemento i+1'}:
-                          </span>
-                          <div className="flex items-baseline gap-3">
-                            <span className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
-                              {currentCard.sentence.new_element}
+                      {srsBackType === 'element_translation' && (() => {
+                        const elementTranslation = getElementTranslation(currentCard.sentence);
+                        return (
+                          <div className="space-y-2">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
+                              {t.srsElementTranslationLabel || 'Tradução do Elemento i+1'}:
                             </span>
-                            <span className="text-slate-600">→</span>
-                            <span className="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-100">
-                              {currentCard.sentence.explanation}
-                            </span>
+                            <div className="flex flex-wrap items-baseline gap-3">
+                              <span className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
+                                {currentCard.sentence.new_element}
+                              </span>
+                              <span className="text-slate-600">→</span>
+                              <span className="text-lg sm:text-xl font-medium text-slate-800 dark:text-slate-100">
+                                {elementTranslation || currentCard.sentence.explanation}
+                              </span>
+                            </div>
+                            {elementTranslation && currentCard.sentence.explanation && (
+                              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                {currentCard.sentence.explanation}
+                              </p>
+                            )}
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
 
                       {srsBackType === 'target_definition' && (
                         <div className="space-y-2">
@@ -732,14 +741,14 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                               {t.srsTargetDefinitionLabel || 'Definição Imersiva no Idioma Alvo'} ({targetLanguage}):
                             </span>
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold">
-                              100% Imersão
+                              {t.srsFullImmersionBadge || '100% Imersão'}
                             </span>
                           </div>
                           <div className="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 italic">
                             "{currentCard.sentence.definition_target || currentCard.sentence.explanation}"
                           </div>
                           <div className="text-xs text-slate-600 dark:text-slate-400">
-                            Palavra-chave: <strong className="text-indigo-600 dark:text-indigo-400">{currentCard.sentence.new_element}</strong>
+                            {t.srsKeywordLabel || 'Palavra-chave:'} <strong className="text-indigo-600 dark:text-indigo-400">{currentCard.sentence.new_element}</strong>
                           </div>
                         </div>
                       )}
@@ -762,19 +771,19 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                         <div className="mt-3 p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl space-y-2.5 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60 animate-fade-in">
                           {srsBackType !== 'full_translation' && (
                             <div>
-                              <strong className="text-slate-600 dark:text-slate-400 block mb-0.5">Tradução Completa:</strong>
+                              <strong className="text-slate-600 dark:text-slate-400 block mb-0.5">{t.srsExtraFullTranslation || 'Tradução completa:'}</strong>
                               <span>{currentCard.sentence.translation}</span>
                             </div>
                           )}
-                          {srsBackType !== 'element_translation' && (
+                          {srsBackType !== 'element_translation' && currentCard.sentence.explanation && (
                             <div>
-                              <strong className="text-slate-600 dark:text-slate-400 block mb-0.5">Explicação do Elemento i+1:</strong>
+                              <strong className="text-slate-600 dark:text-slate-400 block mb-0.5">{t.srsExtraElementExplanation || 'Explicação do elemento i+1:'}</strong>
                               <span>{currentCard.sentence.new_element} → {currentCard.sentence.explanation}</span>
                             </div>
                           )}
                           {srsBackType !== 'target_definition' && currentCard.sentence.definition_target && (
                             <div>
-                              <strong className="text-slate-600 dark:text-slate-400 block mb-0.5">Definição no Idioma Alvo:</strong>
+                              <strong className="text-slate-600 dark:text-slate-400 block mb-0.5">{t.srsExtraTargetDefinition || 'Definição no idioma-alvo:'}</strong>
                               <span className="italic">"{currentCard.sentence.definition_target}"</span>
                             </div>
                           )}
@@ -938,7 +947,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                 {stats.dueToday}
               </div>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
-                {stats.dueToday === 0 ? 'Tudo em dia para hoje!' : 'Prontos para revisar agora'}
+                {stats.dueToday === 0 ? (t.srsAllCaughtUpToday || 'Tudo em dia por hoje!') : (t.srsReadyToReviewNow || 'Prontos para revisar agora')}
               </p>
             </div>
 
@@ -951,7 +960,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                 {stats.newCards}
               </div>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
-                Aguardando 1ª repetição
+                {t.srsAwaitingFirstReview || 'Aguardando a 1ª repetição'}
               </p>
             </div>
 
@@ -964,7 +973,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                 {stats.learningCards + stats.reviewCards}
               </div>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
-                Caminho para fixação
+                {t.srsPathToMastery || 'A caminho da fixação'}
               </p>
             </div>
 
@@ -977,7 +986,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                 {stats.masteredCards}
               </div>
               <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
-                Intervalo &gt; 21 dias ({retention.rate !== null ? `${retention.rate}%` : '85%'} retenção)
+                {interpolate(t.srsMasteredIntervalHint || 'Intervalo > 21 dias ({rate} de retenção)', { rate: retention.rate !== null ? `${retention.rate}%` : '85%' })}
               </p>
             </div>
           </div>
@@ -990,17 +999,22 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
               <div className="space-y-2 max-w-xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-indigo-200 text-xs font-medium">
                   <BrainCircuit size={14} />
-                  <span>Método Anki com Intervalos Exponenciais</span>
+                  <span>{t.srsAnkiMethodBadge || 'Método Anki com intervalos exponenciais'}</span>
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold tracking-tight">
                   {stats.dueToday > 0
-                    ? `${stats.dueToday} ${stats.dueToday === 1 ? 'card pronto' : 'cards prontos'} para revisão hoje`
-                    : 'Você está 100% em dia com suas revisões! 🎉'}
+                    ? interpolate(
+                        stats.dueToday === 1
+                          ? (t.srsDueHeadlineOne || '{count} card pronto para revisão hoje')
+                          : (t.srsDueHeadlineMany || '{count} cards prontos para revisão hoje'),
+                        { count: stats.dueToday }
+                      )
+                    : (t.srsAllCaughtUpHeadline || 'Você está 100% em dia com suas revisões! 🎉')}
                 </h3>
                 <p className="text-indigo-200 text-xs sm:text-sm leading-relaxed">
                   {stats.dueToday > 0
-                    ? 'Pratique agora para interceptar o esquecimento no ponto exato em que a retenção começa a cair.'
-                    : 'Todas as suas frases estão consolidadas na memória de longo prazo. Você pode fazer um reforço livre ou gerar novas histórias.'}
+                    ? (t.srsPracticeNowDesc || 'Pratique agora para interceptar o esquecimento no ponto exato em que a retenção começa a cair.')
+                    : (t.srsAllConsolidatedDesc || 'Todas as suas frases estão consolidadas na memória de longo prazo. Você pode fazer um reforço livre ou gerar novas histórias.')}
                 </p>
               </div>
 
@@ -1069,15 +1083,15 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                 onClick={() => setShowForgettingCurveInfo(!showForgettingCurveInfo)}
                 className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
               >
-                {showForgettingCurveInfo ? 'Ocultar detalhes' : 'Como funciona?'}
+                {showForgettingCurveInfo ? (t.srsHideDetails || 'Ocultar detalhes') : (t.srsHowItWorks || 'Como funciona?')}
               </button>
             </div>
 
             {/* Interactive SVG / Graphic of the Spaced Repetition Curve */}
             <div className="bg-slate-50 dark:bg-slate-950 p-4 sm:p-6 rounded-2xl border border-slate-100 dark:border-slate-800/80">
               <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-mono mb-2">
-                <span>Retenção (%)</span>
-                <span>Tempo / Espaçamento (dias)</span>
+                <span>{t.srsCurveRetentionAxis || 'Retenção (%)'}</span>
+                <span>{t.srsCurveTimeAxis || 'Tempo / espaçamento (dias)'}</span>
               </div>
 
               {/* Graphic Representation */}
@@ -1086,44 +1100,44 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                 <div className="flex-1 flex flex-col items-center h-full justify-end">
                   <div className="text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1">100%</div>
                   <div className="w-full bg-slate-300 dark:bg-slate-700 rounded-t-lg h-[95%]" />
-                  <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 mt-2">Lido</span>
+                  <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 mt-2">{t.srsCurveRead || 'Lido'}</span>
                 </div>
 
                 {/* Day 1: 1st review */}
                 <div className="flex-1 flex flex-col items-center h-full justify-end">
                   <div className="text-[10px] font-bold text-rose-500 mb-1">60% ➔ 100%</div>
                   <div className="w-full bg-rose-400/80 dark:bg-rose-500/70 rounded-t-lg h-[60%]" />
-                  <span className="text-[11px] font-bold text-rose-600 dark:text-rose-400 mt-2">1º dia</span>
+                  <span className="text-[11px] font-bold text-rose-600 dark:text-rose-400 mt-2">{t.srsCurveDay1 || '1º dia'}</span>
                 </div>
 
                 {/* Day 3: 2nd review */}
                 <div className="flex-1 flex flex-col items-center h-full justify-end">
                   <div className="text-[10px] font-bold text-amber-500 mb-1">75% ➔ 100%</div>
                   <div className="w-full bg-amber-400/80 dark:bg-amber-500/70 rounded-t-lg h-[75%]" />
-                  <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 mt-2">3º dia</span>
+                  <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 mt-2">{t.srsCurveDay3 || '3º dia'}</span>
                 </div>
 
                 {/* Day 7: 3rd review */}
                 <div className="flex-1 flex flex-col items-center h-full justify-end">
                   <div className="text-[10px] font-bold text-blue-500 mb-1">85% ➔ 100%</div>
                   <div className="w-full bg-blue-400/80 dark:bg-blue-500/70 rounded-t-lg h-[85%]" />
-                  <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 mt-2">7º dia</span>
+                  <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 mt-2">{t.srsCurveDay7 || '7º dia'}</span>
                 </div>
 
                 {/* Day 21+: Mastered */}
                 <div className="flex-1 flex flex-col items-center h-full justify-end">
                   <div className="text-[10px] font-bold text-emerald-500 mb-1">95%+</div>
                   <div className="w-full bg-emerald-500 rounded-t-lg h-[95%]" />
-                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-2">21d+ (Fixo)</span>
+                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-2">{t.srsCurveDay21 || '21d+ (Fixo)'}</span>
                 </div>
               </div>
 
               <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
                 <span>
-                  💡 <strong>Sem repetição:</strong> O cérebro descarta até 70% das novas palavras em 24h.
+                  💡 {renderRichText(t.srsCurveNoRepetition || '<strong>Sem repetição:</strong> o cérebro descarta até 70% das novas palavras em 24h.')}
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  Com o FSRS-5: a retenção se mantém no alvo ({Math.round(desiredRetention * 100)}%) com menos revisões.
+                  {interpolate(t.srsCurveWithFsrs || 'Com o FSRS-5: a retenção se mantém no alvo ({rate}%) com menos revisões.', { rate: Math.round(desiredRetention * 100) })}
                 </span>
               </div>
             </div>
@@ -1131,10 +1145,13 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
             {showForgettingCurveInfo && (
               <div className="p-4 bg-indigo-50/50 dark:bg-indigo-950/30 rounded-2xl border border-indigo-100 dark:border-indigo-900/50 text-xs text-slate-700 dark:text-slate-300 space-y-2 animate-fade-in">
                 <p>
-                  <strong>Por que o Polyglot i+1 usa o FSRS-5?</strong> Em 1885, Hermann Ebbinghaus descobriu que a perda de memória segue uma curva previsível. O FSRS (Free Spaced Repetition Scheduler) modela individualmente a <em>Estabilidade</em>, a <em>Dificuldade</em> e a <em>Recuperabilidade</em> de cada card — superando o antigo SM-2 em precisão.
+                  {renderRichText(t.srsFsrsWhyP1 || '<strong>Por que o Polyglot i+1 usa o FSRS-5?</strong> Em 1885, Hermann Ebbinghaus descobriu que a perda de memória segue uma curva previsível. O FSRS (Free Spaced Repetition Scheduler) modela individualmente a <em>Estabilidade</em>, a <em>Dificuldade</em> e a <em>Recuperabilidade</em> de cada card — superando o antigo SM-2 em precisão.')}
                 </p>
                 <p>
-                  Quando você clica em <strong>Difícil</strong>, <strong>Bom</strong> ou <strong>Fácil</strong>, o FSRS calcula o intervalo exato para atingir sua meta de retenção (<strong>{Math.round(desiredRetention * 100)}%</strong>), recompensando revisões bem espaçadas e preservando parte da estabilidade mesmo após um lapso — reduzindo até 20–30% o volume de revisões para a mesma retenção!
+                  {renderRichText(interpolate(
+                    t.srsFsrsWhyP2 || 'Quando você clica em <strong>{hard}</strong>, <strong>{good}</strong> ou <strong>{easy}</strong>, o FSRS calcula o intervalo exato para atingir sua meta de retenção (<strong>{rate}%</strong>), recompensando revisões bem espaçadas e preservando parte da estabilidade mesmo após um lapso — reduzindo até 20–30% o volume de revisões para a mesma retenção!',
+                    { hard: t.srsHard || 'Difícil', good: t.srsGood || 'Bom', easy: t.srsEasy || 'Fácil', rate: Math.round(desiredRetention * 100) }
+                  ))}
                 </p>
               </div>
             )}
@@ -1148,7 +1165,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                   <BookOpen size={20} className="text-indigo-600 dark:text-indigo-400" />
                   {t.srsDeckExplorerTitle || 'Deck de Histórias Concluídas'}
                   <span className="text-xs font-normal text-slate-600 dark:text-slate-400">
-                    ({languageCards.length} cards no total)
+                    {interpolate(t.srsCardsTotal || '({count} cards no total)', { count: languageCards.length })}
                   </span>
                 </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
@@ -1165,10 +1182,10 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                     onChange={(e) => setSelectedStoryFilter(e.target.value)}
                     className="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 outline-none"
                   >
-                    <option value="all">Todas as histórias ({languageCards.length} cards)</option>
+                    <option value="all">{interpolate(t.srsAllStoriesOption || 'Todas as histórias ({count} cards)', { count: languageCards.length })}</option>
                     {storiesList.map(s => (
                       <option key={s.timestamp} value={s.title}>
-                        {s.title} ({s.count} cards)
+                        {s.title} ({s.count} {t.cards || 'cards'})
                       </option>
                     ))}
                   </select>
@@ -1218,11 +1235,11 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                             {story.title}
                           </h5>
                           <span className="text-[11px] text-slate-600 dark:text-slate-400">
-                            Concluída em {new Date(story.timestamp).toLocaleDateString()}
+                            {interpolate(t.srsCompletedOn || 'Concluída em {date}', { date: new Date(story.timestamp).toLocaleDateString(t.intlLocale || undefined) })}
                           </span>
                         </div>
                         <span className="px-2 py-0.5 text-xs font-mono font-bold bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-md">
-                          {story.count} cards
+                          {story.count} {t.cards || 'cards'}
                         </span>
                       </div>
 
@@ -1230,10 +1247,10 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                       <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
                         <div className="flex items-center gap-3">
                           <span className="text-amber-600 dark:text-amber-400 font-semibold">
-                            {storyDueCount} devidos
+                            {interpolate(t.srsStoryDueCount || '{count} devidos', { count: storyDueCount })}
                           </span>
                           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                            {storyMastered} dominados
+                            {interpolate(t.srsStoryMasteredCount || '{count} dominados', { count: storyMastered })}
                           </span>
                         </div>
 
@@ -1245,7 +1262,7 @@ export const SRSReviewArea: React.FC<SRSReviewAreaProps> = ({
                           }}
                           className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
                         >
-                          Revisar história →
+                          {t.srsReviewStory || 'Revisar história →'}
                         </button>
                       </div>
                     </div>

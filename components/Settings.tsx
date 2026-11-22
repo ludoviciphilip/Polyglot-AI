@@ -151,7 +151,7 @@ const Settings: React.FC<SettingsProps> = ({
 
   const requestNotificationPermission = async () => {
     if (typeof Notification === 'undefined') {
-      alert("Notifications are not supported in this browser.");
+      alert(t.notificationsNotSupported || "Notifications are not supported in this browser.");
       return;
     }
     if (Notification.permission !== 'granted') {
@@ -159,7 +159,7 @@ const Settings: React.FC<SettingsProps> = ({
       if (result === 'granted') {
         setFormData({ ...formData, notificationsEnabled: true });
       } else {
-        alert("Permission denied. Enable notifications in your browser settings.");
+        alert(t.notificationsPermissionDenied || "Permission denied. Enable notifications in your browser settings.");
       }
     } else {
       setFormData({ ...formData, notificationsEnabled: !formData.notificationsEnabled });
@@ -1085,7 +1085,7 @@ const Settings: React.FC<SettingsProps> = ({
                       })
                     }
                     rows={8}
-                    placeholder="word1, word2, word3..."
+                    placeholder={t.knownWordsPlaceholder || "word1, word2, word3..."}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm font-mono leading-relaxed"
                   />
                   <p className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
