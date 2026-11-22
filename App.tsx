@@ -24,9 +24,8 @@ import {
 } from './utils/profileOptimizer';
 import { BookOpen, LayoutDashboard, History as HistoryIcon, Settings as SettingsIcon, Download, Upload, Sun, Moon, RefreshCw, Flame, Key, FileJson, HelpCircle, Layers, Menu, X } from 'lucide-react';
 
-const STORAGE_KEY = 'polyglot_i1_data_v3';
-const SRS_STORAGE_KEY = 'polyglot_srs_cards_v1';
-const SRS_LOG_STORAGE_KEY = 'polyglot_srs_review_log_v1';
+import { STORAGE_KEY, SRS_STORAGE_KEY, SRS_LOG_STORAGE_KEY, getStoredItem, setStoredItem } from './utils/persistentStore';
+import { isDemoMode, isDemoBadgeHidden } from './utils/demo/demoFlags';
 
 const DEFAULT_PROFILE: UserProfile = {
   name: 'User',
@@ -65,7 +64,7 @@ const loadInitialStorage = (): InitialAppStorage => {
   let srsReviewLogs: SRSReviewLogEntry[] = [];
 
   try {
-    const savedData = localStorage.getItem(STORAGE_KEY);
+    const savedData = getStoredItem(STORAGE_KEY);
     if (savedData) {
       const { profile: savedProfile, history: savedHistory } = JSON.parse(savedData);
       if (savedProfile && typeof savedProfile === 'object') {
@@ -96,7 +95,7 @@ const loadInitialStorage = (): InitialAppStorage => {
   }
 
   try {
-    const savedSrs = localStorage.getItem(SRS_STORAGE_KEY);
+    const savedSrs = getStoredItem(SRS_STORAGE_KEY);
     if (savedSrs) {
       const parsed = JSON.parse(savedSrs);
       if (Array.isArray(parsed)) {
@@ -109,7 +108,7 @@ const loadInitialStorage = (): InitialAppStorage => {
   }
 
   try {
-    const savedLogs = localStorage.getItem(SRS_LOG_STORAGE_KEY);
+    const savedLogs = getStoredItem(SRS_LOG_STORAGE_KEY);
     if (savedLogs) {
       const parsed = JSON.parse(savedLogs);
       if (Array.isArray(parsed)) {
@@ -154,7 +153,7 @@ const App: React.FC = () => {
   const sidebarFileInputRef = useRef<HTMLInputElement>(null);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
     try {
-      return !localStorage.getItem(STORAGE_KEY);
+      return !getStoredItem(STORAGE_KEY);
     } catch {
       return false;
     }
@@ -187,7 +186,7 @@ const App: React.FC = () => {
     setProfile(newProfile);
     setIsOnboardingOpen(false);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile: newProfile, history: [] }));
+      setStoredItem(STORAGE_KEY, JSON.stringify({ profile: newProfile, history: [] }));
     } catch (err) {
       console.error("Failed to save initial onboarding profile", err);
     }
@@ -246,13 +245,13 @@ const App: React.FC = () => {
       return;
     }
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile, history }));
+      setStoredItem(STORAGE_KEY, JSON.stringify({ profile, history }));
     } catch (e) {
-      console.error("Failed to persist profile and history to localStorage", e);
+      console.error("Failed to persist profile and history", e);
     }
   }, [profile, history]);
 
-  // Persist compact non-initial cards to localStorage without indentation
+  // Persist compact non-initial cards without indentation
   useEffect(() => {
     if (!hasMountedSrsRef.current) {
       hasMountedSrsRef.current = true;
@@ -260,9 +259,9 @@ const App: React.FC = () => {
     }
     try {
       const compactList = compactAndFilterPersistedCards(persistedSrsCards, history);
-      localStorage.setItem(SRS_STORAGE_KEY, JSON.stringify(compactList));
+      setStoredItem(SRS_STORAGE_KEY, JSON.stringify(compactList));
     } catch (e) {
-      console.error("Failed to persist SRS cards to localStorage", e);
+      console.error("Failed to persist SRS cards", e);
     }
   }, [persistedSrsCards, history]);
 
@@ -271,23 +270,24 @@ const App: React.FC = () => {
       hasMountedLogsRef.current = true;
       return;
     }
-    try {
-      localStorage.setItem(SRS_LOG_STORAGE_KEY, JSON.stringify(srsReviewLogs.slice(-MAX_REVIEW_LOG_ENTRIES)));
-    } catch (e) {
-      console.error("Failed to persist SRS review logs, attempting to trim to 4000", e);
-      try {
-        const trimmed = srsReviewLogs.slice(-4000);
-        localStorage.setItem(SRS_LOG_STORAGE_KEY, JSON.stringify(trimmed));
-        setSrsReviewLogs(trimmed);
-      } catch (innerErr) {
-        console.error("Failed to persist trimmed SRS review logs", innerErr);
+    setStoredItem(SRS_LOG_STORAGE_KEY, JSON.stringify(srsReviewLogs.slice(-MAX_REVIEW_LOG_ENTRIES)));
+  }, [srsReviewLogs]);
+
+  // Storage writes are async (IndexedDB); failures (e.g. quota) are reported via an event
+  useEffect(() => {
+    const onStorageError = (event: Event) => {
+      const key = (event as CustomEvent<{ key: string }>).detail?.key;
+      if (key === SRS_LOG_STORAGE_KEY) {
+        setSrsReviewLogs(prev => (prev.length > 4000 ? prev.slice(-4000) : prev));
       }
       if (!hasShownQuotaWarning) {
         setHasShownQuotaWarning(true);
         alert(t.storageQuotaNotice || "O espaço de armazenamento do navegador está cheio. O log de revisões foi reduzido às entradas recentes. Recomendamos exportar um backup para proteger seu progresso.");
       }
-    }
-  }, [srsReviewLogs, hasShownQuotaWarning, t]);
+    };
+    window.addEventListener('polyglot-storage-error', onStorageError);
+    return () => window.removeEventListener('polyglot-storage-error', onStorageError);
+  }, [hasShownQuotaWarning, t]);
 
   const handleLogReview = (entry: SRSReviewLogEntry) => {
     setSrsReviewLogs(prev => {
@@ -318,7 +318,20 @@ const App: React.FC = () => {
     });
   };
 
+  const runDemoGeneration = async (kind: 'story' | 'review') => {
+    setLoading(true);
+    try {
+      const demo = await import('./utils/demo/demoMode');
+      const story = kind === 'review' ? await demo.generateDemoReviewStory() : await demo.generateDemoStory();
+      setCurrentStory(story);
+      setActiveTab('study');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGenerateStory = async () => {
+    if (isDemoMode()) return runDemoGeneration('story');
     const hasKey = Boolean(profile.apiKey && profile.apiKey.trim().length > 0);
     if (!hasKey) {
       setApiKeyPromptAction('story');
@@ -358,6 +371,7 @@ const App: React.FC = () => {
   };
 
   const handleGenerateReview = async () => {
+    if (isDemoMode()) return runDemoGeneration('review');
     const hasKey = Boolean(profile.apiKey && profile.apiKey.trim().length > 0);
     if (!hasKey) {
       setApiKeyPromptAction('review');
@@ -657,7 +671,14 @@ const App: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <div className="bg-indigo-500 p-2 rounded-lg"><BookOpen size={24} className="text-white" /></div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Polyglot AI</h1>
+              <h1 className="text-xl font-bold tracking-tight flex items-center gap-2">
+                Polyglot AI
+                {isDemoMode() && !isDemoBadgeHidden() && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300" title="Demo mode: data is not saved">
+                    Demo
+                  </span>
+                )}
+              </h1>
               {streakInfo.streak > 0 && (
                 <div className="flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">
                   <Flame size={12} className="fill-amber-500 text-amber-500" />
