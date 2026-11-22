@@ -371,12 +371,15 @@ describe('SRS FSRS-5 Algorithm Tests', () => {
     });
 
     it('estimateRetentionRate marks isEstimated false when real log exists', () => {
+      // estimateRetentionRate looks at the last 30 days relative to the real clock,
+      // so these logs must be recent (a fixed date made this test expire on 2026-11-22)
+      const now = Date.now();
       const logs: SRSReviewLogEntry[] = [
-        ['c1', new Date(fixedNow - 1000).toISOString(), 3, 1],
-        ['c2', new Date(fixedNow - 2000).toISOString(), 3, 1],
-        ['c3', new Date(fixedNow - 3000).toISOString(), 3, 1],
-        ['c4', new Date(fixedNow - 4000).toISOString(), 3, 1],
-        ['c5', new Date(fixedNow - 5000).toISOString(), 3, 1]
+        ['c1', new Date(now - 1000).toISOString(), 3, 1],
+        ['c2', new Date(now - 2000).toISOString(), 3, 1],
+        ['c3', new Date(now - 3000).toISOString(), 3, 1],
+        ['c4', new Date(now - 4000).toISOString(), 3, 1],
+        ['c5', new Date(now - 5000).toISOString(), 3, 1]
       ];
       const res = estimateRetentionRate([], logs);
       expect(res.isEstimated).toBe(false);
