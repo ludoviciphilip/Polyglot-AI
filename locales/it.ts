@@ -147,6 +147,7 @@ const it = {
   "removeWord": "Rimuovi",
   "wordAlreadyExists": "è già presente nel tuo elenco di vocaboli noti.",
   "needMoreWordsForReview": "Hai bisogno di almeno 20 parole note per una sessione di ripasso di qualità.",
+  "levelBadge": "Livello {level}",
   "level": "Livello",
   "reviewMode": "Modalità Ripasso",
   "errorGeneratingStory": "Errore durante la generazione della lezione:",

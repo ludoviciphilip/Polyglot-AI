@@ -147,6 +147,7 @@ const en = {
   "removeWord": "Remove",
   "wordAlreadyExists": "is already in your known vocabulary list.",
   "needMoreWordsForReview": "You need at least 20 known words for a high-quality review session.",
+  "levelBadge": "{level} Level",
   "level": "Level",
   "reviewMode": "Review Mode",
   "errorGeneratingStory": "Error generating lesson:",

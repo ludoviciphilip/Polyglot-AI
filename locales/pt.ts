@@ -147,6 +147,7 @@ const pt = {
   "removeWord": "Remover",
   "wordAlreadyExists": "já está na sua lista de vocabulário conhecido.",
   "needMoreWordsForReview": "Você precisa de pelo menos 20 palavras conhecidas para uma sessão de revisão de qualidade.",
+  "levelBadge": "Nível {level}",
   "level": "Nível",
   "reviewMode": "Modo de Revisão",
   "errorGeneratingStory": "Erro ao gerar lição:",

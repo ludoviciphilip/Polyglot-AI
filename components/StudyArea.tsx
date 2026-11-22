@@ -10,6 +10,7 @@ import {
 } from '../utils/audio';
 import { findTranslationHighlightRange, formatIpa, getElementTranslation } from '../utils/highlightTranslation';
 import { localizePartOfSpeech } from '../utils/partOfSpeech';
+import { interpolate } from '../utils/richText';
 
 export { playFullStoryAudio, downloadFullStoryAudio };
 
@@ -294,7 +295,7 @@ const StudyArea: React.FC<StudyAreaProps> = ({ story, loading, onGenerate, onCom
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">{story.level_target || 'Advanced'} {t.level || 'Level'}</span>
+            <span className="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">{interpolate(t.levelBadge || '{level} Level', { level: story.level_target || 'Advanced' })}</span>
             {story.is_review && (
               <span className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1"><RefreshCw size={10} /> {t.reviewMode || 'Review Mode'}</span>
             )}

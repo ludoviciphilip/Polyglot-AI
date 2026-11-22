@@ -147,6 +147,7 @@ const de = {
   "removeWord": "Entfernen",
   "wordAlreadyExists": "ist bereits in deiner Wortschatzliste vorhanden.",
   "needMoreWordsForReview": "Du benötigst mindestens 20 bekannte Wörter für eine hochwertige Wiederholungssitzung.",
+  "levelBadge": "Stufe {level}",
   "level": "Stufe",
   "reviewMode": "Wiederholungsmodus",
   "errorGeneratingStory": "Fehler beim Erstellen der Lektion:",
