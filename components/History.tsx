@@ -16,7 +16,7 @@ const History: React.FC<HistoryProps> = ({ history, onReopen, targetLanguage, t,
   const [downloadingIdx, setDownloadingIdx] = useState<number | null>(null);
 
   const formatDate = (timestamp: number) => {
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(t?.intlLocale || undefined, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -46,7 +46,7 @@ const History: React.FC<HistoryProps> = ({ history, onReopen, targetLanguage, t,
     try {
       await downloadFullStoryAudio(item, targetLanguage, apiKey);
     } catch (err: any) {
-      alert(`Download Error: ${err.message}`);
+      alert(`${t.downloadError || "Download Error:"} ${err.message}`);
     } finally {
       setDownloadingIdx(null);
     }

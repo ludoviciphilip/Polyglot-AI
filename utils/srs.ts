@@ -780,7 +780,8 @@ export interface RetentionProgressPoint {
 export const generate30DayRetentionData = (
   cards: SRSCard[],
   targetLanguage?: string,
-  reviewLogs?: SRSReviewLogEntry[]
+  reviewLogs?: SRSReviewLogEntry[],
+  locale?: string
 ): RetentionProgressPoint[] => {
   const filtered = cards.filter(c => !targetLanguage || !c.targetLanguage || c.targetLanguage === targetLanguage);
   const now = Date.now();
@@ -811,8 +812,8 @@ export const generate30DayRetentionData = (
     const dayStartMs = dayEndMs - ONE_DAY_MS + 1;
     const dateObj = new Date(dayEndMs);
 
-    const dateLabel = dateObj.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-    const fullDateLabel = dateObj.toLocaleDateString(undefined, { 
+    const dateLabel = dateObj.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+    const fullDateLabel = dateObj.toLocaleDateString(locale, {
       day: 'numeric', 
       month: 'long',
       year: 'numeric'

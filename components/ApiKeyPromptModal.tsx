@@ -65,7 +65,7 @@ export const ApiKeyPromptModal: React.FC<ApiKeyPromptModalProps> = ({
           <button
             onClick={onClose}
             className="p-1.5 rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-colors cursor-pointer shrink-0"
-            aria-label="Fechar"
+            aria-label={t.close || "Fechar"}
           >
             <X size={18} />
           </button>

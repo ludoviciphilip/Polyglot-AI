@@ -68,7 +68,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
       const dailyGain = gainsByDate[dateStr] || 0;
 
       points.push({
-        date: targetDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        date: targetDate.toLocaleDateString(t?.intlLocale || undefined, { month: 'short', day: 'numeric' }),
         fullDate: dateStr,
         words: Math.max(0, runningTotal),
         newWords: dailyGain,
@@ -79,7 +79,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
     }
 
     return points.reverse();
-  }, [history, currentTotal]);
+  }, [history, currentTotal, t?.intlLocale]);
 
   const stats = useMemo(() => {
     if (chartData.length === 0) return { growth: 0, activeDays: 0, min: 0, max: currentTotal };

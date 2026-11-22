@@ -9,6 +9,7 @@ import {
   downloadFullStoryAudio
 } from '../utils/audio';
 import { findTranslationHighlightRange, formatIpa, getElementTranslation } from '../utils/highlightTranslation';
+import { localizePartOfSpeech } from '../utils/partOfSpeech';
 
 export { playFullStoryAudio, downloadFullStoryAudio };
 
@@ -142,7 +143,7 @@ const SentenceCard: React.FC<{
                         </p>
                         {sentence.part_of_speech && (
                           <span className="text-[10px] font-semibold bg-amber-200/80 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                            {sentence.part_of_speech}
+                            {localizePartOfSpeech(sentence.part_of_speech, t_app?.intlLocale || '')}
                           </span>
                         )}
                       </div>
@@ -205,7 +206,7 @@ const StudyArea: React.FC<StudyAreaProps> = ({ story, loading, onGenerate, onCom
     try {
       await downloadFullStoryAudio(story, targetLanguage, apiKey);
     } catch (err: any) {
-      alert(`Download Error: ${err.message}`);
+      alert(`${t.downloadError || "Download Error:"} ${err.message}`);
     } finally {
       setIsDownloading(false);
     }
@@ -303,7 +304,7 @@ const StudyArea: React.FC<StudyAreaProps> = ({ story, loading, onGenerate, onCom
               </span>
             )}
             {story.modelUsed && (
-              <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-mono px-2 py-1 rounded border border-slate-200 dark:border-slate-700 flex items-center gap-1" title="Model Used">
+              <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-mono px-2 py-1 rounded border border-slate-200 dark:border-slate-700 flex items-center gap-1" title={t.modelUsedTitle || "Model Used"}>
                 <Sparkles size={10} className="text-indigo-500" />
                 {story.modelUsed}
               </span>

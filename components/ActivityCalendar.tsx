@@ -78,12 +78,12 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
         date: d,
         dateKey,
         dayLabel: String(d.getDate()),
-        formattedDate: d.toLocaleDateString(undefined, { 
+        formattedDate: d.toLocaleDateString(t?.intlLocale || undefined, {
           weekday: 'short', 
           month: 'short', 
           day: 'numeric' 
         }),
-        weekdayLabel: d.toLocaleDateString(undefined, { weekday: 'narrow' }),
+        weekdayLabel: d.toLocaleDateString(t?.intlLocale || undefined, { weekday: 'narrow' }),
         lessonCount,
         wordCount,
         isToday: dateKey === todayKey,
@@ -97,7 +97,7 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
       activeDaysCount: active,
       maxLessonsInDay: maxLessons
     };
-  }, [history]);
+  }, [history, t?.intlLocale]);
 
   // Color mapping based on green intensity
   const getIntensityClasses = (intensity: number, isToday: boolean) => {
@@ -223,19 +223,19 @@ export const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
             <div className="flex items-center gap-1">
               <span 
                 className="w-4 h-4 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60" 
-                title="0 lessons"
+                title={`0 ${t.lessons || "lessons"}`}
               />
               <span 
                 className="w-4 h-4 rounded-md bg-emerald-200 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800/80" 
-                title="1 lesson"
+                title={`1 ${t.lesson || "lesson"}`}
               />
               <span 
                 className="w-4 h-4 rounded-md bg-emerald-400 dark:bg-emerald-600 border border-emerald-500 dark:border-emerald-600" 
-                title="2 lessons"
+                title={`2 ${t.lessons || "lessons"}`}
               />
               <span 
                 className="w-4 h-4 rounded-md bg-emerald-600 dark:bg-emerald-500 border border-emerald-700 dark:border-emerald-400 shadow-2xs" 
-                title="3+ lessons"
+                title={`3+ ${t.lessons || "lessons"}`}
               />
             </div>
             <span className="text-slate-400">{t.more || "More"}</span>

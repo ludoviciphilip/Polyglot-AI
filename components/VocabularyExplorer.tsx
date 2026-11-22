@@ -112,7 +112,7 @@ export const VocabularyExplorer: React.FC<VocabularyExplorerProps> = ({
                 ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
             }`}
-            title="Sort A to Z"
+            title={t.sortAZTitle || "Sort A to Z"}
           >
             <ArrowDownAZ size={14} /> A-Z
           </button>
@@ -124,7 +124,7 @@ export const VocabularyExplorer: React.FC<VocabularyExplorerProps> = ({
                 ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
             }`}
-            title="Sort Z to A"
+            title={t.sortZATitle || "Sort Z to A"}
           >
             <ArrowUpZA size={14} /> Z-A
           </button>
@@ -217,11 +217,14 @@ export const VocabularyExplorer: React.FC<VocabularyExplorerProps> = ({
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
               {t.noWordsFound || "No matching words found."}
             </p>
-            {searchTerm && (
-              <p className="text-xs text-slate-400 dark:text-slate-500">
-                No words matched &quot;<span className="text-slate-600 dark:text-slate-300 font-semibold">{searchTerm}</span>&quot;.
-              </p>
-            )}
+            {searchTerm && (() => {
+              const [before, after = ''] = (t.noWordsMatched || 'No words matched "{term}".').split('{term}');
+              return (
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  {before}<span className="text-slate-600 dark:text-slate-300 font-semibold">{searchTerm}</span>{after}
+                </p>
+              );
+            })()}
             {searchTerm && (
               <button
                 type="button"

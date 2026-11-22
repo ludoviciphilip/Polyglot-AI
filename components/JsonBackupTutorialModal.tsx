@@ -42,7 +42,7 @@ export const JsonBackupTutorialModal: React.FC<JsonBackupTutorialModalProps> = (
           <button
             onClick={onClose}
             className="p-2 rounded-full hover:bg-white/10 text-white/80 hover:text-white transition-colors cursor-pointer shrink-0"
-            aria-label="Fechar"
+            aria-label={t.close || "Fechar"}
           >
             <X size={20} />
           </button>
