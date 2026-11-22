@@ -1,0 +1,2688 @@
+{
+ "history": [
+  {
+   "story_title": "Un Caffè a Roma",
+   "level_target": "A1",
+   "proper_nouns": [
+    "Giulia",
+    "Roma"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia è al bar e arriva il cameriere.",
+     "translation": "Giulia is at the café and the waiter arrives.",
+     "new_element": "cameriere",
+     "new_element_translation": "waiter",
+     "explanation": "A person who serves food and drinks in a bar or restaurant.",
+     "definition_target": "Una persona che lavora in un bar o in un ristorante.",
+     "part_of_speech": "noun",
+     "phonetic": "kameˈrjɛːre"
+    },
+    {
+     "id": 2,
+     "original": "Il cameriere saluta Giulia ed è molto gentile.",
+     "translation": "The waiter greets Giulia and is very kind.",
+     "new_element": "saluta",
+     "new_element_translation": "greets",
+     "explanation": "From \"salutare\", used when you say hello to someone.",
+     "definition_target": "Dice \"ciao\" a una persona.",
+     "part_of_speech": "verb",
+     "phonetic": "saˈluta"
+    },
+    {
+     "id": 3,
+     "original": "Giulia ordina un caffè caldo.",
+     "translation": "Giulia orders a hot coffee.",
+     "new_element": "ordina",
+     "new_element_translation": "orders",
+     "explanation": "From \"ordinare\", used when asking for food or drink.",
+     "definition_target": "Chiede qualcosa da mangiare o da bere.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈordina"
+    },
+    {
+     "id": 4,
+     "original": "Il cameriere porta un cappuccino dolce.",
+     "translation": "The waiter brings a sweet cappuccino.",
+     "new_element": "cappuccino",
+     "new_element_translation": "cappuccino",
+     "explanation": "A popular Italian coffee drink made with espresso and frothed milk.",
+     "definition_target": "Un caffè con il latte montato.",
+     "part_of_speech": "noun",
+     "phonetic": "kapputˈtʃiːno"
+    },
+    {
+     "id": 5,
+     "original": "Giulia si siede vicino alla finestra.",
+     "translation": "Giulia sits down near the window.",
+     "new_element": "siede",
+     "new_element_translation": "sits down",
+     "explanation": "From the reflexive verb \"sedersi\", to take a seat.",
+     "definition_target": "Si mette a sedere su una sedia.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈsjɛːde"
+    },
+    {
+     "id": 6,
+     "original": "Fuori piove ma Giulia è felice.",
+     "translation": "Outside it's raining but Giulia is happy.",
+     "new_element": "piove",
+     "new_element_translation": "it's raining",
+     "explanation": "From \"piovere\", describing rain falling from the sky.",
+     "definition_target": "L'acqua cade dal cielo.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈpjɔːve"
+    },
+    {
+     "id": 7,
+     "original": "La gente cammina veloce fuori.",
+     "translation": "People walk quickly outside.",
+     "new_element": "cammina",
+     "new_element_translation": "walk",
+     "explanation": "From \"camminare\", the basic verb for walking.",
+     "definition_target": "Si muove a piedi, un passo dopo l'altro.",
+     "part_of_speech": "verb",
+     "phonetic": "kamˈmina"
+    },
+    {
+     "id": 8,
+     "original": "Giulia beve il caffè e legge un libro.",
+     "translation": "Giulia drinks her coffee and reads a book.",
+     "new_element": "beve",
+     "new_element_translation": "drinks",
+     "explanation": "From \"bere\", the verb for drinking.",
+     "definition_target": "Prende un liquido con la bocca.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈbɛːve"
+    }
+   ]
+  },
+  {
+   "story_title": "Il Mercato di Bologna",
+   "level_target": "A1",
+   "proper_nouns": [
+    "Giulia",
+    "Bologna",
+    "Marco"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia e Marco vanno al mercato la mattina.",
+     "translation": "Giulia and Marco go to the market in the morning.",
+     "new_element": "mercato",
+     "new_element_translation": "market",
+     "explanation": "A place where people buy fruit, vegetables and other food.",
+     "definition_target": "Un luogo dove la gente compra frutta e verdura.",
+     "part_of_speech": "noun",
+     "phonetic": "merˈkato"
+    },
+    {
+     "id": 2,
+     "original": "Il mercato è pieno di gente e di colori.",
+     "translation": "The market is full of people and colors.",
+     "new_element": "colori",
+     "new_element_translation": "colors",
+     "explanation": "Plural of \"colore\", the visual property of things like red, green, blue.",
+     "definition_target": "Rosso, verde e blu sono colori.",
+     "part_of_speech": "noun",
+     "phonetic": "koˈloːri"
+    },
+    {
+     "id": 3,
+     "original": "Marco prende la frutta buona.",
+     "translation": "Marco picks up the good fruit.",
+     "new_element": "frutta",
+     "new_element_translation": "fruit",
+     "explanation": "General word for fruit, like apples and oranges.",
+     "definition_target": "Mele e arance sono frutta.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈfrutta"
+    },
+    {
+     "id": 4,
+     "original": "Giulia vuole comprare anche la verdura.",
+     "translation": "Giulia also wants to buy vegetables.",
+     "new_element": "verdura",
+     "new_element_translation": "vegetables",
+     "explanation": "General word for vegetables, like carrots and potatoes.",
+     "definition_target": "Carote e patate sono verdura.",
+     "part_of_speech": "noun",
+     "phonetic": "verˈduːra"
+    },
+    {
+     "id": 5,
+     "original": "Un venditore saluta Giulia e Marco.",
+     "translation": "A vendor greets Giulia and Marco.",
+     "new_element": "venditore",
+     "new_element_translation": "vendor",
+     "explanation": "A person who sells things at a market or shop.",
+     "definition_target": "Una persona che vende qualcosa al mercato.",
+     "part_of_speech": "noun",
+     "phonetic": "venditˈoːre"
+    },
+    {
+     "id": 6,
+     "original": "Il pane è caldo e molto buono.",
+     "translation": "The bread is warm and very good.",
+     "new_element": "pane",
+     "new_element_translation": "bread",
+     "explanation": "The basic food made from flour and water, baked in an oven.",
+     "definition_target": "Un cibo fatto con la farina, bianco o marrone.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈpaːne"
+    },
+    {
+     "id": 7,
+     "original": "Giulia paga il venditore.",
+     "translation": "Giulia pays the vendor.",
+     "new_element": "paga",
+     "new_element_translation": "pays",
+     "explanation": "From \"pagare\", the verb used when giving money for something.",
+     "definition_target": "Da soldi per avere qualcosa.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈpaɡa"
+    }
+   ]
+  },
+  {
+   "story_title": "Il Gatto Perduto",
+   "level_target": "A1",
+   "proper_nouns": [
+    "Giulia",
+    "Pepe"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia ha un gatto che si chiama Pepe.",
+     "translation": "Giulia has a cat named Pepe.",
+     "new_element": "gatto",
+     "new_element_translation": "cat",
+     "explanation": "A common house pet, Pepe is Giulia's.",
+     "definition_target": "Un animale piccolo che vive in casa, dice \"miao\".",
+     "part_of_speech": "noun",
+     "phonetic": "ˈɡatto"
+    },
+    {
+     "id": 2,
+     "original": "Pepe ama giocare nel giardino.",
+     "translation": "Pepe loves playing in the garden.",
+     "new_element": "giardino",
+     "new_element_translation": "garden",
+     "explanation": "An outdoor space with plants, often behind or beside a house.",
+     "definition_target": "Un posto fuori casa con piante e fiori.",
+     "part_of_speech": "noun",
+     "phonetic": "dʒarˈdiːno"
+    },
+    {
+     "id": 3,
+     "original": "Un giorno Pepe sparisce dal giardino.",
+     "translation": "One day Pepe disappears from the garden.",
+     "new_element": "sparisce",
+     "new_element_translation": "disappears",
+     "explanation": "From \"sparire\", used when someone or something suddenly isn't there anymore.",
+     "definition_target": "Non si vede più, va via senza farsi vedere.",
+     "part_of_speech": "verb",
+     "phonetic": "spaˈriʃʃe"
+    },
+    {
+     "id": 4,
+     "original": "Giulia è molto spaventata e cerca Pepe.",
+     "translation": "Giulia is very scared and looks for Pepe.",
+     "new_element": "spaventata",
+     "new_element_translation": "scared",
+     "explanation": "Feminine form of \"spaventato\", meaning frightened.",
+     "definition_target": "Ha molta paura.",
+     "part_of_speech": "adjective",
+     "phonetic": "spaventˈaːta"
+    },
+    {
+     "id": 5,
+     "original": "Giulia guarda dietro ogni cespuglio.",
+     "translation": "Giulia looks behind every bush.",
+     "new_element": "cespuglio",
+     "new_element_translation": "bush",
+     "explanation": "A small, dense plant, smaller than a tree.",
+     "definition_target": "Una pianta piccola con molte foglie.",
+     "part_of_speech": "noun",
+     "phonetic": "tʃesˈpuʎʎo"
+    },
+    {
+     "id": 6,
+     "original": "Finalmente sente Pepe che miagola piano.",
+     "translation": "Finally she hears Pepe meowing softly.",
+     "new_element": "miagola",
+     "new_element_translation": "meowing",
+     "explanation": "From \"miagolare\", the sound a cat makes.",
+     "definition_target": "Il verso che fa un gatto.",
+     "part_of_speech": "verb",
+     "phonetic": "mjaˈɡɔːla"
+    },
+    {
+     "id": 7,
+     "original": "Giulia trova Pepe e lo abbraccia.",
+     "translation": "Giulia finds Pepe and hugs him.",
+     "new_element": "abbraccia",
+     "new_element_translation": "hugs",
+     "explanation": "From \"abbracciare\", to hold someone close with your arms.",
+     "definition_target": "Stringe qualcuno con le braccia.",
+     "part_of_speech": "verb",
+     "phonetic": "abˈbrattʃa"
+    },
+    {
+     "id": 8,
+     "original": "Che sollievo per tutta la famiglia!",
+     "translation": "What a relief for the whole family!",
+     "new_element": "sollievo",
+     "new_element_translation": "relief",
+     "explanation": "The feeling of comfort after worry or fear has passed.",
+     "definition_target": "Il sentimento buono dopo la paura o la preoccupazione.",
+     "part_of_speech": "noun",
+     "phonetic": "solˈljɛːvo"
+    }
+   ]
+  },
+  {
+   "story_title": "Il Treno per Firenze",
+   "level_target": "A1",
+   "proper_nouns": [
+    "Giulia",
+    "Firenze"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia fa la valigia per Firenze.",
+     "translation": "Giulia packs her suitcase for Florence.",
+     "new_element": "valigia",
+     "new_element_translation": "suitcase",
+     "explanation": "\"Fare la valigia\" is a common idiom meaning to pack for a trip.",
+     "definition_target": "Una borsa grande per i vestiti quando viaggi.",
+     "part_of_speech": "noun",
+     "phonetic": "vaˈliːdʒa"
+    },
+    {
+     "id": 2,
+     "original": "Il treno parte dal binario numero cinque.",
+     "translation": "The train leaves from platform number five.",
+     "new_element": "binario",
+     "new_element_translation": "platform",
+     "explanation": "The specific track/platform area where a train arrives or departs.",
+     "definition_target": "Il posto nella stazione dove arriva il treno.",
+     "part_of_speech": "noun",
+     "phonetic": "biˈnarjo"
+    },
+    {
+     "id": 3,
+     "original": "Il controllore guarda il biglietto di Giulia.",
+     "translation": "The conductor looks at Giulia's ticket.",
+     "new_element": "controllore",
+     "new_element_translation": "conductor",
+     "explanation": "The train employee who checks passengers' tickets.",
+     "definition_target": "La persona che controlla i biglietti sul treno.",
+     "part_of_speech": "noun",
+     "phonetic": "kontrolˈloːre"
+    },
+    {
+     "id": 4,
+     "original": "Giulia guarda fuori dal finestrino.",
+     "translation": "Giulia looks outside through the train window.",
+     "new_element": "finestrino",
+     "new_element_translation": "train window",
+     "explanation": "A small window, typically on a train, car, or plane.",
+     "definition_target": "La finestra piccola di un treno o di una macchina.",
+     "part_of_speech": "noun",
+     "phonetic": "finesˈtriːno"
+    },
+    {
+     "id": 5,
+     "original": "Il treno passa attraverso la campagna verde.",
+     "translation": "The train passes through the green countryside.",
+     "new_element": "campagna",
+     "new_element_translation": "countryside",
+     "explanation": "The rural area outside the city, with fields and farms.",
+     "definition_target": "Il posto fuori città con campi e fattorie.",
+     "part_of_speech": "noun",
+     "phonetic": "kamˈpanna"
+    },
+    {
+     "id": 6,
+     "original": "Giulia vede una piccola collina lontano.",
+     "translation": "Giulia sees a small hill in the distance.",
+     "new_element": "collina",
+     "new_element_translation": "hill",
+     "explanation": "A small, raised area of land, smaller than a mountain.",
+     "definition_target": "Una montagna piccola e bassa.",
+     "part_of_speech": "noun",
+     "phonetic": "kolˈliːna"
+    },
+    {
+     "id": 7,
+     "original": "C'è un bel tramonto rosso fuori.",
+     "translation": "There's a beautiful red sunset outside.",
+     "new_element": "tramonto",
+     "new_element_translation": "sunset",
+     "explanation": "The moment when the sun goes down at the end of the day.",
+     "definition_target": "Quando il sole scende alla fine del giorno.",
+     "part_of_speech": "noun",
+     "phonetic": "traˈmonto"
+    },
+    {
+     "id": 8,
+     "original": "Un passeggero legge un libro vicino a Giulia.",
+     "translation": "A passenger reads a book near Giulia.",
+     "new_element": "passeggero",
+     "new_element_translation": "passenger",
+     "explanation": "A person traveling on a train, bus, or plane (not the driver).",
+     "definition_target": "Una persona che viaggia su un treno o un autobus.",
+     "part_of_speech": "noun",
+     "phonetic": "passedˈdʒɛːro"
+    }
+   ]
+  },
+  {
+   "story_title": "La Ricetta della Nonna",
+   "level_target": "A1",
+   "proper_nouns": [
+    "Nonna Lucia",
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Nonna Lucia ha una ricetta speciale per la torta.",
+     "translation": "Grandma Lucia has a special recipe for the cake.",
+     "new_element": "ricetta",
+     "new_element_translation": "recipe",
+     "explanation": "A set of instructions for cooking a dish.",
+     "definition_target": "Le istruzioni per cucinare un piatto.",
+     "part_of_speech": "noun",
+     "phonetic": "riˈtʃetta"
+    },
+    {
+     "id": 2,
+     "original": "Prima la nonna mette la farina bianca.",
+     "translation": "First, grandma adds the white flour.",
+     "new_element": "farina",
+     "new_element_translation": "flour",
+     "explanation": "A fine powder made from grain, used for baking bread and cakes.",
+     "definition_target": "Una polvere bianca per fare il pane e la torta.",
+     "part_of_speech": "noun",
+     "phonetic": "faˈriːna"
+    },
+    {
+     "id": 3,
+     "original": "Poi mette lo zucchero bianco.",
+     "translation": "Then she adds the white sugar.",
+     "new_element": "zucchero",
+     "new_element_translation": "sugar",
+     "explanation": "The sweet ingredient used in desserts and drinks.",
+     "definition_target": "Una cosa bianca e dolce per il caffè o la torta.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈtsukkero"
+    },
+    {
+     "id": 4,
+     "original": "Poi mette anche due uova.",
+     "translation": "Then she also adds two eggs.",
+     "new_element": "uova",
+     "new_element_translation": "eggs",
+     "explanation": "Plural of \"uovo\", a common ingredient in baking.",
+     "definition_target": "Vengono dalle galline, bianche o marroni.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈwɔːva"
+    },
+    {
+     "id": 5,
+     "original": "Mescola tutto con energia.",
+     "translation": "She mixes everything energetically.",
+     "new_element": "mescola",
+     "new_element_translation": "mixes",
+     "explanation": "From \"mescolare\", to combine ingredients together.",
+     "definition_target": "Gira gli ingredienti insieme con un movimento.",
+     "part_of_speech": "verb",
+     "phonetic": "meˈskɔːla"
+    },
+    {
+     "id": 6,
+     "original": "Poi metti la torta nel forno caldo.",
+     "translation": "Then you put the cake in the hot oven.",
+     "new_element": "forno",
+     "new_element_translation": "oven",
+     "explanation": "The kitchen appliance used to bake food.",
+     "definition_target": "Un apparecchio in cucina per cuocere il cibo.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈforno"
+    },
+    {
+     "id": 7,
+     "original": "Dopo poco tempo, la casa ha un profumo buono.",
+     "translation": "After a little while, the house has a good smell.",
+     "new_element": "profumo",
+     "new_element_translation": "smell",
+     "explanation": "A pleasant scent in the air.",
+     "definition_target": "Un buon odore nell'aria.",
+     "part_of_speech": "noun",
+     "phonetic": "proˈfuːmo"
+    },
+    {
+     "id": 8,
+     "original": "Nonna Lucia insegna la ricetta a Giulia.",
+     "translation": "Grandma Lucia teaches the recipe to Giulia.",
+     "new_element": "insegna",
+     "new_element_translation": "teaches",
+     "explanation": "From \"insegnare\", to teach or show someone how to do something.",
+     "definition_target": "Mostra a un'altra persona come si fa una cosa.",
+     "part_of_speech": "verb",
+     "phonetic": "inˈseɲɲa"
+    }
+   ]
+  },
+  {
+   "story_title": "Un Giorno di Pioggia a Venezia",
+   "level_target": "A1",
+   "proper_nouns": [
+    "Giulia",
+    "Venezia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia deve aprire l'ombrello.",
+     "translation": "Giulia has to open her umbrella.",
+     "new_element": "ombrello",
+     "new_element_translation": "umbrella",
+     "explanation": "The object you use to stay dry when it rains.",
+     "definition_target": "Un oggetto che usi quando piove per non bagnarti.",
+     "part_of_speech": "noun",
+     "phonetic": "omˈbrɛllo"
+    },
+    {
+     "id": 2,
+     "original": "C'è molta pioggia su Venezia oggi.",
+     "translation": "There's a lot of rain over Venice today.",
+     "new_element": "pioggia",
+     "new_element_translation": "rain",
+     "explanation": "Water falling from the sky, as described by the verb \"piovere\".",
+     "definition_target": "L'acqua che cade dal cielo.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈpjoddʒa"
+    },
+    {
+     "id": 3,
+     "original": "Giulia guarda l'acqua del canale.",
+     "translation": "Giulia watches the water of the canal.",
+     "new_element": "canale",
+     "new_element_translation": "canal",
+     "explanation": "A narrow waterway, famous in Venice instead of streets.",
+     "definition_target": "Una strada d'acqua, famosa a Venezia.",
+     "part_of_speech": "noun",
+     "phonetic": "kaˈnaːle"
+    },
+    {
+     "id": 4,
+     "original": "Una gondola passa sul canale.",
+     "translation": "A gondola passes on the canal.",
+     "new_element": "gondola",
+     "new_element_translation": "gondola",
+     "explanation": "The traditional narrow boat used in Venice.",
+     "definition_target": "Una barca tipica e lunga di Venezia.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈɡondola"
+    },
+    {
+     "id": 5,
+     "original": "Giulia cammina verso un vecchio ponte.",
+     "translation": "Giulia walks toward an old bridge.",
+     "new_element": "ponte",
+     "new_element_translation": "bridge",
+     "explanation": "A structure that connects two sides over water or a road.",
+     "definition_target": "Una struttura che collega due parti sopra l'acqua.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈponte"
+    },
+    {
+     "id": 6,
+     "original": "Il cielo è grigio sopra Venezia.",
+     "translation": "The sky is grey above Venice.",
+     "new_element": "grigio",
+     "new_element_translation": "grey",
+     "explanation": "A color between black and white, typical of cloudy skies.",
+     "definition_target": "Un colore, non bianco e non nero.",
+     "part_of_speech": "adjective",
+     "phonetic": "ˈɡriːdʒo"
+    },
+    {
+     "id": 7,
+     "original": "Un turista fa una foto del ponte.",
+     "translation": "A tourist takes a photo of the bridge.",
+     "new_element": "turista",
+     "new_element_translation": "tourist",
+     "explanation": "A person visiting a place for pleasure, not where they live.",
+     "definition_target": "Una persona che visita un posto per vacanza.",
+     "part_of_speech": "noun",
+     "phonetic": "turˈista"
+    },
+    {
+     "id": 8,
+     "original": "C'è un vento freddo vicino al canale.",
+     "translation": "There's a cold wind near the canal.",
+     "new_element": "vento",
+     "new_element_translation": "wind",
+     "explanation": "Moving air that you can feel outside.",
+     "definition_target": "L'aria che si muove fuori.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈvento"
+    }
+   ]
+  },
+  {
+   "story_title": "La Partita di Calcio",
+   "level_target": "A1",
+   "proper_nouns": [
+    "Marco",
+    "Roma"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Marco guarda una partita di calcio.",
+     "translation": "Marco watches a football match.",
+     "new_element": "calcio",
+     "new_element_translation": "football",
+     "explanation": "The most popular sport in Italy, known as soccer in English.",
+     "definition_target": "Uno sport con una palla e due squadre.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈkaltʃo"
+    },
+    {
+     "id": 2,
+     "original": "La partita è allo stadio di Roma.",
+     "translation": "The match is at the stadium in Rome.",
+     "new_element": "stadio",
+     "new_element_translation": "stadium",
+     "explanation": "The large venue where football matches are played.",
+     "definition_target": "Il posto grande dove si gioca a calcio.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈstaːdjo"
+    },
+    {
+     "id": 3,
+     "original": "I tifosi sono pronti e felici.",
+     "translation": "The fans are ready and happy.",
+     "new_element": "tifosi",
+     "new_element_translation": "fans",
+     "explanation": "People who passionately support a sports team.",
+     "definition_target": "Le persone che amano e seguono una squadra.",
+     "part_of_speech": "noun",
+     "phonetic": "tiˈfoːzi"
+    },
+    {
+     "id": 4,
+     "original": "L'arbitro inizia la partita.",
+     "translation": "The referee starts the match.",
+     "new_element": "arbitro",
+     "new_element_translation": "referee",
+     "explanation": "The official who controls a sports match and enforces the rules.",
+     "definition_target": "La persona che controlla le regole della partita.",
+     "part_of_speech": "noun",
+     "phonetic": "arˈbitro"
+    },
+    {
+     "id": 5,
+     "original": "Marco guarda il pallone con attenzione.",
+     "translation": "Marco watches the ball carefully.",
+     "new_element": "pallone",
+     "new_element_translation": "ball",
+     "explanation": "The ball used in a football match.",
+     "definition_target": "La palla grande che si usa per giocare a calcio.",
+     "part_of_speech": "noun",
+     "phonetic": "palˈloːne"
+    },
+    {
+     "id": 6,
+     "original": "Alla fine arriva un gol fantastico!",
+     "translation": "In the end, a fantastic goal arrives!",
+     "new_element": "gol",
+     "new_element_translation": "goal",
+     "explanation": "The point scored when the ball enters the net.",
+     "explanation_note": "",
+     "definition_target": "Il punto quando la palla entra nella porta.",
+     "part_of_speech": "noun",
+     "phonetic": "ɡɔl"
+    },
+    {
+     "id": 7,
+     "original": "Il numero dieci segna per la sua squadra.",
+     "translation": "Number ten scores for his team.",
+     "new_element": "segna",
+     "new_element_translation": "scores",
+     "explanation": "From \"segnare\", to score a goal or point.",
+     "definition_target": "Fa un punto o un gol in una partita.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈseɲɲa"
+    },
+    {
+     "id": 8,
+     "original": "Tutto lo stadio esulta forte.",
+     "translation": "The whole stadium cheers loudly.",
+     "new_element": "esulta",
+     "new_element_translation": "cheers",
+     "explanation": "From \"esultare\", to celebrate joyfully, especially after a goal.",
+     "definition_target": "Grida di gioia dopo una cosa bella.",
+     "part_of_speech": "verb",
+     "phonetic": "eˈzulta"
+    }
+   ]
+  },
+  {
+   "story_title": "Il Colloquio di Lavoro",
+   "level_target": "A1",
+   "proper_nouns": [
+    "Marco"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Marco ha un colloquio di lavoro oggi.",
+     "translation": "Marco has a job interview today.",
+     "new_element": "colloquio",
+     "new_element_translation": "interview",
+     "explanation": "A formal meeting to discuss a job, often with questions.",
+     "definition_target": "Un incontro per parlare di un lavoro.",
+     "part_of_speech": "noun",
+     "phonetic": "kolˈlɔːkwjo"
+    },
+    {
+     "id": 2,
+     "original": "L'azienda è grande e nuova.",
+     "translation": "The company is big and new.",
+     "new_element": "azienda",
+     "new_element_translation": "company",
+     "explanation": "A business organization where people work.",
+     "definition_target": "Un'organizzazione dove le persone lavorano.",
+     "part_of_speech": "noun",
+     "phonetic": "aˈdzjɛnda"
+    },
+    {
+     "id": 3,
+     "original": "Marco è un po' nervoso prima del colloquio.",
+     "translation": "Marco is a bit nervous before the interview.",
+     "new_element": "nervoso",
+     "new_element_translation": "nervous",
+     "explanation": "Feeling worried or anxious before something important.",
+     "definition_target": "Ha un po' di paura o ansia.",
+     "part_of_speech": "adjective",
+     "phonetic": "nerˈvoːzo"
+    },
+    {
+     "id": 4,
+     "original": "Marco arriva puntuale all'ufficio.",
+     "translation": "Marco arrives at the office right on time.",
+     "new_element": "puntuale",
+     "new_element_translation": "right on time",
+     "explanation": "Arriving exactly when expected, not late.",
+     "definition_target": "Arriva esattamente all'ora giusta, non in ritardo.",
+     "part_of_speech": "adjective",
+     "phonetic": "puntuˈaːle"
+    },
+    {
+     "id": 5,
+     "original": "Marco è il primo candidato della giornata.",
+     "translation": "Marco is the first candidate of the day.",
+     "new_element": "candidato",
+     "new_element_translation": "candidate",
+     "explanation": "A person applying for a job or position.",
+     "definition_target": "Una persona che vuole un lavoro.",
+     "part_of_speech": "noun",
+     "phonetic": "kandiˈdaːto"
+    },
+    {
+     "id": 6,
+     "original": "Il direttore legge il curriculum di Marco.",
+     "translation": "The director reads Marco's résumé.",
+     "new_element": "curriculum",
+     "new_element_translation": "résumé",
+     "explanation": "A document listing a person's education and work experience.",
+     "definition_target": "Un documento con gli studi e il lavoro di una persona.",
+     "part_of_speech": "noun",
+     "phonetic": "kurˈrikulum"
+    },
+    {
+     "id": 7,
+     "original": "Alla fine, c'è una stretta di mano.",
+     "translation": "In the end, there's a handshake.",
+     "new_element": "stretta",
+     "new_element_translation": "handshake",
+     "explanation": "\"Stretta di mano\" is the act of shaking hands, often to close a deal.",
+     "definition_target": "Quando due persone si prendono la mano per salutarsi.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈstretta"
+    },
+    {
+     "id": 8,
+     "original": "Il direttore sorride e dice \"bravo!\".",
+     "translation": "The director smiles and says \"well done!\".",
+     "new_element": "sorride",
+     "new_element_translation": "smiles",
+     "explanation": "From \"sorridere\", to smile.",
+     "definition_target": "Fa un'espressione felice con la bocca.",
+     "part_of_speech": "verb",
+     "phonetic": "sorˈriːde"
+    }
+   ]
+  },
+  {
+   "story_title": "La Spiaggia in Sicilia",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia",
+    "Marco",
+    "Sicilia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia e Marco vanno in spiaggia in Sicilia.",
+     "translation": "Giulia and Marco go to the beach in Sicily.",
+     "new_element": "spiaggia",
+     "new_element_translation": "beach",
+     "explanation": "The sandy area next to the sea.",
+     "definition_target": "Il posto vicino al mare con la sabbia.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈspjaddʒa"
+    },
+    {
+     "id": 2,
+     "original": "C'è molta sabbia fine vicino al mare.",
+     "translation": "There's a lot of fine sand near the sea.",
+     "new_element": "sabbia",
+     "new_element_translation": "sand",
+     "explanation": "The small grains that cover a beach.",
+     "definition_target": "I piccoli granelli che si trovano sulla spiaggia.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈsabbja"
+    },
+    {
+     "id": 3,
+     "original": "Marco deve aprire un grande ombrellone sulla spiaggia.",
+     "translation": "Marco has to open a big beach umbrella.",
+     "new_element": "ombrellone",
+     "new_element_translation": "beach umbrella",
+     "explanation": "A large umbrella used for shade at the beach.",
+     "definition_target": "Un ombrello grande per fare ombra sulla spiaggia.",
+     "part_of_speech": "noun",
+     "phonetic": "ombrelˈloːne"
+    },
+    {
+     "id": 4,
+     "original": "Giulia ha un costume nuovo.",
+     "translation": "Giulia has a new swimsuit.",
+     "new_element": "costume",
+     "new_element_translation": "swimsuit",
+     "explanation": "Clothing worn for swimming.",
+     "definition_target": "I vestiti che indossi per nuotare.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈkostume"
+    },
+    {
+     "id": 5,
+     "original": "Marco nuota felice nel mare blu.",
+     "translation": "Marco swims happily in the blue sea.",
+     "new_element": "nuota",
+     "new_element_translation": "swims",
+     "explanation": "From \"nuotare\", to move through water using your arms and legs.",
+     "definition_target": "Si muove nell'acqua con le braccia e le gambe.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈnwɔːta"
+    },
+    {
+     "id": 6,
+     "original": "Le onde del mare sono grandi oggi.",
+     "translation": "The waves of the sea are big today.",
+     "new_element": "onde",
+     "new_element_translation": "waves",
+     "explanation": "The moving ridges of water on the sea's surface.",
+     "definition_target": "L'acqua del mare che si muove su e giù.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈonde"
+    },
+    {
+     "id": 7,
+     "original": "Dopo il bagno, vogliono mangiare un gelato freddo.",
+     "translation": "After the swim, they want to eat a cold ice cream.",
+     "new_element": "gelato",
+     "new_element_translation": "ice cream",
+     "explanation": "A cold, sweet dessert, very popular in Italy.",
+     "definition_target": "Un dolce freddo, famoso in Italia.",
+     "part_of_speech": "noun",
+     "phonetic": "dʒeˈlaːto"
+    },
+    {
+     "id": 8,
+     "original": "La vacanza in Sicilia è fantastica.",
+     "translation": "The vacation in Sicily is fantastic.",
+     "new_element": "vacanza",
+     "new_element_translation": "vacation",
+     "explanation": "A period of travel or rest away from work or school.",
+     "definition_target": "Un periodo di riposo, spesso un viaggio.",
+     "part_of_speech": "noun",
+     "phonetic": "vaˈkantsa"
+    }
+   ]
+  },
+  {
+   "story_title": "La Libreria",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia entra in una libreria piccola.",
+     "translation": "Giulia enters a small bookshop.",
+     "new_element": "libreria",
+     "new_element_translation": "bookshop",
+     "explanation": "A shop where books are sold.",
+     "definition_target": "Un negozio dove si comprano i libri.",
+     "part_of_speech": "noun",
+     "phonetic": "libreˈriːa"
+    },
+    {
+     "id": 2,
+     "original": "Lei guarda ogni scaffale con attenzione.",
+     "translation": "She looks at every shelf carefully.",
+     "new_element": "scaffale",
+     "new_element_translation": "shelf",
+     "explanation": "A flat surface for holding books or objects, often on a wall.",
+     "definition_target": "Dove si metti i libri in verticale.",
+     "part_of_speech": "noun",
+     "phonetic": "skafˈfaːle"
+    },
+    {
+     "id": 3,
+     "original": "Giulia trova un romanzo interessante.",
+     "translation": "Giulia finds an interesting novel.",
+     "new_element": "romanzo",
+     "new_element_translation": "novel",
+     "explanation": "A long fictional story, usually a book.",
+     "definition_target": "Un libro lungo con una storia inventata.",
+     "part_of_speech": "noun",
+     "phonetic": "roˈmandzo"
+    },
+    {
+     "id": 4,
+     "original": "L'autore del libro è molto bravo.",
+     "translation": "The author of the book is very good.",
+     "new_element": "autore",
+     "new_element_translation": "author",
+     "explanation": "The person who wrote a book.",
+     "definition_target": "La persona che scrive un libro.",
+     "part_of_speech": "noun",
+     "phonetic": "auˈtoːre"
+    },
+    {
+     "id": 5,
+     "original": "Lei legge la prima pagina del romanzo.",
+     "translation": "She reads the first page of the novel.",
+     "new_element": "pagina",
+     "new_element_translation": "page",
+     "explanation": "One side of a sheet of paper in a book.",
+     "definition_target": "Un foglio di un libro.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈpaːdʒina"
+    },
+    {
+     "id": 6,
+     "original": "La cassiera è molto gentile.",
+     "translation": "The cashier is very kind.",
+     "new_element": "cassiera",
+     "new_element_translation": "cashier",
+     "explanation": "The person who takes payment in a shop.",
+     "definition_target": "La persona che prende i soldi in un negozio.",
+     "part_of_speech": "noun",
+     "phonetic": "kasˈsjɛːra"
+    },
+    {
+     "id": 7,
+     "original": "C'è uno sconto speciale oggi.",
+     "translation": "There's a special discount today.",
+     "new_element": "sconto",
+     "new_element_translation": "discount",
+     "explanation": "A reduction in the normal price of something.",
+     "definition_target": "Quando qualcosa costa meno del prezzo normale.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈskonto"
+    },
+    {
+     "id": 8,
+     "original": "La cassiera consiglia un buon libro a Giulia.",
+     "translation": "The cashier recommends a good book to Giulia.",
+     "new_element": "consiglia",
+     "new_element_translation": "recommends",
+     "explanation": "From \"consigliare\", to suggest or recommend something to someone.",
+     "definition_target": "Dice a una persona cosa è meglio fare o scegliere.",
+     "part_of_speech": "verb",
+     "phonetic": "konˈsiʎʎa"
+    }
+   ]
+  },
+  {
+   "story_title": "Il Compleanno di Pepe",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia",
+    "Pepe",
+    "Marco"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia decora la casa con fiori.",
+     "translation": "Giulia decorates the house with flowers.",
+     "new_element": "decora",
+     "new_element_translation": "decorates",
+     "explanation": "From \"decorare\", to make a place look nicer for an occasion.",
+     "definition_target": "Rende una casa più bella per una festa.",
+     "part_of_speech": "verb",
+     "phonetic": "deˈkɔːra"
+    },
+    {
+     "id": 2,
+     "original": "Marco porta un palloncino rosso alla festa.",
+     "translation": "Marco brings a red balloon to the party.",
+     "new_element": "palloncino",
+     "new_element_translation": "balloon",
+     "explanation": "A small inflatable object often used at parties.",
+     "definition_target": "Un oggetto colorato e leggero, pieno d'aria, per le feste.",
+     "part_of_speech": "noun",
+     "phonetic": "pallonˈtʃiːno"
+    },
+    {
+     "id": 3,
+     "original": "Pepe ha un nuovo giocattolo come regalo.",
+     "translation": "Pepe has a new toy as a gift.",
+     "new_element": "giocattolo",
+     "new_element_translation": "toy",
+     "explanation": "An object used for playing, especially for children or pets.",
+     "definition_target": "Un oggetto per giocare.",
+     "part_of_speech": "noun",
+     "phonetic": "dʒoˈkattolo"
+    },
+    {
+     "id": 4,
+     "original": "C'è una ciotola piena di cibo.",
+     "translation": "There's a bowl full of food.",
+     "new_element": "ciotola",
+     "new_element_translation": "bowl",
+     "explanation": "A round container used for food, especially for pets.",
+     "definition_target": "Un piccolo contenitore rotondo per il cibo.",
+     "part_of_speech": "noun",
+     "phonetic": "tʃoˈtoːla"
+    },
+    {
+     "id": 5,
+     "original": "Sulla torta, c'è una candelina speciale.",
+     "translation": "On the cake, there's a special candle.",
+     "new_element": "candelina",
+     "new_element_translation": "candle",
+     "explanation": "A small candle, often placed on a birthday cake.",
+     "definition_target": "Una piccola candela sulla torta di compleanno.",
+     "part_of_speech": "noun",
+     "phonetic": "kandeˈliːna"
+    },
+    {
+     "id": 6,
+     "original": "Tutti gli amici cantano per Pepe.",
+     "translation": "All the friends sing for Pepe.",
+     "new_element": "cantano",
+     "new_element_translation": "sing",
+     "explanation": "From \"cantare\", to sing, often the birthday song.",
+     "definition_target": "Fanno musica con la voce.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈkantano"
+    },
+    {
+     "id": 7,
+     "original": "Giulia augura buona fortuna al suo gatto.",
+     "translation": "Giulia wishes good luck to her cat.",
+     "new_element": "augura",
+     "new_element_translation": "wishes",
+     "explanation": "From \"augurare\", to wish someone well or good luck.",
+     "definition_target": "Spera qualcosa di buono per un'altra persona.",
+     "part_of_speech": "verb",
+     "phonetic": "auˈɡuːra"
+    },
+    {
+     "id": 8,
+     "original": "Alla fine, tutti vogliono una fetta di torta.",
+     "translation": "In the end, everyone wants a slice of cake.",
+     "new_element": "fetta",
+     "new_element_translation": "slice",
+     "explanation": "A thin piece cut from something, like cake or bread.",
+     "definition_target": "Un pezzo sottile tagliato da una torta o dal pane.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈfetta"
+    }
+   ]
+  },
+  {
+   "story_title": "Una Passeggiata al Parco",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia cammina nel parco.",
+     "translation": "Giulia walks in the park.",
+     "new_element": "parco",
+     "new_element_translation": "park",
+     "explanation": "A green public space with grass and trees.",
+     "definition_target": "Un posto verde in città con alberi e piante.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈparko"
+    },
+    {
+     "id": 2,
+     "original": "Lei si siede su una panchina.",
+     "translation": "She sits on a bench.",
+     "new_element": "panchina",
+     "new_element_translation": "bench",
+     "explanation": "A long seat, usually outdoors in a park.",
+     "definition_target": "Una sedia lunga di legno o metallo nel parco.",
+     "part_of_speech": "noun",
+     "phonetic": "panˈkiːna"
+    },
+    {
+     "id": 3,
+     "original": "Un piccolo scoiattolo è vicino a un albero.",
+     "translation": "A little squirrel is near a tree.",
+     "new_element": "scoiattolo",
+     "new_element_translation": "squirrel",
+     "explanation": "A small animal with a bushy tail that climbs trees.",
+     "definition_target": "Un piccolo animale con la coda lunga che vive sugli alberi.",
+     "part_of_speech": "noun",
+     "phonetic": "skojatˈtolo"
+    },
+    {
+     "id": 4,
+     "original": "Un uccello è sopra la panchina.",
+     "translation": "A bird is above the bench.",
+     "new_element": "uccello",
+     "new_element_translation": "bird",
+     "explanation": "An animal that flies and sings, like a sparrow.",
+     "definition_target": "Un animale piccolo che vola e canta.",
+     "part_of_speech": "noun",
+     "phonetic": "utˈtʃɛllo"
+    },
+    {
+     "id": 5,
+     "original": "C'è una bella fontana nel parco.",
+     "translation": "There's a beautiful fountain in the park.",
+     "new_element": "fontana",
+     "new_element_translation": "fountain",
+     "explanation": "A structure that shoots water into the air, often decorative.",
+     "definition_target": "Una struttura con acqua che esce verso l'alto.",
+     "part_of_speech": "noun",
+     "phonetic": "fonˈtaːna"
+    },
+    {
+     "id": 6,
+     "original": "I bambini vogliono giocare sul prato verde.",
+     "translation": "The children want to play on the green lawn.",
+     "new_element": "prato",
+     "new_element_translation": "lawn",
+     "explanation": "An area of grass, often in a park or garden.",
+     "definition_target": "Un posto con l'erba verde.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈpraːto"
+    },
+    {
+     "id": 7,
+     "original": "Ci sono molte foglie per terra.",
+     "translation": "There are many leaves on the ground.",
+     "new_element": "foglie",
+     "new_element_translation": "leaves",
+     "explanation": "The green parts of a tree that fall in autumn.",
+     "definition_target": "Le parti verdi di un albero che cadono per terra.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈfɔʎʎe"
+    },
+    {
+     "id": 8,
+     "original": "C'è un bambino sull'altalena.",
+     "translation": "There's a child on the swing.",
+     "new_element": "altalena",
+     "new_element_translation": "swing",
+     "explanation": "A seat on ropes or chains that children swing on.",
+     "definition_target": "Un gioco per bambini che si muove avanti e indietro.",
+     "part_of_speech": "noun",
+     "phonetic": "altaˈleːna"
+    }
+   ]
+  },
+  {
+   "story_title": "La Lezione di Italiano",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "L'insegnante arriva in classe.",
+     "translation": "The teacher arrives in class.",
+     "new_element": "insegnante",
+     "new_element_translation": "teacher",
+     "explanation": "A person who teaches a subject at school.",
+     "definition_target": "Una persona che insegna a scuola.",
+     "part_of_speech": "noun",
+     "phonetic": "insenˈɲante"
+    },
+    {
+     "id": 2,
+     "original": "Un nuovo studente ascolta con attenzione.",
+     "translation": "A new student listens carefully.",
+     "new_element": "studente",
+     "new_element_translation": "student",
+     "explanation": "A person who studies at school or university.",
+     "definition_target": "Una persona che studia a scuola.",
+     "part_of_speech": "noun",
+     "phonetic": "stuˈdente"
+    },
+    {
+     "id": 3,
+     "original": "Oggi la lezione è sulla grammatica.",
+     "translation": "Today the lesson is about grammar.",
+     "new_element": "grammatica",
+     "new_element_translation": "grammar",
+     "explanation": "The rules of a language, like verb forms and word order.",
+     "definition_target": "Le regole di una lingua.",
+     "part_of_speech": "noun",
+     "phonetic": "ɡramˈmaːtika"
+    },
+    {
+     "id": 4,
+     "original": "Oggi vogliamo imparare un verbo nuovo.",
+     "translation": "Today we want to learn a new verb.",
+     "new_element": "verbo",
+     "new_element_translation": "verb",
+     "explanation": "A word that describes an action, like \"to eat\" or \"to go\".",
+     "definition_target": "Una parola come \"andare\" o \"mangiare\".",
+     "part_of_speech": "noun",
+     "phonetic": "ˈverbo"
+    },
+    {
+     "id": 5,
+     "original": "L'insegnante dà un esercizio difficile.",
+     "translation": "The teacher gives a difficult exercise.",
+     "new_element": "esercizio",
+     "new_element_translation": "exercise",
+     "explanation": "A task given to practice and learn something.",
+     "definition_target": "Un compito per imparare qualcosa.",
+     "part_of_speech": "noun",
+     "phonetic": "ezerˈtʃittsjo"
+    },
+    {
+     "id": 6,
+     "original": "Giulia deve scrivere la risposta nel quaderno.",
+     "translation": "Giulia has to write the answer in the notebook.",
+     "new_element": "quaderno",
+     "new_element_translation": "notebook",
+     "explanation": "A book with blank or lined pages for writing.",
+     "definition_target": "Un libro con pagine bianche per scrivere.",
+     "part_of_speech": "noun",
+     "phonetic": "kwaˈdɛrno"
+    },
+    {
+     "id": 7,
+     "original": "L'insegnante corregge l'errore di Giulia.",
+     "translation": "The teacher corrects Giulia's mistake.",
+     "new_element": "corregge",
+     "new_element_translation": "corrects",
+     "explanation": "From \"correggere\", to fix a mistake.",
+     "definition_target": "Cambia una cosa sbagliata e la rende giusta.",
+     "part_of_speech": "verb",
+     "phonetic": "korˈreddʒe"
+    },
+    {
+     "id": 8,
+     "original": "Alla fine, la pronuncia di tutti è giusta.",
+     "translation": "In the end, everyone's pronunciation is correct.",
+     "new_element": "pronuncia",
+     "new_element_translation": "pronunciation",
+     "explanation": "The way words are spoken out loud.",
+     "definition_target": "Il modo in cui si dicono le parole.",
+     "part_of_speech": "noun",
+     "phonetic": "proˈnuntʃa"
+    }
+   ]
+  },
+  {
+   "story_title": "Il Weekend in Montagna",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Marco",
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Marco e Giulia vanno in montagna.",
+     "translation": "Marco and Giulia go to the mountains.",
+     "new_element": "montagna",
+     "new_element_translation": "mountains",
+     "explanation": "A high natural landform, great for hiking.",
+     "definition_target": "Un posto molto alto, con rocce e neve.",
+     "part_of_speech": "noun",
+     "phonetic": "monˈtaɲɲa"
+    },
+    {
+     "id": 2,
+     "original": "Marco porta un grande zaino.",
+     "translation": "Marco carries a big backpack.",
+     "new_element": "zaino",
+     "new_element_translation": "backpack",
+     "explanation": "A bag carried on the back, useful for hiking.",
+     "definition_target": "Una borsa che porti sulla schiena.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈdzaino"
+    },
+    {
+     "id": 3,
+     "original": "Giulia cammina su un lungo sentiero.",
+     "translation": "Giulia walks on a long trail.",
+     "new_element": "sentiero",
+     "new_element_translation": "trail",
+     "explanation": "A narrow path, often through nature.",
+     "definition_target": "Una strada stretta in montagna o nel bosco.",
+     "part_of_speech": "noun",
+     "phonetic": "senˈtjɛːro"
+    },
+    {
+     "id": 4,
+     "original": "Il sentiero passa attraverso un bosco verde.",
+     "translation": "The trail passes through a green forest.",
+     "new_element": "bosco",
+     "new_element_translation": "forest",
+     "explanation": "A large area covered with trees.",
+     "definition_target": "Un posto con molti alberi.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈbosko"
+    },
+    {
+     "id": 5,
+     "original": "Finalmente Giulia arriva alla cima della montagna.",
+     "translation": "Finally Giulia reaches the top of the mountain.",
+     "new_element": "cima",
+     "new_element_translation": "top",
+     "explanation": "The highest point of a mountain.",
+     "definition_target": "Il punto più alto di una montagna.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈtʃiːma"
+    },
+    {
+     "id": 6,
+     "original": "Da qui, il panorama è bellissimo.",
+     "translation": "From here, the view is beautiful.",
+     "new_element": "panorama",
+     "new_element_translation": "view",
+     "explanation": "A wide view, often from a high place.",
+     "definition_target": "Quello che vedi da un posto alto.",
+     "part_of_speech": "noun",
+     "phonetic": "panoˈraːma"
+    },
+    {
+     "id": 7,
+     "original": "La notte, vogliono dormire in un piccolo rifugio.",
+     "translation": "At night, they want to sleep in a small mountain hut.",
+     "new_element": "rifugio",
+     "new_element_translation": "mountain hut",
+     "explanation": "A small shelter in the mountains for hikers to rest.",
+     "definition_target": "Una piccola casa in montagna dove si dorme.",
+     "part_of_speech": "noun",
+     "phonetic": "riˈfuːdʒo"
+    },
+    {
+     "id": 8,
+     "original": "L'aria di montagna è fresca e buona.",
+     "translation": "The mountain air is fresh and good.",
+     "new_element": "fresca",
+     "new_element_translation": "fresh",
+     "explanation": "Feminine form of \"fresco\", meaning cool and clean.",
+     "definition_target": "Non calda, pulita e leggera.",
+     "part_of_speech": "adjective",
+     "phonetic": "ˈfreska"
+    }
+   ]
+  },
+  {
+   "story_title": "La Cena in Famiglia",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia",
+    "Marco"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Tutta la famiglia è a tavola stasera.",
+     "translation": "The whole family is at the table tonight.",
+     "new_element": "tavola",
+     "new_element_translation": "table",
+     "explanation": "The piece of furniture where a family eats together.",
+     "definition_target": "Il mobile dove la famiglia mangia insieme.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈtaːvola"
+    },
+    {
+     "id": 2,
+     "original": "Giulia apparecchia la tavola con cura.",
+     "translation": "Giulia sets the table carefully.",
+     "new_element": "apparecchia",
+     "new_element_translation": "sets",
+     "explanation": "From \"apparecchiare\", to prepare the table with plates and cutlery.",
+     "definition_target": "Prepara la tavola con piatti e posate.",
+     "part_of_speech": "verb",
+     "phonetic": "apparekˈkja"
+    },
+    {
+     "id": 3,
+     "original": "Ogni persona ha un piatto nuovo.",
+     "translation": "Every person has a new plate.",
+     "new_element": "piatto",
+     "new_element_translation": "plate",
+     "explanation": "The flat dish you put food on.",
+     "definition_target": "L'oggetto dove metti il cibo per mangiare.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈpjatto"
+    },
+    {
+     "id": 4,
+     "original": "Marco prende la forchetta e il coltello.",
+     "translation": "Marco takes the fork and the knife.",
+     "new_element": "forchetta",
+     "new_element_translation": "fork",
+     "explanation": "The utensil with points used for eating.",
+     "definition_target": "Un oggetto con punte per mangiare.",
+     "part_of_speech": "noun",
+     "phonetic": "forˈketta"
+    },
+    {
+     "id": 5,
+     "original": "La nonna porta una zuppa buona.",
+     "translation": "Grandma brings a good soup.",
+     "new_element": "zuppa",
+     "new_element_translation": "soup",
+     "explanation": "A warm liquid dish, often with vegetables.",
+     "definition_target": "Un piatto liquido e caldo, spesso con verdura.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈtsuppa"
+    },
+    {
+     "id": 6,
+     "original": "Marco porta un'insalata fresca.",
+     "translation": "Marco brings a fresh salad.",
+     "new_element": "insalata",
+     "new_element_translation": "salad",
+     "explanation": "A cold dish usually made of vegetables.",
+     "definition_target": "Un piatto freddo con verdura.",
+     "part_of_speech": "noun",
+     "phonetic": "insaˈlaːta"
+    },
+    {
+     "id": 7,
+     "original": "Ogni bicchiere ha vino rosso.",
+     "translation": "Every glass has red wine.",
+     "new_element": "bicchiere",
+     "new_element_translation": "glass",
+     "explanation": "The container you drink from.",
+     "definition_target": "L'oggetto dove metti l'acqua o il vino per bere.",
+     "part_of_speech": "noun",
+     "phonetic": "bikˈkjɛːre"
+    },
+    {
+     "id": 8,
+     "original": "Tutti fanno un brindisi insieme.",
+     "translation": "Everyone makes a toast together.",
+     "new_element": "brindisi",
+     "new_element_translation": "toast",
+     "explanation": "Raising glasses together to celebrate something.",
+     "definition_target": "Quando alzi il bicchiere per festeggiare.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈbrindizi"
+    }
+   ]
+  },
+  {
+   "story_title": "Un Regalo di Compleanno",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Marco",
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Marco porta un pacco grande per Giulia.",
+     "translation": "Marco brings a big package for Giulia.",
+     "new_element": "pacco",
+     "new_element_translation": "package",
+     "explanation": "A wrapped object, usually a gift.",
+     "definition_target": "Un oggetto chiuso con la carta, spesso un regalo.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈpakko"
+    },
+    {
+     "id": 2,
+     "original": "Il pacco ha un nastro rosso.",
+     "translation": "The package has a red ribbon.",
+     "new_element": "nastro",
+     "new_element_translation": "ribbon",
+     "explanation": "A thin strip of material, often used to decorate gifts.",
+     "definition_target": "Una striscia sottile per decorare un regalo.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈnastro"
+    },
+    {
+     "id": 3,
+     "original": "Sopra c'è anche un fiocco blu.",
+     "translation": "On top there's also a blue bow.",
+     "new_element": "fiocco",
+     "new_element_translation": "bow",
+     "explanation": "A decorative knot, often made from ribbon.",
+     "definition_target": "Un nodo decorativo fatto con il nastro.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈfjokko"
+    },
+    {
+     "id": 4,
+     "original": "Giulia è molto emozionata.",
+     "translation": "Giulia is very excited.",
+     "new_element": "emozionata",
+     "new_element_translation": "excited",
+     "explanation": "Feminine form of \"emozionato\", feeling strong emotion or excitement.",
+     "definition_target": "Sente una forte emozione, positiva e forte.",
+     "part_of_speech": "adjective",
+     "phonetic": "emotsjoˈnaːta"
+    },
+    {
+     "id": 5,
+     "original": "Lei scarta il regalo piano piano.",
+     "translation": "She unwraps the gift slowly.",
+     "new_element": "scarta",
+     "new_element_translation": "unwraps",
+     "explanation": "From \"scartare\", to remove the wrapping from a gift.",
+     "definition_target": "Toglie la carta da un regalo.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈskarta"
+    },
+    {
+     "id": 6,
+     "original": "Dentro la scatola c'è una collana bellissima.",
+     "translation": "Inside the box there's a beautiful necklace.",
+     "new_element": "collana",
+     "new_element_translation": "necklace",
+     "explanation": "A piece of jewelry worn around the neck.",
+     "definition_target": "Un gioiello che si porta al collo.",
+     "part_of_speech": "noun",
+     "phonetic": "kolˈlaːna"
+    },
+    {
+     "id": 7,
+     "original": "Marco dà anche un piccolo orologio.",
+     "translation": "Marco also gives a small watch.",
+     "new_element": "orologio",
+     "new_element_translation": "watch",
+     "explanation": "A device worn on the wrist to tell time.",
+     "definition_target": "Un oggetto che porti al braccio per sapere l'ora.",
+     "part_of_speech": "noun",
+     "phonetic": "oroˈlɔːdʒo"
+    },
+    {
+     "id": 8,
+     "original": "Alla fine, Giulia trova anche una felpa.",
+     "translation": "In the end, Giulia also finds a sweatshirt.",
+     "new_element": "felpa",
+     "new_element_translation": "sweatshirt",
+     "explanation": "A warm, comfortable piece of clothing.",
+     "definition_target": "Un vestito morbido e caldo per il corpo.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈfelpa"
+    }
+   ]
+  },
+  {
+   "story_title": "Il Nuovo Appartamento",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Oggi è il giorno del trasloco per Giulia.",
+     "translation": "Today is moving day for Giulia.",
+     "new_element": "trasloco",
+     "new_element_translation": "moving day",
+     "explanation": "The day you move from one home to another.",
+     "definition_target": "Il giorno in cui cambi casa.",
+     "part_of_speech": "noun",
+     "phonetic": "traˈzloːko"
+    },
+    {
+     "id": 2,
+     "original": "Ci sono molte scatole nel nuovo appartamento.",
+     "translation": "There are many boxes in the new apartment.",
+     "new_element": "scatole",
+     "new_element_translation": "boxes",
+     "explanation": "Plural of \"scatola\", used to carry things when moving.",
+     "definition_target": "Contenitori usati per portare le cose quando ti sposti.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈskaːtole"
+    },
+    {
+     "id": 3,
+     "original": "Il divano grigio è già arrivato.",
+     "translation": "The grey sofa has already arrived.",
+     "new_element": "divano",
+     "new_element_translation": "sofa",
+     "explanation": "A long, comfortable seat for more than one person.",
+     "definition_target": "Un mobile lungo e comodo dove ti siedi.",
+     "part_of_speech": "noun",
+     "phonetic": "diˈvaːno"
+    },
+    {
+     "id": 4,
+     "original": "Giulia mette i vestiti nell'armadio.",
+     "translation": "Giulia puts her clothes in the wardrobe.",
+     "new_element": "armadio",
+     "new_element_translation": "wardrobe",
+     "explanation": "A tall piece of furniture for storing clothes.",
+     "definition_target": "Un mobile alto dove metti i vestiti.",
+     "part_of_speech": "noun",
+     "phonetic": "arˈmaːdjo"
+    },
+    {
+     "id": 5,
+     "original": "Dal balcone, Giulia vede tutta la città.",
+     "translation": "From the balcony, Giulia sees the whole city.",
+     "new_element": "balcone",
+     "new_element_translation": "balcony",
+     "explanation": "An outdoor platform attached to the outside of a building.",
+     "definition_target": "Un piccolo spazio fuori, attaccato alla casa.",
+     "part_of_speech": "noun",
+     "phonetic": "balˈkoːne"
+    },
+    {
+     "id": 6,
+     "original": "L'ascensore non funziona oggi.",
+     "translation": "The elevator isn't working today.",
+     "new_element": "ascensore",
+     "new_element_translation": "elevator",
+     "explanation": "A machine that moves people between floors in a building.",
+     "definition_target": "Una macchina che porta le persone su e giù in un edificio.",
+     "part_of_speech": "noun",
+     "phonetic": "aʃenˈsoːre"
+    },
+    {
+     "id": 7,
+     "original": "La parete della cucina è bianca.",
+     "translation": "The kitchen wall is white.",
+     "new_element": "parete",
+     "new_element_translation": "wall",
+     "explanation": "One of the vertical surfaces of a room.",
+     "definition_target": "Il lato verticale di una stanza.",
+     "part_of_speech": "noun",
+     "phonetic": "paˈreːte"
+    },
+    {
+     "id": 8,
+     "original": "Tutti i mobili sono nuovi.",
+     "translation": "All the furniture is new.",
+     "new_element": "mobili",
+     "new_element_translation": "furniture",
+     "explanation": "Movable objects like tables, chairs, and sofas in a home.",
+     "definition_target": "Tavoli, sedie e divani in una casa.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈmoːbili"
+    }
+   ]
+  },
+  {
+   "story_title": "La Festa di Carnevale",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia",
+    "Marco",
+    "Italia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Oggi è il giorno di Carnevale in Italia.",
+     "translation": "Today is Carnival day in Italy.",
+     "new_element": "carnevale",
+     "new_element_translation": "Carnival",
+     "explanation": "A festive Italian holiday with costumes and parades before Lent.",
+     "definition_target": "Una festa italiana con costumi e maschere.",
+     "part_of_speech": "noun",
+     "phonetic": "karneˈvaːle"
+    },
+    {
+     "id": 2,
+     "original": "Giulia ha una maschera bianca.",
+     "translation": "Giulia has a white mask.",
+     "new_element": "maschera",
+     "new_element_translation": "mask",
+     "explanation": "A covering worn over the face, common during Carnival.",
+     "definition_target": "Una cosa che copre la faccia.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈmaskera"
+    },
+    {
+     "id": 3,
+     "original": "Oggi lei è una principessa.",
+     "translation": "Today she is a princess.",
+     "new_element": "principessa",
+     "new_element_translation": "princess",
+     "explanation": "A royal character, popular as a costume.",
+     "definition_target": "La figlia di un re, un personaggio delle fiabe.",
+     "part_of_speech": "noun",
+     "phonetic": "printʃiˈpessa"
+    },
+    {
+     "id": 4,
+     "original": "Marco è un pagliaccio oggi.",
+     "translation": "Marco is a clown today.",
+     "new_element": "pagliaccio",
+     "new_element_translation": "clown",
+     "explanation": "A funny costumed character who makes people laugh.",
+     "definition_target": "Un personaggio buffo che fa ridere.",
+     "part_of_speech": "noun",
+     "phonetic": "paʎˈʎattʃo"
+    },
+    {
+     "id": 5,
+     "original": "Ci sono molti coriandoli per terra.",
+     "translation": "There's lots of confetti on the ground.",
+     "new_element": "coriandoli",
+     "new_element_translation": "confetti",
+     "explanation": "Small pieces of colored paper thrown during celebrations.",
+     "definition_target": "Piccoli pezzi di carta colorata per le feste.",
+     "part_of_speech": "noun",
+     "phonetic": "korjanˈdoli"
+    },
+    {
+     "id": 6,
+     "original": "C'è molta gente in piazza oggi.",
+     "translation": "There are many people in the square today.",
+     "new_element": "piazza",
+     "new_element_translation": "square",
+     "explanation": "An open public space in a town, surrounded by buildings.",
+     "definition_target": "Un posto aperto in città, con edifici intorno.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈpjattsa"
+    },
+    {
+     "id": 7,
+     "original": "Un carro grande passa per la strada.",
+     "translation": "A big float passes through the street.",
+     "new_element": "carro",
+     "new_element_translation": "float",
+     "explanation": "A decorated vehicle used in a parade.",
+     "definition_target": "Un veicolo decorato per una sfilata.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈkarro"
+    },
+    {
+     "id": 8,
+     "original": "Giulia ha un trucco speciale sulla faccia.",
+     "translation": "Giulia has special makeup on her face.",
+     "new_element": "trucco",
+     "new_element_translation": "makeup",
+     "explanation": "Cosmetics applied to the face, often for costumes or parties.",
+     "definition_target": "I colori che metti sulla faccia per una festa.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈtrukko"
+    }
+   ]
+  },
+  {
+   "story_title": "Un Problema con la Macchina",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Marco"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Il motore della macchina fa un rumore strano.",
+     "translation": "The car's engine makes a strange noise.",
+     "new_element": "motore",
+     "new_element_translation": "engine",
+     "explanation": "The part of a car that makes it move.",
+     "definition_target": "La parte della macchina che la fa muovere.",
+     "part_of_speech": "noun",
+     "phonetic": "moˈtoːre"
+    },
+    {
+     "id": 2,
+     "original": "Marco guarda la benzina.",
+     "translation": "Marco checks the gas.",
+     "new_element": "benzina",
+     "new_element_translation": "gas",
+     "explanation": "The fuel used to make a car run.",
+     "definition_target": "Il carburante per far andare la macchina.",
+     "part_of_speech": "noun",
+     "phonetic": "benˈdziːna"
+    },
+    {
+     "id": 3,
+     "original": "Una gomma della macchina è vecchia.",
+     "translation": "One of the car's tires is old.",
+     "new_element": "gomma",
+     "new_element_translation": "tire",
+     "explanation": "The rubber wheel covering of a car.",
+     "definition_target": "La parte rotonda e nera della macchina.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈɡomma"
+    },
+    {
+     "id": 4,
+     "original": "Marco porta la macchina in officina.",
+     "translation": "Marco takes the car to the garage.",
+     "new_element": "officina",
+     "new_element_translation": "garage",
+     "explanation": "A place where cars are repaired.",
+     "definition_target": "Un posto dove si riparano le macchine.",
+     "part_of_speech": "noun",
+     "phonetic": "offiˈtʃiːna"
+    },
+    {
+     "id": 5,
+     "original": "Il meccanico guarda il motore.",
+     "translation": "The mechanic looks at the engine.",
+     "new_element": "meccanico",
+     "new_element_translation": "mechanic",
+     "explanation": "A person who repairs cars and machines.",
+     "definition_target": "La persona che ripara le macchine.",
+     "part_of_speech": "noun",
+     "phonetic": "mekˈkaːniko"
+    },
+    {
+     "id": 6,
+     "original": "Il motore ha un guasto serio.",
+     "translation": "The engine has a serious breakdown.",
+     "new_element": "guasto",
+     "new_element_translation": "breakdown",
+     "explanation": "A problem that stops a machine from working.",
+     "definition_target": "Un problema che non fa funzionare una macchina.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈɡwasto"
+    },
+    {
+     "id": 7,
+     "original": "Anche il freno non funziona bene.",
+     "translation": "The brake isn't working well either.",
+     "new_element": "freno",
+     "new_element_translation": "brake",
+     "explanation": "The part of a car used to stop it.",
+     "definition_target": "La parte della macchina che la fa fermare.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈfreno"
+    },
+    {
+     "id": 8,
+     "original": "Il meccanico ripara tutto in un'ora.",
+     "translation": "The mechanic fixes everything in an hour.",
+     "new_element": "ripara",
+     "new_element_translation": "fixes",
+     "explanation": "From \"riparare\", to fix or repair something broken.",
+     "definition_target": "Fa funzionare di nuovo qualcosa di rotto.",
+     "part_of_speech": "verb",
+     "phonetic": "riˈpaːra"
+    }
+   ]
+  },
+  {
+   "story_title": "L'Ultimo Giorno d'Estate",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Oggi è l'ultimo giorno d'estate.",
+     "translation": "Today is the last day of summer.",
+     "new_element": "estate",
+     "new_element_translation": "summer",
+     "explanation": "The warmest season of the year.",
+     "definition_target": "La stagione più calda dell'anno.",
+     "part_of_speech": "noun",
+     "phonetic": "eˈstaːte"
+    },
+    {
+     "id": 2,
+     "original": "Le vacanze di Giulia sono belle quest'anno.",
+     "translation": "Giulia's vacation is nice this year.",
+     "new_element": "vacanze",
+     "new_element_translation": "vacation",
+     "explanation": "Plural of \"vacanza\", a period of rest or travel.",
+     "definition_target": "I giorni di riposo o di viaggio.",
+     "part_of_speech": "noun",
+     "phonetic": "vaˈkantse"
+    },
+    {
+     "id": 3,
+     "original": "Giulia sente un po' di malinconia.",
+     "translation": "Giulia feels a bit of melancholy.",
+     "new_element": "malinconia",
+     "new_element_translation": "melancholy",
+     "explanation": "A gentle feeling of sadness, often nostalgic.",
+     "definition_target": "Un sentimento leggero di tristezza.",
+     "part_of_speech": "noun",
+     "phonetic": "malinkoˈniːa"
+    },
+    {
+     "id": 4,
+     "original": "A settembre, torna la scuola.",
+     "translation": "In September, school comes back.",
+     "new_element": "settembre",
+     "new_element_translation": "September",
+     "explanation": "The ninth month of the year, when school usually starts in Italy.",
+     "definition_target": "Il mese dopo agosto, quando inizia la scuola.",
+     "part_of_speech": "noun",
+     "phonetic": "setˈtembre"
+    },
+    {
+     "id": 5,
+     "original": "Lei ha nostalgia della spiaggia.",
+     "translation": "She misses the beach.",
+     "new_element": "nostalgia",
+     "new_element_translation": "misses",
+     "explanation": "A longing feeling for something you had and liked.",
+     "definition_target": "Il desiderio di una cosa bella del passato.",
+     "part_of_speech": "noun",
+     "phonetic": "nostalˈdʒiːa"
+    },
+    {
+     "id": 6,
+     "original": "La sua abbronzatura è ancora bella.",
+     "translation": "Her tan is still nice.",
+     "new_element": "abbronzatura",
+     "new_element_translation": "tan",
+     "explanation": "The darker skin color from being in the sun.",
+     "definition_target": "Il colore scuro della pelle dopo il sole.",
+     "part_of_speech": "noun",
+     "phonetic": "abbrontsaˈtuːra"
+    },
+    {
+     "id": 7,
+     "original": "Sente un'emozione dolce nel cuore.",
+     "translation": "She feels a sweet emotion in her heart.",
+     "new_element": "emozione",
+     "new_element_translation": "emotion",
+     "explanation": "A strong feeling, like joy or sadness.",
+     "definition_target": "Un sentimento forte, come la gioia o la tristezza.",
+     "part_of_speech": "noun",
+     "phonetic": "emoˈtsjoːne"
+    },
+    {
+     "id": 8,
+     "original": "L'autunno arriva piano piano.",
+     "translation": "Autumn is slowly arriving.",
+     "new_element": "autunno",
+     "new_element_translation": "Autumn",
+     "explanation": "The season between summer and winter.",
+     "definition_target": "La stagione dopo l'estate, prima dell'inverno.",
+     "part_of_speech": "noun",
+     "phonetic": "auˈtunno"
+    }
+   ]
+  },
+  {
+   "story_title": "Una Serata al Cinema",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Marco",
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Marco e Giulia vanno al cinema stasera.",
+     "translation": "Marco and Giulia go to the cinema tonight.",
+     "new_element": "cinema",
+     "new_element_translation": "cinema",
+     "explanation": "A place where people watch movies.",
+     "definition_target": "Un posto dove la gente guarda i film.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈtʃiːnema"
+    },
+    {
+     "id": 2,
+     "original": "Vogliono comprare un grande popcorn.",
+     "translation": "They want to buy a big popcorn.",
+     "new_element": "popcorn",
+     "new_element_translation": "popcorn",
+     "explanation": "A classic snack eaten while watching movies.",
+     "definition_target": "Uno snack che si mangia guardando un film.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈpɔpkorn"
+    },
+    {
+     "id": 3,
+     "original": "Giulia si siede sulla sua poltrona.",
+     "translation": "Giulia sits in her seat.",
+     "new_element": "poltrona",
+     "new_element_translation": "seat",
+     "explanation": "A comfortable armchair, like those in a cinema.",
+     "definition_target": "Una sedia comoda, come quelle al cinema.",
+     "part_of_speech": "noun",
+     "phonetic": "polˈtroːna"
+    },
+    {
+     "id": 4,
+     "original": "Nella sala c'è buio.",
+     "translation": "In the room, it's dark.",
+     "new_element": "buio",
+     "new_element_translation": "dark",
+     "explanation": "The absence of light.",
+     "definition_target": "Quando non c'è luce.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈbuːjo"
+    },
+    {
+     "id": 5,
+     "original": "Il film inizia sul grande schermo.",
+     "translation": "The movie starts on the big screen.",
+     "new_element": "schermo",
+     "new_element_translation": "screen",
+     "explanation": "The flat surface where a movie is shown.",
+     "definition_target": "La parte piatta dove si vede il film.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈskermo"
+    },
+    {
+     "id": 6,
+     "original": "L'attore è molto bravo.",
+     "translation": "The actor is very good.",
+     "new_element": "attore",
+     "new_element_translation": "actor",
+     "explanation": "A person who performs in movies or theater.",
+     "definition_target": "Una persona che fa film o teatro.",
+     "part_of_speech": "noun",
+     "phonetic": "atˈtoːre"
+    },
+    {
+     "id": 7,
+     "original": "Il film è una commedia divertente.",
+     "translation": "The movie is a funny comedy.",
+     "new_element": "commedia",
+     "new_element_translation": "comedy",
+     "explanation": "A funny movie or play meant to make people laugh.",
+     "definition_target": "Un film che fa ridere.",
+     "part_of_speech": "noun",
+     "phonetic": "komˈmɛːdja"
+    },
+    {
+     "id": 8,
+     "original": "Alla fine, ci sono molti applausi.",
+     "translation": "In the end, there's a lot of applause.",
+     "new_element": "applausi",
+     "new_element_translation": "applause",
+     "explanation": "The clapping people do to show appreciation.",
+     "definition_target": "Il rumore che fai con le mani per dire che ti piace.",
+     "part_of_speech": "noun",
+     "phonetic": "apˈplauzi"
+    }
+   ]
+  },
+  {
+   "story_title": "Il Mercatino di Natale",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia",
+    "Marco"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia e Marco vanno al mercatino di Natale.",
+     "translation": "Giulia and Marco go to the Christmas market.",
+     "new_element": "mercatino",
+     "new_element_translation": "market",
+     "explanation": "A small, often seasonal market, like at Christmas.",
+     "definition_target": "Un piccolo mercato, spesso per una festa.",
+     "part_of_speech": "noun",
+     "phonetic": "merkaˈtiːno"
+    },
+    {
+     "id": 2,
+     "original": "Ci sono tante luci nel mercatino.",
+     "translation": "There are so many lights in the market.",
+     "new_element": "luci",
+     "new_element_translation": "lights",
+     "explanation": "Plural of \"luce\", used to describe decorative lighting.",
+     "definition_target": "Piccole luci colorate, usate per decorare.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈluːtʃi"
+    },
+    {
+     "id": 3,
+     "original": "C'è un po' di neve per terra.",
+     "translation": "There's a bit of snow on the ground.",
+     "new_element": "neve",
+     "new_element_translation": "snow",
+     "explanation": "White, cold flakes that fall in winter.",
+     "definition_target": "L'acqua bianca e fredda che cade in inverno.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈneːve"
+    },
+    {
+     "id": 4,
+     "original": "Giulia porta una sciarpa nuova.",
+     "translation": "Giulia wears a new scarf.",
+     "new_element": "sciarpa",
+     "new_element_translation": "scarf",
+     "explanation": "A piece of clothing worn around the neck for warmth.",
+     "definition_target": "Un vestito lungo che metti al collo per il freddo.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈʃarpa"
+    },
+    {
+     "id": 5,
+     "original": "Marco porta i guanti nuovi.",
+     "translation": "Marco wears new gloves.",
+     "new_element": "guanti",
+     "new_element_translation": "gloves",
+     "explanation": "Clothing worn on the hands to keep warm.",
+     "definition_target": "I vestiti che metti sulle mani per il freddo.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈɡwanti"
+    },
+    {
+     "id": 6,
+     "original": "Vogliono comprare delle castagne buone.",
+     "translation": "They want to buy some good chestnuts.",
+     "new_element": "castagne",
+     "new_element_translation": "chestnuts",
+     "explanation": "A warm winter snack, roasted and sold at Christmas markets.",
+     "definition_target": "Un cibo caldo di inverno, marrone e rotondo.",
+     "part_of_speech": "noun",
+     "phonetic": "kaˈstaɲɲe"
+    },
+    {
+     "id": 7,
+     "original": "Vogliono bere una cioccolata buona insieme.",
+     "translation": "They want to drink a good hot chocolate together.",
+     "new_element": "cioccolata",
+     "new_element_translation": "hot chocolate",
+     "explanation": "A sweet warm drink, popular in winter.",
+     "definition_target": "Una bevanda dolce e calda d'inverno.",
+     "part_of_speech": "noun",
+     "phonetic": "tʃokkoˈlaːta"
+    },
+    {
+     "id": 8,
+     "original": "Le decorazioni dell'albero sono belle.",
+     "translation": "The tree's decorations are beautiful.",
+     "new_element": "decorazioni",
+     "new_element_translation": "decorations",
+     "explanation": "Objects used to make something look festive.",
+     "definition_target": "Le cose che rendono bello un posto per una festa.",
+     "part_of_speech": "noun",
+     "phonetic": "dekoratˈtsjoːni"
+    }
+   ]
+  }
+ ],
+ "fresh": [
+  {
+   "story_title": "Il Messaggio Misterioso",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia",
+    "Marco"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Un giorno, Giulia trova una busta sulla porta.",
+     "translation": "One day, Giulia finds an envelope on the door.",
+     "new_element": "busta",
+     "new_element_translation": "envelope",
+     "explanation": "A paper cover used to hold a letter.",
+     "definition_target": "La carta dove metti una lettera.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈbusta"
+    },
+    {
+     "id": 2,
+     "original": "La busta è misteriosa e senza nome.",
+     "translation": "The envelope is mysterious and has no name.",
+     "new_element": "misteriosa",
+     "new_element_translation": "mysterious",
+     "explanation": "Feminine form of \"misterioso\", meaning strange and unexplained.",
+     "definition_target": "Strana, difficile da capire.",
+     "part_of_speech": "adjective",
+     "phonetic": "misteˈrjoːza"
+    },
+    {
+     "id": 3,
+     "original": "Non c'è il nome del mittente.",
+     "translation": "There's no name of the sender.",
+     "new_element": "mittente",
+     "new_element_translation": "sender",
+     "explanation": "The person who sends a letter or message.",
+     "definition_target": "La persona che manda una lettera.",
+     "part_of_speech": "noun",
+     "phonetic": "mitˈtente"
+    },
+    {
+     "id": 4,
+     "original": "Giulia ama risolvere un buon mistero.",
+     "translation": "Giulia loves solving a good mystery.",
+     "new_element": "mistero",
+     "new_element_translation": "mystery",
+     "explanation": "Something strange and unexplained, like in detective stories.",
+     "definition_target": "Una cosa strana che non si capisce subito.",
+     "part_of_speech": "noun",
+     "phonetic": "misˈtɛːro"
+    },
+    {
+     "id": 5,
+     "original": "Dentro c'è solo un piccolo indizio.",
+     "translation": "Inside there's only a small clue.",
+     "new_element": "indizio",
+     "new_element_translation": "clue",
+     "explanation": "A small piece of information that helps solve a mystery.",
+     "definition_target": "Una piccola informazione che aiuta a capire.",
+     "part_of_speech": "noun",
+     "phonetic": "inˈdittsjo"
+    },
+    {
+     "id": 6,
+     "original": "Giulia indovina che è un gioco.",
+     "translation": "Giulia guesses that it's a game.",
+     "new_element": "indovina",
+     "new_element_translation": "guesses",
+     "explanation": "From \"indovinare\", to guess the right answer.",
+     "definition_target": "Trova la risposta giusta senza sapere con certezza.",
+     "part_of_speech": "verb",
+     "phonetic": "indoˈviːna"
+    },
+    {
+     "id": 7,
+     "original": "La sua curiosità è grande.",
+     "translation": "Her curiosity is big.",
+     "new_element": "curiosità",
+     "new_element_translation": "curiosity",
+     "explanation": "The strong desire to know or learn something.",
+     "definition_target": "Il desiderio forte di sapere qualcosa.",
+     "part_of_speech": "noun",
+     "phonetic": "kurjoziˈta"
+    },
+    {
+     "id": 8,
+     "original": "Qualcuno nasconde la verità per ora.",
+     "translation": "Someone is hiding the truth for now.",
+     "new_element": "nasconde",
+     "new_element_translation": "is hiding",
+     "explanation": "From \"nascondere\", to keep something secret or out of sight.",
+     "definition_target": "Non fa vedere o sapere una cosa.",
+     "part_of_speech": "verb",
+     "phonetic": "nasˈkonde"
+    },
+    {
+     "id": 9,
+     "original": "Alla fine, Giulia trova una firma speciale: Marco.",
+     "translation": "In the end, Giulia finds a special signature: Marco.",
+     "new_element": "firma",
+     "new_element_translation": "signature",
+     "explanation": "A person's written name, used to show who sent something.",
+     "definition_target": "Il nome scritto a mano di una persona.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈfirma"
+    },
+    {
+     "id": 10,
+     "original": "La firma dice solo un orario e un posto.",
+     "translation": "The signature only gives a time and a place.",
+     "new_element": "orario",
+     "new_element_translation": "time",
+     "explanation": "A specific point of time, as on a schedule.",
+     "definition_target": "Un'ora precisa, come su un programma.",
+     "part_of_speech": "noun",
+     "phonetic": "oˈrarjo"
+    }
+   ]
+  },
+  {
+   "story_title": "La Valigia Sbagliata",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Giulia",
+    "Roma"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Giulia arriva all'aeroporto di Roma.",
+     "translation": "Giulia arrives at the airport in Rome.",
+     "new_element": "aeroporto",
+     "new_element_translation": "airport",
+     "explanation": "The place where airplanes take off and land.",
+     "definition_target": "Il posto dove arrivano e partono gli aerei.",
+     "part_of_speech": "noun",
+     "phonetic": "aeroˈpɔrto"
+    },
+    {
+     "id": 2,
+     "original": "Lei prende il suo bagaglio.",
+     "translation": "She picks up her luggage.",
+     "new_element": "bagaglio",
+     "new_element_translation": "luggage",
+     "explanation": "Bags and suitcases used for traveling.",
+     "definition_target": "Le borse e le valigie per viaggiare.",
+     "part_of_speech": "noun",
+     "phonetic": "baˈɡaʎʎo"
+    },
+    {
+     "id": 3,
+     "original": "Ma la valigia non ha l'etichetta giusta.",
+     "translation": "But the suitcase doesn't have the right tag.",
+     "new_element": "etichetta",
+     "new_element_translation": "tag",
+     "explanation": "A small label attached to an object with information.",
+     "definition_target": "Un piccolo pezzo di carta con informazioni su un oggetto.",
+     "part_of_speech": "noun",
+     "phonetic": "etiˈketta"
+    },
+    {
+     "id": 4,
+     "original": "È la valigia di una persona sconosciuta.",
+     "translation": "It's the suitcase of an unknown person.",
+     "new_element": "sconosciuta",
+     "new_element_translation": "unknown",
+     "explanation": "Feminine form of \"sconosciuto\", meaning not known or familiar.",
+     "definition_target": "Una persona che non conosci.",
+     "part_of_speech": "adjective",
+     "phonetic": "skonoˈʃuːta"
+    },
+    {
+     "id": 5,
+     "original": "Qualcuno scambia la valigia per errore.",
+     "translation": "Someone swaps the suitcase by mistake.",
+     "new_element": "scambia",
+     "new_element_translation": "swaps",
+     "explanation": "From \"scambiare\", to exchange one thing for another.",
+     "definition_target": "Prende una cosa invece di un'altra per sbaglio.",
+     "part_of_speech": "verb",
+     "phonetic": "ˈskambja"
+    },
+    {
+     "id": 6,
+     "original": "Giulia cerca la vera proprietaria della valigia.",
+     "translation": "Giulia looks for the real owner of the suitcase.",
+     "new_element": "proprietaria",
+     "new_element_translation": "owner",
+     "explanation": "The woman who legally owns an object.",
+     "definition_target": "La persona a cui appartiene una cosa.",
+     "part_of_speech": "noun",
+     "phonetic": "proprjeˈtarja"
+    },
+    {
+     "id": 7,
+     "original": "Dentro trova una fotografia di famiglia.",
+     "translation": "Inside she finds a family photograph.",
+     "new_element": "fotografia",
+     "new_element_translation": "photograph",
+     "explanation": "A picture taken with a camera.",
+     "definition_target": "Un'immagine fatta con una macchina fotografica.",
+     "part_of_speech": "noun",
+     "phonetic": "fotoɡraˈfiːa"
+    },
+    {
+     "id": 8,
+     "original": "Con gentilezza, Giulia chiama la donna.",
+     "translation": "Kindly, Giulia calls the woman.",
+     "new_element": "gentilezza",
+     "new_element_translation": "Kindly",
+     "explanation": "The noun form of \"gentile\", meaning kindness.",
+     "definition_target": "Il modo di essere gentile con gli altri.",
+     "part_of_speech": "noun",
+     "phonetic": "dʒentiˈlettsa"
+    },
+    {
+     "id": 9,
+     "original": "La donna ringrazia Giulia tante volte.",
+     "translation": "The woman thanks Giulia many times.",
+     "new_element": "ringrazia",
+     "new_element_translation": "thanks",
+     "explanation": "From \"ringraziare\", to express gratitude to someone.",
+     "definition_target": "Dice \"grazie\" a una persona.",
+     "part_of_speech": "verb",
+     "phonetic": "ringˈrattsja"
+    },
+    {
+     "id": 10,
+     "original": "Alla fine, c'è una nuova amicizia tra loro.",
+     "translation": "In the end, there's a new friendship between them.",
+     "new_element": "amicizia",
+     "new_element_translation": "friendship",
+     "explanation": "The relationship between friends.",
+     "definition_target": "Il rapporto speciale tra due amici.",
+     "part_of_speech": "noun",
+     "phonetic": "amiˈtʃittsja"
+    }
+   ]
+  },
+  {
+   "story_title": "Il Concorso di Cucina",
+   "level_target": "A2",
+   "proper_nouns": [
+    "Nonna Lucia",
+    "Giulia"
+   ],
+   "sentences": [
+    {
+     "id": 1,
+     "original": "Oggi Nonna Lucia ha un concorso di cucina.",
+     "translation": "Today Grandma Lucia has a cooking contest.",
+     "new_element": "concorso",
+     "new_element_translation": "contest",
+     "explanation": "A competition where people try to win a prize.",
+     "definition_target": "Una competizione per vincere un premio.",
+     "part_of_speech": "noun",
+     "phonetic": "konˈkorso"
+    },
+    {
+     "id": 2,
+     "original": "Ogni cuoco ha un piatto speciale.",
+     "translation": "Every cook has a special dish.",
+     "new_element": "cuoco",
+     "new_element_translation": "cook",
+     "explanation": "A person who prepares food professionally.",
+     "definition_target": "Una persona che cucina, spesso per lavoro.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈkwɔːko"
+    },
+    {
+     "id": 3,
+     "original": "Il giudice assaggia ogni piatto.",
+     "translation": "The judge tastes every dish.",
+     "new_element": "assaggia",
+     "new_element_translation": "tastes",
+     "explanation": "From \"assaggiare\", to try a small amount of food to check its taste.",
+     "definition_target": "Prova un po' di cibo per sentire il sapore.",
+     "part_of_speech": "verb",
+     "phonetic": "asˈsaddʒa"
+    },
+    {
+     "id": 4,
+     "original": "Nonna Lucia usa una vecchia padella.",
+     "translation": "Grandma Lucia uses an old pan.",
+     "new_element": "padella",
+     "new_element_translation": "pan",
+     "explanation": "A flat pan used for frying food.",
+     "definition_target": "Un oggetto di cucina per friggere il cibo.",
+     "part_of_speech": "noun",
+     "phonetic": "paˈdella"
+    },
+    {
+     "id": 5,
+     "original": "Il suo segreto è un po' di peperoncino.",
+     "translation": "Her secret is a bit of chili pepper.",
+     "new_element": "peperoncino",
+     "new_element_translation": "chili pepper",
+     "explanation": "A small, spicy pepper used in cooking.",
+     "definition_target": "Una piccola spezia che rende il cibo piccante.",
+     "part_of_speech": "noun",
+     "phonetic": "peperonˈtʃiːno"
+    },
+    {
+     "id": 6,
+     "original": "Il piatto è piccante e buono.",
+     "translation": "The dish is spicy and good.",
+     "new_element": "piccante",
+     "new_element_translation": "spicy",
+     "explanation": "Having a strong, hot taste, like chili.",
+     "definition_target": "Ha un sapore forte, come il peperoncino.",
+     "part_of_speech": "adjective",
+     "phonetic": "pikˈkante"
+    },
+    {
+     "id": 7,
+     "original": "A tutti piace il sapore nuovo.",
+     "translation": "Everyone likes the new flavor.",
+     "new_element": "sapore",
+     "new_element_translation": "flavor",
+     "explanation": "The taste of food.",
+     "definition_target": "Il gusto del cibo.",
+     "part_of_speech": "noun",
+     "phonetic": "saˈpoːre"
+    },
+    {
+     "id": 8,
+     "original": "Alla fine, Nonna Lucia ha il primo premio.",
+     "translation": "In the end, Grandma Lucia has the first prize.",
+     "new_element": "premio",
+     "new_element_translation": "prize",
+     "explanation": "Something given to the winner of a contest.",
+     "definition_target": "Quello che vince il primo di un concorso.",
+     "part_of_speech": "noun",
+     "phonetic": "ˈprɛːmjo"
+    },
+    {
+     "id": 9,
+     "original": "Che grande vittoria per la nonna!",
+     "translation": "What a big victory for grandma!",
+     "new_element": "vittoria",
+     "new_element_translation": "victory",
+     "explanation": "The act of winning a competition.",
+     "definition_target": "Quando vinci una competizione.",
+     "part_of_speech": "noun",
+     "phonetic": "vitˈtɔːrja"
+    },
+    {
+     "id": 10,
+     "original": "Giulia sente molto orgoglio per sua nonna.",
+     "translation": "Giulia feels very proud of her grandma.",
+     "new_element": "orgoglio",
+     "new_element_translation": "proud",
+     "explanation": "A strong feeling of satisfaction about someone's achievement.",
+     "definition_target": "Un sentimento forte e felice per il successo di qualcuno.",
+     "part_of_speech": "noun",
+     "phonetic": "orˈɡɔʎʎo"
+    }
+   ]
+  }
+ ],
+ "review": {
+  "story_title": "La Settimana di Giulia",
+  "level_target": "A2",
+  "proper_nouns": [
+   "Giulia",
+   "Marco",
+   "Pepe",
+   "Venezia",
+   "Bologna",
+   "Firenze"
+  ],
+  "sentences": [
+   {
+    "id": 1,
+    "original": "Giulia ha una settimana molto bella.",
+    "translation": "Giulia has a very nice week.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 2,
+    "original": "Un giorno, Giulia va al bar e beve un cappuccino caldo.",
+    "translation": "One day, Giulia goes to the café and drinks a hot cappuccino.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 3,
+    "original": "Il suo gatto Pepe vuole giocare nel giardino.",
+    "translation": "Her cat Pepe wants to play in the garden.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 4,
+    "original": "Un giorno piove molto a Venezia.",
+    "translation": "One day it rains a lot in Venice.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 5,
+    "original": "Giulia prende l'ombrello e cammina piano.",
+    "translation": "Giulia takes the umbrella and walks slowly.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 6,
+    "original": "Al mercato di Bologna, Marco vuole comprare della frutta.",
+    "translation": "At the market in Bologna, Marco wants to buy some fruit.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 7,
+    "original": "Il venditore saluta Marco e sorride.",
+    "translation": "The vendor greets Marco and smiles.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 8,
+    "original": "Giulia prende il treno per Firenze.",
+    "translation": "Giulia takes the train to Florence.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 9,
+    "original": "Dal finestrino, lei vede una bella campagna verde.",
+    "translation": "Through the train window, she sees a beautiful green countryside.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 10,
+    "original": "La nonna di Giulia ha una ricetta speciale per la torta.",
+    "translation": "Giulia's grandma has a special recipe for the cake.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 11,
+    "original": "Lei mette farina, zucchero e uova nella ciotola.",
+    "translation": "She puts flour, sugar and eggs in the bowl.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 12,
+    "original": "Dopo, metti la torta nel forno caldo.",
+    "translation": "Then, you put the cake in the hot oven.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 13,
+    "original": "Marco guarda una partita di calcio allo stadio.",
+    "translation": "Marco watches a football match at the stadium.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 14,
+    "original": "Tutti i tifosi sono felici per il gol.",
+    "translation": "All the fans are happy about the goal.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   },
+   {
+    "id": 15,
+    "original": "Alla fine della settimana, Giulia è molto felice.",
+    "translation": "At the end of the week, Giulia is very happy.",
+    "new_element": "",
+    "new_element_translation": "",
+    "explanation": "",
+    "definition_target": "",
+    "part_of_speech": "",
+    "phonetic": ""
+   }
+  ]
+ }
+}
