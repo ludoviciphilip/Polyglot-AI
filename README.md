@@ -1,10 +1,21 @@
 # Polyglot i+1 — AI-Powered Natural Language Learning
 
-**Learn languages through stories tailored to what you already know.**
+**Open-source comprehensible-input language learning app: AI-generated i+1 stories, contextual vocabulary, audio, and FSRS spaced repetition.**
 
-Polyglot i+1 is an AI-powered language learning application built around the **Natural Method** and the *i+1 principle*: learners acquire language by understanding content that is mostly familiar while encountering a small amount of new vocabulary.
+[![License](https://img.shields.io/badge/license-Mutualist%20License-blue)](LICENSE.md)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178c6?logo=typescript&logoColor=white)](package.json)
+[![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)](package.json)
+[![Powered by Gemini](https://img.shields.io/badge/AI-Google%20Gemini-8e75ff?logo=googlegemini&logoColor=white)](https://aistudio.google.com/apikey)
+
+[Live App](https://polyglotai.ai.studio/) · [Features](#-features) · [Install](#-getting-started) · [Why Polyglot](#-the-i1-principle) · [Contributing](CONTRIBUTING.md)
+
+Polyglot i+1 is an AI-powered language learning application built around the **Natural Method**, **comprehensible input**, and Stephen Krashen's ***i+1* principle**: learners acquire language by understanding content that is mostly familiar while encountering a small amount of new vocabulary — the same idea behind graded readers.
 
 Instead of relying exclusively on isolated word lists, Polyglot generates personalized stories based on your current proficiency level and known vocabulary. Each lesson introduces new linguistic elements in context, helping you build comprehension, vocabulary, and familiarity with the target language.
+
+<p align="center">
+  <img src="public/assets/aistudio/image_a506a649.png" alt="Polyglot i+1 vocabulary and definition cards for an Italian lesson" width="480">
+</p>
 
 ## ✨ Features
 
@@ -214,6 +225,16 @@ Polyglot is designed around local learning data and user-controlled backups.
 - Treat exported JSON backups as sensitive because they may contain your API key and personal learning data.
 - Do not commit API keys to source control or share them publicly.
 - Because the application calls Gemini from the browser, a key entered by a user should be treated as accessible to that browser environment. Local storage is not a secure secret vault.
+
+## 🔄 Alternatives / Comparison
+
+Polyglot i+1 sits at the intersection of a few categories of language-learning tools:
+
+- **Like Anki**, it uses flashcards and a spaced-repetition scheduler (FSRS-5) — but cards are generated automatically from stories you've read instead of being authored by hand.
+- **Like LingQ or Readlang**, it's built around reading comprehensible content and looking up unfamiliar words in context — but the reading material itself is generated for your vocabulary level by AI rather than imported from existing texts.
+- **Unlike most commercial apps**, it has no mandatory account or cloud sync: your profile, vocabulary, and review history live in your browser and move between devices only via manual JSON export/import.
+
+Anki, LingQ, and Readlang are trademarks of their respective owners; Polyglot i+1 is not affiliated with, sponsored by, or endorsed by any of them. Google Gemini is a trademark of Google LLC; Polyglot i+1 uses the public Gemini API as an AI provider and is not affiliated with Google.
 
 ## 🗺️ Project Status
 
